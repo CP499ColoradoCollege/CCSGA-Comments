@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "ccsga-comments",
+    "dev": "ccsga-comments-dev"
+  }
+}

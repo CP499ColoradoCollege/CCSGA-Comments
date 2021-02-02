@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "590635822251",
+    "firebase_url": "https://ccsga-comments-default-rtdb.firebaseio.com",
+    "project_id": "ccsga-comments",
+    "storage_bucket": "ccsga-comments.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:590635822251:android:5c0ed5035225107eb75bee",
+        "android_client_info": {
+          "package_name": "edu.coloradocollege.ccsgaComments"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "590635822251-smbt7s88d58uokvkbk8nt95dt8gg81sf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPcyWBsqKa5jaEyWozmf-xFYexVsmhDrE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "590635822251-smbt7s88d58uokvkbk8nt95dt8gg81sf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "590635822251-lfbjb7dekdnp3f2tut06huv6re5rmkrb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "edu.coloradocollege.ccsgaComments"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

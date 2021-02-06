@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'InboxCard.dart';
 
 void main() {
   runApp(MyApp());
@@ -93,13 +94,12 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            InboxCard(
+                'CCSGA Internal Affairs - Fer',
+                'Hi Sam! Thanks for reaching out, we will help you with your issue.',
+                DateTime.now()),
+            InboxCard('CCSGA President - Sakina Bhatti',
+                'Hi Ely, I love the database you setup!', DateTime.now())
           ],
         ),
       ),

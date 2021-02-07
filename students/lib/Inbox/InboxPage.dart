@@ -1,20 +1,6 @@
+import 'dart:html';
 import 'package:flutter/material.dart';
 import 'InboxCard.dart';
-
-class InboxApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.yellow,
-      ),
-      home: InboxPage(title: 'Messages'),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
 
 class InboxPage extends StatefulWidget {
   InboxPage({Key key, this.title}) : super(key: key);
@@ -26,12 +12,6 @@ class InboxPage extends StatefulWidget {
 }
 
 class _InboxPageState extends State<InboxPage> {
-  void _newMessage() {
-    setState(() {
-      print("New message");
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,7 +57,15 @@ class _InboxPageState extends State<InboxPage> {
     print("Filter messages");
   }
 
+  void _newMessage() {
+    setState(() {
+      print("New message");
+    });
+  }
+
   Future<void> _pullRefresh() async {
     print("Pull to refresh");
+    //call to database to get name
+    setState(() {});
   }
 }

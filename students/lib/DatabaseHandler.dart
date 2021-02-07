@@ -1,7 +1,7 @@
 import 'package:firebase/firebase.dart'; // for web
 // import 'package:firebase_core/firebase_core.dart'; // for mobile
 // import 'package:firebase_database/firebase_database.dart'; // for mobile
-import 'InboxCard.dart';
+import 'Inbox/InboxCard.dart';
 
 class DatabaseHandler {
   

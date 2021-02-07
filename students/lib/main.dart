@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'InboxCard.dart';
+import 'Inbox/InboxCard.dart';
+import 'Inbox/Inbox.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(InboxApp());
 }
 
 class MyApp extends StatelessWidget {

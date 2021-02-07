@@ -19,7 +19,7 @@ class InboxCard extends StatelessWidget {
         child: InkWell(
           splashColor: Colors.blue.withAlpha(30),
           onTap: () {
-            CardTapped();
+            cardTapped();
           },
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -50,7 +50,7 @@ class InboxCard extends StatelessWidget {
     );
   }
 
-  void CardTapped() {
+  void cardTapped() {
     print('Card tapped.');
   }
 }

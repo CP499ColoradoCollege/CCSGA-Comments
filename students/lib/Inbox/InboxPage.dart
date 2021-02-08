@@ -1,4 +1,3 @@
-import 'dart:html';
 import 'package:flutter/material.dart';
 import 'InboxCard.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';

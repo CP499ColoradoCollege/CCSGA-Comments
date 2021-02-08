@@ -19,6 +19,7 @@ class NavigationDrawer extends StatelessWidget {
           ListTile(
             title: Text('Home'),
             onTap: () {
+              print("Home Page Tapped");
               // Update the state of the app
               // ...
               // Then close the drawer
@@ -28,6 +29,7 @@ class NavigationDrawer extends StatelessWidget {
           ListTile(
             title: Text('Messages'),
             onTap: () {
+              print("Messages Page Tapped");
               // Update the state of the app
               // ...
               // Then close the drawer
@@ -37,6 +39,7 @@ class NavigationDrawer extends StatelessWidget {
           ListTile(
             title: Text('Settings'),
             onTap: () {
+              print("Settings Page Tapped");
               // Update the state of the app
               // ...
               // Then close the drawer

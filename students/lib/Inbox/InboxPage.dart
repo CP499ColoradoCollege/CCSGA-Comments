@@ -2,6 +2,7 @@ import 'dart:html';
 import 'package:flutter/material.dart';
 import 'InboxCard.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
+import 'package:ccsga_comments/Navigation/NavigationDrawer.dart';
 
 class InboxPage extends StatefulWidget {
   InboxPage({Key key, this.title}) : super(key: key);
@@ -46,6 +47,7 @@ class _InboxPageState extends State<InboxPage> {
         tooltip: 'New Message',
         child: Icon(Icons.add),
       ),
+      drawer: NavigationDrawer(),
     );
   }
 
@@ -61,12 +63,10 @@ class _InboxPageState extends State<InboxPage> {
 
   Future<void> _pullRefresh() async {
     DatabaseHandler dbHandler = DatabaseHandler.instance;
-    dbHandler.getMessages()
-      .then((messages){
-        setState(() {
-          _messages = [...messages];
-        });
-      })
-      .catchError((err) => print("Caught an error: $err"));
+    dbHandler.getMessages().then((messages) {
+      setState(() {
+        _messages = [...messages];
+      });
+    }).catchError((err) => print("Caught an error: $err"));
   }
 }

@@ -1,57 +1,47 @@
+import 'package:ccsga_comments/BasePage.dart';
 import 'package:flutter/material.dart';
 import 'InboxCard.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
-import 'package:ccsga_comments/Navigation/NavigationDrawer.dart';
 
-class InboxPage extends StatefulWidget {
+class InboxPage extends BasePage {
   InboxPage({Key key, this.title}) : super(key: key);
 
   final String title;
 
-  @override
   _InboxPageState createState() => _InboxPageState();
 }
 
-class _InboxPageState extends State<InboxPage> {
+class _InboxPageState extends BaseState<InboxPage> with BasicPage {
+  @override
+  String screenName() {
+    return "Messages";
+  }
+
   List<InboxCard> _messages = [];
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.title), actions: <Widget>[
-        new IconTheme(
-          data: new IconThemeData(
-            color: Colors.black,
-          ),
-          child: new IconButton(
-            icon: const Icon(Icons.filter_alt_outlined),
-            tooltip: 'Filter Messages',
-            onPressed: () {
-              _filterMessages();
-            },
-          ),
-        )
-      ]),
-      body: Center(
-        child: RefreshIndicator(
-          onRefresh: _pullRefresh,
-          child: ListView(
-            padding: const EdgeInsets.all(8),
-            children: _messages,
-          ),
+  Widget body() {
+    return Center(
+      child: RefreshIndicator(
+        onRefresh: _pullRefresh,
+        child: ListView(
+          padding: const EdgeInsets.all(8),
+          children: _messages,
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _newMessage,
-        tooltip: 'New Message',
-        child: Icon(Icons.add),
-      ),
-      drawer: NavigationDrawer(),
     );
   }
 
-  void _filterMessages() {
-    print("Filter messages");
+  @override
+  Widget fab() {
+    return FloatingActionButton.extended(
+      onPressed: () {
+        _newMessage();
+      },
+      label: Text('New Message'),
+      icon: Icon(Icons.add),
+      backgroundColor: Colors.yellow,
+    );
   }
 
   void _newMessage() {

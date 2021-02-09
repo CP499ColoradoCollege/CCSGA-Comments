@@ -41,49 +41,52 @@ class _NewMessagePageState extends State<NewMessagePage> {
                 alignment: Alignment.bottomCenter,
                 child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 24.0),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          CheckboxListTile(
-                            title: Text("Send my message anonymously"),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 6),
-                            value: _isChecked,
-                            onChanged: (bool value) =>
-                                setState(() => _isChecked = value),
-                          ),
-                          SizedBox(height: 24),
-                          MultiSelectDialogField(
-                            buttonText:
-                                Text('Select a committee to tag if you like'),
-                            title: Text('CCSGA Committees'),
-                            items: _committees
-                                .map((e) => MultiSelectItem(e, e.name))
-                                .toList(),
-                            listType: MultiSelectListType.CHIP,
-                            onConfirm: (values) {
-                              _selectedCommittees = values;
-                            },
-                          ),
-                          SizedBox(height: 24),
-                          TextFormField(
-                            minLines: 7,
-                            maxLines: 13,
-                            decoration: InputDecoration(
-                              labelText: 'Write a message',
-                              border: const OutlineInputBorder(),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                    color: Colors.black, width: 2.0),
+                    child: Container(
+                        constraints: BoxConstraints(maxWidth: 1000),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              CheckboxListTile(
+                                title: Text("Send my message anonymously"),
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 6),
+                                value: _isChecked,
+                                onChanged: (bool value) =>
+                                    setState(() => _isChecked = value),
                               ),
-                              suffixIcon: IconButton(
-                                onPressed: () => _sendMessage(),
-                                icon: Icon(Icons.send_rounded),
+                              SizedBox(height: 24),
+                              MultiSelectDialogField(
+                                buttonText: Text(
+                                    'Select a committee to tag if you like'),
+                                title: Text('CCSGA Committees'),
+                                items: _committees
+                                    .map((e) => MultiSelectItem(e, e.name))
+                                    .toList(),
+                                listType: MultiSelectListType.CHIP,
+                                onConfirm: (values) {
+                                  _selectedCommittees = values;
+                                },
                               ),
-                            ),
-                          )
-                        ])))));
+                              SizedBox(height: 24),
+                              TextFormField(
+                                minLines: 7,
+                                maxLines: 13,
+                                decoration: InputDecoration(
+                                  labelText: 'Write a message',
+                                  border: const OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                        color: Colors.black, width: 2.0),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    onPressed: () => _sendMessage(),
+                                    icon: Icon(Icons.send_rounded),
+                                  ),
+                                ),
+                              )
+                            ]))))));
   }
 
   void _sendMessage() {

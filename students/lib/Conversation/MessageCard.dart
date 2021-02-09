@@ -33,7 +33,7 @@ class MessageCard extends StatelessWidget {
               Row(
                 children: [
                   Padding(
-                      padding: const EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.only(bottom: 10),
                       child: Text(
                         this.body.toString(),
                         textAlign: TextAlign.left,
@@ -45,6 +45,9 @@ class MessageCard extends StatelessWidget {
                   Text(
                     this.sender.toString(),
                     textAlign: TextAlign.left,
+                  ),
+                  Expanded(
+                    child: Container(),
                   ),
                   Text(
                     this.time.toString(),

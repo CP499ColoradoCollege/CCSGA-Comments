@@ -46,7 +46,7 @@ class _InboxPageState extends State<InboxPage> {
             "Sam",
             "Test message to see how well this works.... !!!!!",
             DateTime.now(),
-            true),
+            false),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _newMessage,

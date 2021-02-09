@@ -2,17 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class MessageCard extends StatelessWidget {
-  String sender;
-  String body;
-  String time;
-  bool isSender;
+  final String sender;
+  final String body;
+  final DateTime time;
+  final bool isSender;
 
-  MessageCard(String sender, String body, DateTime time, bool isSender) {
-    this.sender = sender;
-    this.body = body;
-    this.time = DateFormat("MMM d -").add_jm().format(time);
-    this.isSender = isSender;
-  }
+  MessageCard(this.sender, this.body, this.time, this.isSender);
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +45,7 @@ class MessageCard extends StatelessWidget {
                     child: Container(),
                   ),
                   Text(
-                    this.time.toString(),
+                    DateFormat("MMM d -").add_jm().format(this.time).toString(),
                     textAlign: TextAlign.right,
                   )
                 ],

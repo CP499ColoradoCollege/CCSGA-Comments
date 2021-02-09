@@ -2,11 +2,9 @@ import 'package:ccsga_comments/Conversation/MessageCard.dart';
 import 'package:flutter/material.dart';
 
 class MessageThread extends StatelessWidget {
-  List<MessageCard> messages;
+  final List<MessageCard> messages;
 
-  MessageThread(List<MessageCard> messages) {
-    this.messages = messages;
-  }
+  MessageThread(this.messages);
 
   @override
   Widget build(BuildContext context) {

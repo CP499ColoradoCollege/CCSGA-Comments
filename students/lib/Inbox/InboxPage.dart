@@ -1,3 +1,4 @@
+import 'package:ccsga_comments/Conversation/MessageCard.dart';
 import 'package:flutter/material.dart';
 import 'InboxCard.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
@@ -33,13 +34,19 @@ class _InboxPageState extends State<InboxPage> {
         )
       ]),
       body: Center(
-        child: RefreshIndicator(
-          onRefresh: _pullRefresh,
-          child: ListView(
-            padding: const EdgeInsets.all(8),
-            children: _messages,
-          ),
-        ),
+        // child: RefreshIndicator(
+        //   onRefresh: _pullRefresh,
+        //   child: ListView(
+        //     padding: const EdgeInsets.all(8),
+        //     children: _messages,
+        //   ),
+        // ),
+
+        child: new MessageCard(
+            "Sam",
+            "Test message to see how well this works.... !!!!!",
+            DateTime.now(),
+            true),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _newMessage,

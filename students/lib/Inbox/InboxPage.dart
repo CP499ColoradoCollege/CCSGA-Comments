@@ -39,7 +39,7 @@ class _InboxPageState extends BaseState<InboxPage> with BasicPage {
       },
       label: Text('New Message'),
       icon: Icon(Icons.add),
-      backgroundColor: Colors.yellow,
+      backgroundColor: Theme.of(context).accentColor,
     );
   }
 

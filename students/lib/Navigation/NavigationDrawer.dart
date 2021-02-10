@@ -11,8 +11,8 @@ class NavigationDrawer extends StatelessWidget {
             height: 56.0,
             child: DrawerHeader(
                 child: Text('CCSGA Comments',
-                    style: TextStyle(color: Colors.black, fontSize: 20)),
-                decoration: BoxDecoration(color: Colors.yellow),
+                    style: TextStyle(color: Colors.white, fontSize: 20)),
+                decoration: BoxDecoration(color: Theme.of(context).accentColor),
                 margin: EdgeInsets.all(0.0),
                 padding: EdgeInsets.all(10.0)),
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Inbox/InboxPage.dart';
+import 'NewMessage/NewMessagePage.dart';
 
 void main() {
   runApp(CCSGACommentsApp());
@@ -11,9 +12,7 @@ class CCSGACommentsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'CCSGA Comments',
-      theme: ThemeData(
-        primarySwatch: Colors.yellow,
-      ),
+      theme: ThemeData(primarySwatch: Colors.indigo),
       home: InboxPage(title: 'Messages'),
       debugShowCheckedModeBanner: false,
     );

@@ -11,9 +11,7 @@ class CCSGACommentsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'CCSGA Comments',
-      theme: ThemeData(
-        primarySwatch: Colors.yellow,
-      ),
+      theme: ThemeData(primarySwatch: Colors.indigo),
       home: InboxPage(title: 'Messages'),
       debugShowCheckedModeBanner: false,
     );

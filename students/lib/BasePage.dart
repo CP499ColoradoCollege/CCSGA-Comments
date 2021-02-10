@@ -15,10 +15,11 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(screenName()), actions: <Widget>[
+      appBar:
+          AppBar(title: Center(child: Text(screenName())), actions: <Widget>[
         new IconTheme(
           data: new IconThemeData(
-            color: Colors.black,
+            color: Colors.white,
           ),
           child: new IconButton(
             icon: const Icon(Icons.filter_alt_outlined),

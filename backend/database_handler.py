@@ -80,6 +80,15 @@ def create_stored_procedures():
                 END IF;
                 INSERT INTO AppliedLabels (conversationId, labelId) VALUES (conversationId, labelId);
             END ;
+        ''',
+        '''CREATE PROCEDURE get_conversation (IN requestedConversationId INT, IN requester VARCHAR(40))
+            BEGIN
+                IF EXISTS (SELECT username FROM Users WHERE isCCSGA AND username=requester) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = requester AND conversationId = requestedConversationId) THEN
+                    SELECT Messages.id, Users.username, Users.displayName, Messages.body, Messages.dateandtime, MessageSettings.isRead FROM ((Messages JOIN Users ON Messages.sender = Users.username) JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) WHERE Messages.conversationId = requestedConversationId;
+                ELSE
+                    SELECT NULL;
+                END IF;
+            END ;
         '''
     ]
     

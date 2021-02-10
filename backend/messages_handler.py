@@ -8,6 +8,8 @@ TEMP_DISPLAY_NAME = 'Temp Display Name3'
 
 @app.route("/api/conversations/create", methods=["POST"])
 def create_conversation():
+    # TODO: prevent non-signed in users from accessing
+    
     request_dict = request.get_json()
     
     necessary_keys = ['revealIdentity', 'messageBody', 'labels']
@@ -27,6 +29,21 @@ def create_conversation():
 
     for label_body in request_dict["labels"]:
         cur.callproc("apply_label", (conversation_id, label_body))
-    # TODO: Labels, AppliedLabels, CCSGA ConversationSettings, CCSGA MessageSettings
+    # TODO: CCSGA ConversationSettings, CCSGA MessageSettings
     conn.commit()
     return make_response(jsonify({"conversationId": conversation_id, "messageId": message_id}), 201)
+
+@app.route("/api/conversations/<conversation_id>", methods=["GET"])
+def get_conversation(conversation_id):
+    conn, cur = get_conn_and_cursor()
+    cur.callproc("get_conversation", (conversation_id, TEMP_USERNAME))
+    results = cur.fetchall()
+
+    if results == [(None,)]:
+        abort(403, "User is not authorized to view this conversation")
+
+    messages = dict()
+    for message_id, sender_username, sender_display_name, message_body, dateandtime, isRead in results:
+        messages[message_id] = {"sender": {"username": sender_username, "displayName": sender_display_name}, "body": message_body, "dateTime": dateandtime, "isRead": (True if isRead else False)}
+    return make_response(jsonify(messages), 200)
+

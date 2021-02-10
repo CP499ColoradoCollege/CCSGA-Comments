@@ -2,15 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class InboxCard extends StatelessWidget {
-  String name;
-  String message;
-  String time;
+  final String name;
+  final String message;
+  final DateTime time;
 
-  InboxCard(String name, String message, DateTime time) {
-    this.name = name;
-    this.message = message;
-    this.time = DateFormat("MMM d -").add_jm().format(time);
-  }
+  InboxCard(this.name, this.message, this.time);
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +39,7 @@ class InboxCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Text(
-                    this.time.toString(),
+                    DateFormat("MMM d -").add_jm().format(this.time).toString(),
                     textAlign: TextAlign.center,
                   )
                 ],

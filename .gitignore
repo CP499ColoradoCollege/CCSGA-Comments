@@ -1,2 +1,6 @@
 .DS_Store
 students/functions/package-lock.json
+venv
+config.py
+.env
+__pycache__

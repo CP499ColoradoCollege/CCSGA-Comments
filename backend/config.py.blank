@@ -1,0 +1,16 @@
+# This file contains the template that the actual config.py file should use in the context of this project.
+# SECRET_KEY needs to be set to a random, sufficiently long value.
+# Fields beginning with DB need to contain the correct values for username, password, and databasename in the context of the server's database (os.getenv is sufficient for this if using .env file)
+# DO NOT COMMIT A CONFIG.PY FILE WITH THE ACTUAL VALUES TO THE GIT REPO!
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+CAS_SERVER='https://cas.coloradocollege.edu'
+CAS_AFTER_LOGIN='homepage'
+SECRET_KEY='insert random value here'
+DB_IP=os.getenv("DB_IP")
+DB_USERNAME=os.getenv("DB_USERNAME")
+DB_PASSWORD=os.getenv("DB_PASSWORD")
+DB_DBNAME=os.getenv("DB_DBNAME")

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Inbox/InboxPage.dart';
+import 'package:ccsga_comments/NewMessage/NewMessagePage.dart';
 
 void main() {
   runApp(CCSGACommentsApp());

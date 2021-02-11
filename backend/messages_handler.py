@@ -11,6 +11,8 @@ def create_conversation():
     # TODO: prevent non-signed in users from accessing
     
     request_dict = request.get_json()
+    if request_dict == None:
+        return make_response(jsonify(message="Bad request. Please check that Content-Type is application/json"), 400)
     
     necessary_keys = ['revealIdentity', 'messageBody', 'labels']
     for key in necessary_keys:
@@ -37,6 +39,8 @@ def create_conversation():
 @app.route("/api/conversations/<conversation_id>/messages/create", methods=["POST"])
 def create_message(conversation_id):
     request_dict = request.get_json()
+    if request_dict == None:
+        return make_response(jsonify(message="Bad request. Please check that Content-Type is application/json"), 400)
     
     necessary_keys = ['messageBody']
     for key in necessary_keys:
@@ -68,6 +72,7 @@ def get_conversation(conversation_id):
     # TODO: return the complete json object planned in the API
 
     if results == [(None,)]:
+        cur.nextset()
         abort(403, "User is not authorized to view this conversation")
 
     messages = dict()

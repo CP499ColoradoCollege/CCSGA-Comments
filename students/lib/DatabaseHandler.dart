@@ -37,7 +37,7 @@ class DatabaseHandler {
       'messageBody': msg.body,
       'labels': conv.labels
     };
-    var response = await http.post(url, body: jsonEncode(newMessageAttributes));
+    var response = await http.post(url, headers: {"Content-Type": "application/json"}, body: jsonEncode(newMessageAttributes));
     // handle response
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');

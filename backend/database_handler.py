@@ -59,14 +59,21 @@ def create_stored_procedures():
                     INSERT INTO Conversations (status) VALUES ('Delivered');
                     SELECT LAST_INSERT_ID() INTO conversationId;
                     INSERT INTO ConversationSettings (conversationId, username, isArchived, identityRevealed) VALUES (conversationId, sender, 0, revealIdentity);
+                    INSERT INTO ConversationSettings (conversationId, username, isArchived, identityRevealed) SELECT conversationId, Users.username, 0, 1 FROM Users WHERE isCCSGA;
                 END IF;
             END ;
         ''',
-        '''CREATE PROCEDURE create_message (IN conversationId INT, IN sender VARCHAR(40), IN messageBody TEXT, OUT messageId INT)
+        '''CREATE PROCEDURE create_message (IN conversationIdInput INT, IN sender VARCHAR(40), IN messageBody TEXT, OUT newMessageId INT)
             BEGIN
-                INSERT INTO Messages (conversationId, sender, body, dateandtime) VALUES (conversationId, sender, messageBody, UTC_TIMESTAMP());
-                SELECT LAST_INSERT_ID() INTO messageId;
-                INSERT INTO MessageSettings (messageId, username, isRead) VALUES (messageId, sender, 1);
+                IF EXISTS (SELECT username FROM Users WHERE isCCSGA AND username=sender) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = sender AND conversationId = conversationIdInput) THEN
+                    INSERT INTO Messages (conversationId, sender, body, dateandtime) VALUES (conversationIdInput, sender, messageBody, UTC_TIMESTAMP());
+                    SELECT LAST_INSERT_ID() INTO newMessageId;
+                    INSERT INTO MessageSettings (messageId, username, isRead) SELECT newMessageId, ConversationSettings.username, 0 FROM ConversationSettings WHERE ConversationSettings.conversationId = conversationIdInput;
+                    UPDATE MessageSettings SET isRead = 1 WHERE username = sender AND messageId = newMessageId;
+                ELSE
+                    SET newMessageId = -1;
+                END IF;
+                
             END ;
         ''',
         '''CREATE PROCEDURE apply_label (IN conversationId INT, IN labelBody VARCHAR(40))

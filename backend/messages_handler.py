@@ -3,8 +3,8 @@ from backend import app
 from backend.database_handler import get_conn_and_cursor
 from datetime import datetime
 
-TEMP_USERNAME = 'temp_username3'
-TEMP_DISPLAY_NAME = 'Temp Display Name3'
+TEMP_USERNAME = 'temp_username1'
+TEMP_DISPLAY_NAME = 'Temp Display Name1'
 
 @app.route("/api/conversations/create", methods=["POST"])
 def create_conversation():
@@ -30,14 +30,42 @@ def create_conversation():
     for label_body in request_dict["labels"]:
         cur.callproc("apply_label", (conversation_id, label_body))
     # TODO: CCSGA ConversationSettings, CCSGA MessageSettings
+    # TODO: HTTP errors
     conn.commit()
     return make_response(jsonify({"conversationId": conversation_id, "messageId": message_id}), 201)
+
+@app.route("/api/conversations/<conversation_id>/messages/create", methods=["POST"])
+def create_message(conversation_id):
+    request_dict = request.get_json()
+    
+    necessary_keys = ['messageBody']
+    for key in necessary_keys:
+        if key not in request_dict:
+            return make_response(jsonify(message="The required property '" + key + "' was not included in the request"), 400)
+    
+    # TODO: handle user not being in the database?
+    # TODO: 404/3/1 errors
+
+    conn, cur = get_conn_and_cursor()
+    cur.callproc("create_message", (conversation_id, TEMP_USERNAME, request_dict['messageBody'], 0))
+    message_id = cur.fetchall()[0][0]
+    if message_id == -1:
+        abort(403, "User is not authorized to post to this conversation")
+    
+    cur.nextset()
+    conn.commit()
+    return make_response(jsonify({"messageId": message_id}), 201)
+
 
 @app.route("/api/conversations/<conversation_id>", methods=["GET"])
 def get_conversation(conversation_id):
     conn, cur = get_conn_and_cursor()
     cur.callproc("get_conversation", (conversation_id, TEMP_USERNAME))
     results = cur.fetchall()
+
+    # TODO: 404, etc.
+    # TODO: handle user not being in database?
+    # TODO: return the complete json object planned in the API
 
     if results == [(None,)]:
         abort(403, "User is not authorized to view this conversation")

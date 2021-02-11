@@ -9,7 +9,7 @@ load_dotenv()
 def get_new_db_connection():
     '''Connect to the database using the values specified in the environment. 
     Implemented as a function so that it can be called easily in other places when it's discovered that the connection was lost/ended.
-    However, outside of this file, it is preferrable to call get_cursor() instead.'''
+    However, outside of this file, it is preferrable to call get_conn_and_cursor() instead.'''
     try:
         return mariadb.connect(
             user=os.getenv("DB_USERNAME"),
@@ -49,7 +49,7 @@ def create_tables():
     cur.execute("CREATE TABLE IF NOT EXISTS Announcements (id INT AUTO_INCREMENT, icon TEXT, body TEXT, dateandtime DATETIME, PRIMARY KEY (id));")
 
 def create_stored_procedures():
-    '''Creates all the stored procedures for the database.'''
+    '''Creates all the stored procedures for the database. Doesn't modify those that currently exist.'''
     commands = [
         '''CREATE PROCEDURE create_conversation (IN revealIdentity BOOL, IN sender VARCHAR(40), OUT conversationId INT)
             BEGIN
@@ -112,5 +112,5 @@ def create_stored_procedures():
 if __name__ == '__main__':
     print("Creating database tables (doesn't modify any that already exist)")
     create_tables()
-    print("Creating stored procedures")
+    print("Creating stored procedures (doesn't modify any that already exist)")
     create_stored_procedures()

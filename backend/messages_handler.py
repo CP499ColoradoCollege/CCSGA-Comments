@@ -31,7 +31,7 @@ def create_conversation():
 
     for label_body in request_dict["labels"]:
         cur.callproc("apply_label", (conversation_id, label_body))
-    # TODO: CCSGA ConversationSettings, CCSGA MessageSettings
+    
     # TODO: HTTP errors
     conn.commit()
     return make_response(jsonify({"conversationId": conversation_id, "messageId": message_id}), 201)
@@ -64,6 +64,7 @@ def create_message(conversation_id):
 @app.route("/api/conversations/<conversation_id>", methods=["GET"])
 def get_conversation(conversation_id):
     conn, cur = get_conn_and_cursor()
+    # TODO: get anonymized version if rep is requesting and student is anonymous
     cur.callproc("get_conversation", (conversation_id, TEMP_USERNAME))
     results = cur.fetchall()
 

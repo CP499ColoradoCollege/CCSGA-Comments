@@ -11,6 +11,9 @@ class ConversationPage extends BasePage {
 
 class _ConversationPageState extends BaseState<ConversationPage>
     with BasicPage {
+
+  final messageFieldController = TextEditingController();
+
   @override
   Widget body() {
     return Container(
@@ -19,6 +22,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
         children: [
           MessageThread(),
           TextFormField(
+            controller: messageFieldController,
             minLines: 1,
             maxLines: 6,
             cursorColor: Colors.black,
@@ -55,6 +59,8 @@ class _ConversationPageState extends BaseState<ConversationPage>
   }
 
   void _sendMessage() {
-    print("Send message");
+    if(this.messageFieldController.text != "") {
+      print("Send message");
+    }
   }
 }

@@ -12,4 +12,13 @@ Widget fab() => Container();
 
 body will be the body of the page and fab is the floating action button.
 
-See InboxPage as an example of the implementation.
+class NewPage extends BasePage {
+  NewPage({Key key, this.title}) : super(key: key);
+
+  final String title;
+
+  @override
+  _NewPageState createState() => _NewPageState();
+}
+
+class _NewPageState extends BaseState<NewPage> with BasicPage {}

@@ -1,21 +1,94 @@
 import 'package:ccsga_comments/Conversation/MessageCard.dart';
+import 'package:ccsga_comments/Models/MessageModel.dart';
 import 'package:flutter/material.dart';
 
-class MessageThread extends StatelessWidget {
-  final List<MessageCard> messages;
+class MessageThread extends StatefulWidget {
+  const MessageThread({Key key}) : super(key: key);
 
-  MessageThread(this.messages);
+  @override
+  _MessageThreadState createState() => _MessageThreadState();
+}
+
+class _MessageThreadState extends State<MessageThread> {
+  final ScrollController _scrollController = ScrollController();
+
+  List<MessageModel> messages = [
+    MessageModel(
+        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+        DateTime.now(), true),
+    MessageModel(
+        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+        DateTime.now(), true),
+    MessageModel(
+        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+        DateTime.now(), true),
+    MessageModel(
+        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+        DateTime.now(), true),
+    MessageModel(
+        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+        DateTime.now(), true),
+    MessageModel(
+        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+        DateTime.now(), true),
+    MessageModel(
+        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+        DateTime.now(), true),
+    MessageModel(
+        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+        DateTime.now(), true),
+    MessageModel(
+        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+        DateTime.now(), true),
+    MessageModel(
+        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+        DateTime.now(), true),
+    MessageModel(
+        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+        DateTime.now(), true),
+    MessageModel(
+        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+        DateTime.now(), true)
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return Flexible(
+        child: ListView.builder(
       itemCount: messages.length,
       shrinkWrap: true,
       padding: EdgeInsets.only(top: 10, bottom: 10),
-      physics: NeverScrollableScrollPhysics(),
+      physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+      controller: _scrollController,
       itemBuilder: (context, index) {
-        return messages[index];
+        return MessageCard(messages[index]);
       },
+    ));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => scrollToBottom());
+  }
+
+  void scrollToBottom() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: Duration(seconds: 1),
+      curve: Curves.fastOutSlowIn,
     );
   }
 }

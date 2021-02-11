@@ -1,4 +1,4 @@
-import 'package:ccsga_comments/BasePage.dart';
+import 'package:ccsga_comments/BasePage/BasePage.dart';
 import 'package:flutter/material.dart';
 import 'InboxCard.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';

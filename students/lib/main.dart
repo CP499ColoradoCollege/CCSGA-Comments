@@ -13,7 +13,7 @@ class CCSGACommentsApp extends StatelessWidget {
     return MaterialApp(
       title: 'CCSGA Comments',
       theme: ThemeData(primarySwatch: Colors.indigo),
-      home: InboxPage(title: 'Messages'),
+      home: NewMessagePage(title: 'Messages'),
       debugShowCheckedModeBanner: false,
     );
   }

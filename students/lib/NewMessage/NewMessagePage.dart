@@ -1,17 +1,11 @@
 import 'dart:html';
 import 'package:ccsga_comments/BasePage.dart';
+import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
-
-class Committee {
-  final int id;
-  final String name;
-
-  Committee({
-    this.id,
-    this.name,
-  });
-}
+import './Message.dart';
+import './Conversation.dart';
+import './CommitteeModel.dart';
 
 class NewMessagePage extends BasePage {
   NewMessagePage({Key key, this.title}) : super(key: key);
@@ -28,11 +22,19 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
     Committee(id: 1, name: 'Outreach'),
     Committee(id: 2, name: 'Diversity and Inclusion')
   ];
-  List<Committee> _selectedCommittees = [];
+  List<dynamic> _selectedCommittees = [];
 
   bool _isChecked = false;
 
   final _formKey = GlobalKey<FormState>();
+
+  final textFieldController = TextEditingController();
+
+  @override
+  void dispose() {
+    textFieldController.dispose();
+    super.dispose();
+  }
 
   @override
   String screenName() {
@@ -79,7 +81,7 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
                               ),
                               SizedBox(height: 24),
                               TextFormField(
-                                minLines: 7,
+                                minLines: 2,
                                 maxLines: 13,
                                 cursorColor: Colors.black,
                                 decoration: InputDecoration(
@@ -99,6 +101,7 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
                                     icon: Icon(Icons.send_rounded),
                                   ),
                                 ),
+                                controller: textFieldController,
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please enter some text';
@@ -111,5 +114,11 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
 
   void _sendMessage() {
     print("Send message");
+    //Conversation .... //TODO
+    var selectedCommitteesStrList = [];
+    _selectedCommittees.forEach((e) => selectedCommitteesStrList.add(e.name));
+    var msg = new Message(0, 1, textFieldController.text);
+    var conv = new Conversation(_isChecked, [msg], selectedCommitteesStrList);
+    DatabaseHandler.instance.sendNewMessage(msg, conv);
   }
 }

@@ -19,7 +19,6 @@ class _InboxPageState extends BaseState<InboxPage> with BasicPage {
 
   List<InboxCard> _messages = [];
 
-  @override
   Widget body() {
     return Center(
       child: RefreshIndicator(

@@ -1,7 +1,8 @@
 import 'dart:html';
-import 'package:ccsga_comments/BasePage.dart';
+import 'package:ccsga_comments/BasePage/BasePage.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:ccsga_comments/Conversation/MessageThread.dart';
 
 class Committee {
   final int id;

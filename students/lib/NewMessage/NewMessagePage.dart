@@ -22,7 +22,7 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
     Committee(id: 1, name: 'Outreach'),
     Committee(id: 2, name: 'Diversity and Inclusion')
   ];
-  List<dynamic> _selectedCommittees = [];
+  List<Committee> _selectedCommittees = [];
 
   bool _isChecked = false;
 
@@ -75,7 +75,7 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
                                     .map((e) => MultiSelectItem(e, e.name))
                                     .toList(),
                                 listType: MultiSelectListType.CHIP,
-                                onConfirm: (values) {
+                                onConfirm: (List<Committee> values) {
                                   _selectedCommittees = values;
                                 },
                               ),
@@ -115,7 +115,7 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
   void _sendMessage() {
     print("Send message");
     //Conversation .... //TODO
-    var selectedCommitteesStrList = [];
+    List<String> selectedCommitteesStrList = [];
     _selectedCommittees.forEach((e) => selectedCommitteesStrList.add(e.name));
     var msg = new Message(0, 1, textFieldController.text);
     var conv = new Conversation(_isChecked, [msg], selectedCommitteesStrList);

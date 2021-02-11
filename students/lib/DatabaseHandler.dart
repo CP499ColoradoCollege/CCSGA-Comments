@@ -33,11 +33,10 @@ class DatabaseHandler {
   void sendNewMessage(Message msg, Conversation conv) async {
     var url = '/api/conversations/create';
     var newMessageAttributes = {
-      'revealIdentity': conv.isAnonymous,
+      'revealIdentity': !conv.isAnonymous,
       'messageBody': msg.body,
       'labels': conv.labels
     };
-
     var response = await http.post(url, body: jsonEncode(newMessageAttributes));
     // handle response
     print('Response status: ${response.statusCode}');

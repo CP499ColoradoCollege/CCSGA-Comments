@@ -26,7 +26,7 @@ class Conversation {
   bool isAnonymous;
   bool isRead;
   List<Message> messages;
-  List<Committee> labels;
+  List<String> labels;
 
   Conversation(this.isAnonymous, this.messages, this.labels) {
     this.status = new ConversationStatus().sent;

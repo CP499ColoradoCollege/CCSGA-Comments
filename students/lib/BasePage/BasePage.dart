@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:beamer/beamer.dart';
 import 'package:ccsga_comments/Navigation/NavigationDrawer.dart';
 
 //Based on this article: https://medium.com/flutter-community/mixins-and-base-classes-a-recipe-for-success-in-flutter-bc3fbb5da670

@@ -1,23 +1,27 @@
 import 'package:ccsga_comments/BasePage/BasePage.dart';
+import 'package:ccsga_comments/Conversation/ConversationPage.dart';
+import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
+import 'package:ccsga_comments/NewMessage/NewMessagePage.dart';
 import 'package:flutter/material.dart';
-import 'InboxCard.dart';
+import 'ConversationListCard.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
+import 'package:beamer/beamer.dart';
 
-class InboxPage extends BasePage {
-  InboxPage({Key key, this.title}) : super(key: key);
+class ConversationListPage extends BasePage {
+  ConversationListPage({Key key, this.title}) : super(key: key);
 
   final String title;
 
-  _InboxPageState createState() => _InboxPageState();
+  _ConversationListPageState createState() => _ConversationListPageState();
 }
 
-class _InboxPageState extends BaseState<InboxPage> with BasicPage {
+class _ConversationListPageState extends BaseState<ConversationListPage> with BasicPage {
   @override
   String screenName() {
     return "Messages";
   }
 
-  List<InboxCard> _messages = [];
+  List<ConversationListCard> _messages = [];
 
   Widget body() {
     return Center(
@@ -44,9 +48,7 @@ class _InboxPageState extends BaseState<InboxPage> with BasicPage {
   }
 
   void _newMessage() {
-    setState(() {
-      print("New message");
-    });
+    context.beamTo(NewMessageLocation());
   }
 
   Future<void> _pullRefresh() async {

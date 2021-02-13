@@ -1,0 +1,63 @@
+import 'package:beamer/beamer.dart';
+import 'package:flutter/material.dart';
+import 'package:ccsga_comments/ConversationList/ConversationListPage.dart';
+import 'package:ccsga_comments/NewMessage/NewMessagePage.dart';
+import 'package:ccsga_comments/Conversation/ConversationPage.dart';
+
+const List<String> _conversationListPath = ['conversation_list'];
+const List<String> _conversationPath = ['conversation/:conversationID'];
+const List<String> _newMessagePath = ['new_message'];
+
+class ConversationListLocation extends BeamLocation {
+  ConversationListLocation() {
+    pathSegments = _conversationListPath;
+  }
+  @override
+  List<String> get pathBlueprints => _conversationListPath;
+
+  @override
+  List<BeamPage> get pages => [
+    BeamPage(
+      key: ValueKey('conversation_list'),
+      child: ConversationListPage(),
+    ),
+  ];
+}
+
+class ConversationLocation extends BeamLocation {
+  ConversationLocation({
+    @required Map<String, String> pathParameters,
+  }) : super(
+    pathBlueprint: _conversationPath.last,
+    pathParameters: pathParameters,
+  );
+
+  @override
+  List<String> get pathBlueprints => _conversationPath;
+
+  @override
+  List<BeamPage> get pages => [
+    ...ConversationListLocation().pages,
+    BeamPage(
+      key: ValueKey('conversation-${pathParameters['id'] ?? ''}'),
+      child: ConversationPage(),
+    )
+  ];
+}
+
+class NewMessageLocation extends BeamLocation {
+  NewMessageLocation() {
+    pathSegments = _newMessagePath;
+  }
+
+  @override
+  List<String> get pathBlueprints => _newMessagePath;
+
+  @override
+  List<BeamPage> get pages => [
+    BeamPage(
+      key: ValueKey('new_message'),
+      child: NewMessagePage(),
+    ),
+  ];
+}

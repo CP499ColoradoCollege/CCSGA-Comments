@@ -1,6 +1,7 @@
 //import 'package:firebase/firebase.dart'; // for web
 // import 'package:firebase_core/firebase_core.dart'; // for mobile
 // import 'package:firebase_database/firebase_database.dart'; // for mobile
+import 'package:ccsga_comments/NewMessage/ChewedResponseModel.dart';
 import 'package:ccsga_comments/NewMessage/Conversation.dart';
 import 'package:flutter/material.dart';
 
@@ -30,16 +31,28 @@ class DatabaseHandler {
   }
 
   // send a new message to the db, starting a conversation
-  void sendNewMessage(Message msg, Conversation conv) async {
+  Future<ChewedResponse> initiateNewConversation(
+      bool isAnonymous, String messageBody, List<String> labels) async {
     var url = '/api/conversations/create';
     var newMessageAttributes = {
-      'revealIdentity': !conv.isAnonymous,
-      'messageBody': msg.body,
-      'labels': conv.labels
+      'revealIdentity': isAnonymous,
+      'messageBody': messageBody,
+      'labels': labels
     };
-    var response = await http.post(url, headers: {"Content-Type": "application/json"}, body: jsonEncode(newMessageAttributes));
-    // handle response
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(newMessageAttributes));
+    if (response.statusCode == 201) {
+      return new ChewedResponse(true, 'Message Sent Successfully');
+    } else if (response.statusCode == 401) {
+      return new ChewedResponse(
+          false, 'You cannot send a message unless you are signed in');
+    } else if (response.statusCode == 403) {
+      return new ChewedResponse(false,
+          'If you are signed in with a CCSGA account, you cannot initiate a conversation \nOtherwise, your account may have been banned. Please contact the Administrator');
+    } else {
+      return new ChewedResponse(false,
+          'Failed to send your message. Error code: ${response.statusCode}');
+    }
   }
 }

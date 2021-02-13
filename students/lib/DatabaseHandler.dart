@@ -1,7 +1,7 @@
 import 'package:firebase/firebase.dart'; // for web
 // import 'package:firebase_core/firebase_core.dart'; // for mobile
 // import 'package:firebase_database/firebase_database.dart'; // for mobile
-import 'Inbox/InboxCard.dart';
+import 'ConversationList/ConversationListCard.dart';
 
 class DatabaseHandler {
   
@@ -14,9 +14,9 @@ class DatabaseHandler {
   static DatabaseHandler get instance => _instance; // the getter
 
   // get all the messages from the database, or all of a user's messages if a username is provided
-  Future<List<InboxCard>> getMessages({var username}) async {
+  Future<List<ConversationListCard>> getMessages({var username}) async {
     DatabaseReference ref;
-    List<InboxCard> messages = [];
+    List<ConversationListCard> messages = [];
     if (username == null){
       ref = db.ref("messages");
       var queryEvent = await ref.once("value");
@@ -24,7 +24,7 @@ class DatabaseHandler {
       allMessagesSnapshot.forEach((userMessagesSnapshot) {
         userMessagesSnapshot.forEach((messageSnapshot){
           Map<String, dynamic> message = messageSnapshot.val();
-          messages.add(new InboxCard(message["display_name"], message["body"], DateTime.parse(message["time"])));
+          messages.add(new ConversationListCard(message["display_name"], message["body"], DateTime.parse(message["time"])));
         });
       });
       return messages;
@@ -34,7 +34,7 @@ class DatabaseHandler {
       DataSnapshot messagesSnapshot = queryEvent.snapshot;
       messagesSnapshot.forEach((messageSnapshot) {
         Map<String, dynamic> message = messageSnapshot.val();
-        messages.add(new InboxCard(message["display_name"], message["body"], DateTime.parse(message["time"])));
+        messages.add(new ConversationListCard(message["display_name"], message["body"], DateTime.parse(message["time"])));
       });
       return messages;
     }

@@ -99,7 +99,8 @@ def create_stored_procedures():
                 ELSEIF NOT EXISTS (SELECT id FROM Conversations WHERE id = requestedConversationId) THEN
                     SELECT -404;
                 ELSEIF EXISTS (SELECT username FROM Users WHERE isCCSGA AND username=requester) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = requester AND conversationId = requestedConversationId) THEN
-                    SELECT Messages.id, Users.username, Users.displayName, Messages.body, Messages.dateandtime, MessageSettings.isRead FROM ((Messages JOIN Users ON Messages.sender = Users.username) JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) WHERE Messages.conversationId = requestedConversationId;
+                    SELECT Messages.id, Users.username, Users.displayName, Messages.body, Messages.dateandtime, MessageSettings.isRead FROM (((Messages JOIN Users ON Messages.sender = Users.username) JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) JOIN ConversationSettings ON ConversationSettings.username = Messages.sender AND ConversationSettings.conversationId = requestedConversationId) WHERE Messages.conversationId = requestedConversationId AND (ConversationSettings.identityRevealed OR Messages.sender = requester)
+                    UNION SELECT Messages.id, "anonymous", "Anonymous", Messages.body, Messages.dateandtime, MessageSettings.isRead FROM ((Messages JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) JOIN ConversationSettings ON ConversationSettings.username = Messages.sender AND ConversationSettings.conversationId = requestedConversationId) WHERE Messages.conversationId = requestedConversationId AND NOT (ConversationSettings.identityRevealed OR Messages.sender = requester);
                 ELSE
                     SELECT -403;
                 END IF;

@@ -60,8 +60,6 @@ def create_message(conversation_id):
         if key not in request_dict:
             return make_response(jsonify(message="The required property '" + key + "' was not included in the request"), 400)
     
-    # TODO: handle user not being in the database?
-
     conn, cur = get_conn_and_cursor()
     cur.callproc("create_message", (conversation_id, flask.session.get('CAS_USERNAME'), request_dict['messageBody'], 0))
     message_id = cur.fetchall()[0][0]
@@ -89,11 +87,9 @@ def get_conversation(conversation_id):
         return resp
 
     conn, cur = get_conn_and_cursor()
-    # TODO: get anonymized version if rep is requesting and student is anonymous
     cur.callproc("get_conversation", (conversation_id, flask.session.get('CAS_USERNAME')))
     results = cur.fetchall()
 
-    # TODO: handle user not being in database?
     # TODO: return the complete json object planned in the API
 
     if results == [(-403,)]:

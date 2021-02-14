@@ -4,6 +4,7 @@
 import 'package:ccsga_comments/NewMessage/ChewedResponseModel.dart';
 import 'package:ccsga_comments/NewMessage/Conversation.dart';
 import 'package:flutter/material.dart';
+import 'package:tuple/tuple.dart';
 
 import 'Inbox/InboxCard.dart';
 import 'package:http/http.dart' as http;
@@ -20,20 +21,31 @@ class DatabaseHandler {
       ._privateConstructor(); // A private, static instance of this class
   static DatabaseHandler get instance => _instance; // the getter
 
-  // get all the messages from the database, or all of a user's messages if a username is provided
-  Future<List<InboxCard>> getMessages({var username}) async {
-    //DatabaseReference ref;
-    List<InboxCard> messages = [];
-    if (username == null) {
-    } else {
-      return messages;
-    }
-  }
+  // WIP
+  // get all my conversations from the database
+  // Future<Tuple2<ChewedResponse, List<Conversation>>>
+  //     getConversationList() async {
+  //   final url = '/api/conversations';
+  //   var response =
+  //       await http.get(url, headers: {"Content-Type": "application/json"});
+  //   var chewedResponse = ChewedResponse();
+  //   chewedResponse.chewStatusCode(response.statusCode);
+  //   if (response.statusCode == 200) {
+  //     //we need a conv list here somehow
+  //     //another class for a ConvList? loop through JSON attr and fromJson them all?
+  //     List<Conversation> convList =
+  //         Conversation.fromJson(jsonDecode(response.body));
+  //   }
+  //   // PLACEHOLDER, replace with ^^ when figured out
+  //   List<Conversation> conversationList = [Conversation()];
+  //   return Tuple2<ChewedResponse, List<Conversation>>(
+  //       chewedResponse, conversationList);
+  // }
 
   // send a new message to the db, starting a conversation
   Future<ChewedResponse> initiateNewConversation(
       bool isAnonymous, String messageBody, List<String> labels) async {
-    var url = '/api/conversations/create';
+    final url = '/api/conversations/create';
     var newMessageAttributes = {
       'revealIdentity': isAnonymous,
       'messageBody': messageBody,
@@ -42,17 +54,51 @@ class DatabaseHandler {
     var response = await http.post(url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(newMessageAttributes));
-    if (response.statusCode == 201) {
-      return new ChewedResponse(true, 'Message Sent Successfully');
-    } else if (response.statusCode == 401) {
-      return new ChewedResponse(
-          false, 'You cannot send a message unless you are signed in');
-    } else if (response.statusCode == 403) {
-      return new ChewedResponse(false,
-          'If you are signed in with a CCSGA account, you cannot initiate a conversation \nOtherwise, your account may have been banned. Please contact the Administrator');
+    var chewedResponse =
+        ChewedResponse(null, "Message Sent Successfully!", response.statusCode);
+    return chewedResponse;
+  }
+
+  // send a message in an existing conversation (as a reply)
+  Future<ChewedResponse> sendMessageInConversation(
+      int conversationId, String messageBody) async {
+    final url = '/api/conversations/$conversationId/messages/create';
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"messageBody": messageBody}));
+    var chewedResponse =
+        ChewedResponse(null, "Message Sent Successfully!", response.statusCode);
+    return chewedResponse;
+  }
+
+  // get messages and other details of a single conversation
+  Future<Tuple2<ChewedResponse, Conversation>> getConversation(
+      int conversationId) async {
+    final url = '/api/conversations/$conversationId';
+    var response =
+        await http.get(url, headers: {"Content-Type": "application/json"});
+    var chewedResponse = ChewedResponse();
+    chewedResponse.chewStatusCode(response.statusCode);
+    if (response.statusCode == 200) {
+      Conversation conv = Conversation.fromJson(jsonDecode(response.body));
+      return Tuple2<ChewedResponse, Conversation>(chewedResponse, conv);
     } else {
-      return new ChewedResponse(false,
-          'Failed to send your message. Error code: ${response.statusCode}');
+      return Tuple2<ChewedResponse, Conversation>(chewedResponse, null);
+    }
+  }
+
+  // get details of a single message based on ID
+  Future<Tuple2<ChewedResponse, Message>> getMessage(int messageId) async {
+    final url = '/api/conversations/<conversationId>/messages/$messageId';
+    var response =
+        await http.get(url, headers: {"Content-Type": "application/json"});
+    var chewedResponse = ChewedResponse();
+    chewedResponse.chewStatusCode(response.statusCode);
+    if (response.statusCode == 200) {
+      Message msg = Message.fromJson(jsonDecode(response.body));
+      return Tuple2<ChewedResponse, Message>(chewedResponse, msg);
+    } else {
+      return Tuple2<ChewedResponse, Message>(chewedResponse, null);
     }
   }
 }

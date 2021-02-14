@@ -129,7 +129,6 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
   }
 
   void _sendMessageInNewConversation() async {
-    print("Send message");
     List<String> selectedCommitteesStrList = [];
     _selectedCommittees.forEach((e) => selectedCommitteesStrList.add(e.name));
     ChewedResponse chewedResponse = await DatabaseHandler.instance

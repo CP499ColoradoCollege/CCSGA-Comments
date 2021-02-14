@@ -51,11 +51,11 @@ class _InboxPageState extends BaseState<InboxPage> with BasicPage {
   }
 
   Future<void> _pullRefresh() async {
-    DatabaseHandler dbHandler = DatabaseHandler.instance;
-    dbHandler.getMessages().then((messages) {
-      setState(() {
-        _messages = [...messages];
-      });
-    }).catchError((err) => print("Caught an error: $err"));
+    // DatabaseHandler dbHandler = DatabaseHandler.instance;
+    // dbHandler.getMessages().then((messages) {
+    //   setState(() {
+    //     _messages = [...messages];
+    //   });
+    // }).catchError((err) => print("Caught an error: $err"));
   }
 }

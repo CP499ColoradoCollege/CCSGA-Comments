@@ -88,20 +88,42 @@ def get_conversation(conversation_id):
 
     conn, cur = get_conn_and_cursor()
     cur.callproc("get_conversation", (conversation_id, flask.session.get('CAS_USERNAME')))
-    results = cur.fetchall()
+    messages_query_result = cur.fetchall()
 
-    # TODO: return the complete json object planned in the API
-
-    if results == [(-403,)]:
+    if messages_query_result == [(-403,)]:
         return make_response(jsonify({"message": "User is either banned or not authorized to view this conversation"}), 403)
 
-    if results == [(-404,)]:
+    if messages_query_result == [(-404,)]:
         return make_response(jsonify({"message": "Conversation not found"}), 404)
 
-    cur.nextset()
+    # Handle the messages query
     messages = dict()
-    for message_id, sender_username, sender_display_name, message_body, dateandtime, isRead in results:
-        messages[message_id] = {"sender": {"username": sender_username, "displayName": sender_display_name}, "body": message_body, "dateTime": dateandtime, "isRead": (True if isRead else False)}
+    for message_id, sender_username, sender_display_name, message_body, dateandtime, isRead in messages_query_result:
+        messages[message_id] = {"sender": {"username": sender_username, "displayName": sender_display_name}, "body": message_body, "dateTime": dateandtime, "isRead": bool(isRead)}
+    
+    # Handle the status query
+    cur.nextset()
+    status = cur.fetchone()[0]
 
-    return make_response(jsonify(messages), 200)
+    # Handle the labels query
+    cur.nextset()
+    labels = []
+    for row in cur.fetchall():
+        labels.append(row[0])
+    
+    # Handle the isArchived query
+    cur.nextset()
+    isArchived = bool(cur.fetchone()[0])
+
+    # Handle the isArchived query
+    cur.nextset()
+    allIdentitiesRevealed = bool(cur.fetchone()[0])
+    
+    # Handle the isArchived query
+    cur.nextset()
+    allMessagesRead = bool(cur.fetchone()[0])
+
+    cur.nextset()
+
+    return make_response(jsonify({"messages": messages, "status": status, "labels": labels, "isArchived": isArchived, "studentIdentityRevealed": allIdentitiesRevealed, "isRead": allMessagesRead}), 200)
 

@@ -101,6 +101,12 @@ def create_stored_procedures():
                 ELSEIF EXISTS (SELECT username FROM Users WHERE isCCSGA AND username=requester) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = requester AND conversationId = requestedConversationId) THEN
                     SELECT Messages.id, Users.username, Users.displayName, Messages.body, Messages.dateandtime, MessageSettings.isRead FROM (((Messages JOIN Users ON Messages.sender = Users.username) JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) JOIN ConversationSettings ON ConversationSettings.username = Messages.sender AND ConversationSettings.conversationId = requestedConversationId) WHERE Messages.conversationId = requestedConversationId AND (ConversationSettings.identityRevealed OR Messages.sender = requester)
                     UNION SELECT Messages.id, "anonymous", "Anonymous", Messages.body, Messages.dateandtime, MessageSettings.isRead FROM ((Messages JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) JOIN ConversationSettings ON ConversationSettings.username = Messages.sender AND ConversationSettings.conversationId = requestedConversationId) WHERE Messages.conversationId = requestedConversationId AND NOT (ConversationSettings.identityRevealed OR Messages.sender = requester);
+                
+                    SELECT status FROM Conversations WHERE id = requestedConversationId;
+                    SELECT body FROM Labels JOIN AppliedLabels ON Labels.id = AppliedLabels.labelId WHERE AppliedLabels.conversationId = requestedConversationId;
+                    SELECT isArchived FROM ConversationSettings WHERE ConversationSettings.conversationId = requestedConversationId AND ConversationSettings.username = requester;
+                    SELECT NOT EXISTS (SELECT ConversationSettings.id from ConversationSettings WHERE ConversationSettings.conversationId = requestedConversationId AND NOT identityRevealed);
+                    SELECT NOT EXISTS (SELECT Messages.id FROM Messages JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId WHERE Messages.conversationId = requestedConversationId AND NOT isRead);
                 ELSE
                     SELECT -403;
                 END IF;

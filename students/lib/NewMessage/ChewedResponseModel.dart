@@ -6,11 +6,11 @@
 class ChewedResponse {
   bool isSuccessful;
   String message;
-  int responseCode;
+  int statusCode;
 
-  ChewedResponse([this.isSuccessful, this.message, this.responseCode]) {
-    if (this.responseCode != null) {
-      this.chewStatusCode(this.responseCode);
+  ChewedResponse({this.isSuccessful, this.message, this.statusCode}) {
+    if (this.statusCode != null) {
+      this.chewStatusCode(this.statusCode);
     }
   }
 

@@ -54,8 +54,8 @@ class DatabaseHandler {
     var response = await http.post(url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(newMessageAttributes));
-    var chewedResponse =
-        ChewedResponse(null, "Message Sent Successfully!", response.statusCode);
+    var chewedResponse = ChewedResponse(
+        message: "Message Sent Successfully!", statusCode: response.statusCode);
     return chewedResponse;
   }
 
@@ -66,8 +66,8 @@ class DatabaseHandler {
     var response = await http.post(url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"messageBody": messageBody}));
-    var chewedResponse =
-        ChewedResponse(null, "Message Sent Successfully!", response.statusCode);
+    var chewedResponse = ChewedResponse(
+        message: "Message Sent Successfully!", statusCode: response.statusCode);
     return chewedResponse;
   }
 

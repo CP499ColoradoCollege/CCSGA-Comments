@@ -13,14 +13,12 @@ def static_proxy(path):
 
 @app.route("/")
 def homepage():
-    print(flask.session.get('CAS_USERNAME'))
     resp = make_response(render_template('index.html'))
     resp.headers.set('Cache-Control', 'no-store')
     return resp
 
 @app.route("/messages")
 def inbox_page():
-    print(flask.session.get('CAS_USERNAME'))
     resp = make_response(render_template('index.html'))
     resp.headers.set('Cache-Control', 'no-store')
     return resp

@@ -53,8 +53,8 @@ def create_stored_procedures():
     commands = [
         '''CREATE PROCEDURE create_conversation (IN revealIdentity BOOL, IN sender VARCHAR(40), OUT conversationId INT)
             BEGIN
-                IF EXISTS (SELECT username FROM users WHERE isCCSGA AND username=sender) THEN
-                    SET conversationId = -1;
+                IF EXISTS (SELECT username FROM Users WHERE (isCCSGA OR isBanned) AND username=sender) THEN
+                    SET conversationId = -403;
                 ELSE
                     INSERT INTO Conversations (status) VALUES ('Delivered');
                     SELECT LAST_INSERT_ID() INTO conversationId;
@@ -65,13 +65,17 @@ def create_stored_procedures():
         ''',
         '''CREATE PROCEDURE create_message (IN conversationIdInput INT, IN sender VARCHAR(40), IN messageBody TEXT, OUT newMessageId INT)
             BEGIN
-                IF EXISTS (SELECT username FROM Users WHERE isCCSGA AND username=sender) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = sender AND conversationId = conversationIdInput) THEN
+                IF EXISTS (SELECT username FROM Users WHERE username=sender AND isBanned) THEN
+                    SET newMessageId = -403;
+                ELSEIF NOT EXISTS (SELECT id FROM Conversations WHERE id = conversationIdInput) THEN
+                    SET newMessageId = -404;
+                ELSEIF EXISTS (SELECT username FROM Users WHERE isCCSGA AND username=sender) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = sender AND conversationId = conversationIdInput) THEN
                     INSERT INTO Messages (conversationId, sender, body, dateandtime) VALUES (conversationIdInput, sender, messageBody, UTC_TIMESTAMP());
                     SELECT LAST_INSERT_ID() INTO newMessageId;
                     INSERT INTO MessageSettings (messageId, username, isRead) SELECT newMessageId, ConversationSettings.username, 0 FROM ConversationSettings WHERE ConversationSettings.conversationId = conversationIdInput;
                     UPDATE MessageSettings SET isRead = 1 WHERE username = sender AND messageId = newMessageId;
                 ELSE
-                    SET newMessageId = -1;
+                    SET newMessageId = -403;
                 END IF;
                 
             END ;
@@ -90,10 +94,14 @@ def create_stored_procedures():
         ''',
         '''CREATE PROCEDURE get_conversation (IN requestedConversationId INT, IN requester VARCHAR(40))
             BEGIN
-                IF EXISTS (SELECT username FROM Users WHERE isCCSGA AND username=requester) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = requester AND conversationId = requestedConversationId) THEN
+                IF EXISTS (SELECT username FROM Users WHERE username=requester AND isBanned) THEN
+                    SELECT -403;
+                ELSEIF NOT EXISTS (SELECT id FROM Conversations WHERE id = requestedConversationId) THEN
+                    SELECT -404;
+                ELSEIF EXISTS (SELECT username FROM Users WHERE isCCSGA AND username=requester) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = requester AND conversationId = requestedConversationId) THEN
                     SELECT Messages.id, Users.username, Users.displayName, Messages.body, Messages.dateandtime, MessageSettings.isRead FROM ((Messages JOIN Users ON Messages.sender = Users.username) JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) WHERE Messages.conversationId = requestedConversationId;
                 ELSE
-                    SELECT NULL;
+                    SELECT -403;
                 END IF;
             END ;
         '''

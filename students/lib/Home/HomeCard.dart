@@ -41,7 +41,7 @@ class HomeCard extends StatelessWidget {
   }
 
   void cardTapped() async {
-    if (url != '' && await canLaunch(url)) {
+    if (url.isNotEmpty && await canLaunch(url)) {
       await launch(url);
     } else {
       throw 'Could not launch $url';

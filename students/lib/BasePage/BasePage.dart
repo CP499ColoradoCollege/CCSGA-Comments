@@ -16,7 +16,10 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Center(child: Text(screenName()))),
+      appBar: AppBar(
+        title: Text(screenName()),
+        centerTitle: true,
+      ),
       body: Container(
         child: body(),
       ),

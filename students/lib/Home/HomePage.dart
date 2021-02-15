@@ -17,21 +17,26 @@ class _HomePageState extends BaseState<HomePage> with BasicPage {
   @override
   Widget body() {
     return Container(
-      child: GridView.extent(
-          maxCrossAxisExtent: 600.0,
-          crossAxisSpacing: 5.0,
-          childAspectRatio: 4,
-          children: <Widget>[
-            HomeCard(
-                'CC Academic Calendar',
-                'See the academic calendar here...',
-                'https://www.coloradocollege.edu/academics/curriculum/calendar/calendar-2020-21.html/'),
-            HomeCard(
-                'COVID-19 Guidelines',
-                'Learn more about the community guidelines here...',
-                'https://www.coloradocollege.edu/other/coronavirus/'),
-            HomeCard('CCSGA Announcement', 'Midnight rasties!!!')
-          ]),
+      child: Column(
+        children: <Widget>[
+          GridView.extent(
+              maxCrossAxisExtent: 800.0,
+              crossAxisSpacing: 5.0,
+              childAspectRatio: 6,
+              shrinkWrap: true,
+              children: <Widget>[
+                HomeCard(
+                    'CC Academic Calendar',
+                    'See the academic calendar here...',
+                    'https://www.coloradocollege.edu/academics/curriculum/calendar/calendar-2020-21.html/'),
+                HomeCard(
+                    'COVID-19 Guidelines',
+                    'Learn more about the community guidelines here...',
+                    'https://www.coloradocollege.edu/other/coronavirus/'),
+                HomeCard('CCSGA Announcement', 'Midnight rasties!!!')
+              ]),
+        ],
+      ),
     );
   }
 

@@ -24,9 +24,8 @@
   <component name="ChangeListManager">
     <list default="true" id="c55fb4b5-9a91-4d64-8ae9-fdb732a28e86" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/lib/BasePage/BasePage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/BasePage/BasePage.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/lib/Home/HomeCard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Home/HomeCard.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/students/lib/Home/HomePage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Home/HomePage.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/main.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,10 +134,10 @@
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
     <state x="397" y="208" key="SettingsEditor/0.25.1792.1095@0.25.1792.1095" timestamp="1613402892729" />
-    <state x="561" y="269" width="670" height="676" key="search.everywhere.popup" timestamp="1613254977040">
+    <state x="561" y="269" width="670" height="676" key="search.everywhere.popup" timestamp="1613431064085">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
-    <state x="561" y="269" width="670" height="676" key="search.everywhere.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613254977040" />
+    <state x="561" y="269" width="670" height="676" key="search.everywhere.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613431064085" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -123,6 +123,35 @@ def create_stored_procedures():
             if re.match(r"PROCEDURE \S+ already exists", str(e)) == None:
                 raise
 
+# Helper functions for checking user role
+
+def is_student(username):
+    '''Return True iff specified user is student (i.e., neither CCSGA rep nor admin).'''
+    if not username: return False
+    conn, cur = get_conn_and_cursor()
+    cur.execute("SELECT isCCSGA, isAdmin FROM Users WHERE username = ?", (username,))
+    isCCSGA, isAdmin = cur.fetchone()
+    cur.nextset()
+    return not (isCCSGA or isAdmin)
+
+def is_ccsga(username):
+    '''Return True iff specified user is a CCSGA rep.'''
+    if not username: return False
+    conn, cur = get_conn_and_cursor()
+    cur.execute("SELECT isCCSGA FROM Users WHERE username = ?", (username,))
+    isCCSGA = cur.fetchone()[0]
+    cur.nextset()
+    return bool(isCCSGA)
+
+def is_admin(username):
+    '''Return True iff specified user is an admin.'''
+    if not username: return False
+    conn, cur = get_conn_and_cursor()
+    cur.execute("SELECT isAdmin FROM Users WHERE username = ?", (username,))
+    isAdmin = cur.fetchone()[0]
+    cur.nextset()
+    return bool(isAdmin) 
+
 
 if __name__ == '__main__':
     print("Creating database tables (doesn't modify any that already exist)")

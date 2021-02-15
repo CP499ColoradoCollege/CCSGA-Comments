@@ -23,7 +23,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c55fb4b5-9a91-4d64-8ae9-fdb732a28e86" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/students/lib/Home/HomeCard.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/students/lib/Home/HomePage.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/Navigation/CCSGABeamLocations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Navigation/CCSGABeamLocations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/Navigation/NavigationDrawer.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Navigation/NavigationDrawer.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/students/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/students/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,8 +100,13 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="531" y="263" width="820" height="508" key="#Notifications" timestamp="1613356554012">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="531" y="263" width="820" height="508" key="#Notifications/0.25.1792.1095@0.25.1792.1095" timestamp="1613356554012" />
     <state x="360" y="231" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1613008747895">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
@@ -106,26 +119,26 @@
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
     <state x="528" y="312" key="#main.dart/0.25.1792.1095@0.25.1792.1095" timestamp="1613008506696" />
-    <state width="1750" height="119" key="GridCell.Tab.0.bottom" timestamp="1613265895464">
+    <state width="1750" height="221" key="GridCell.Tab.0.bottom" timestamp="1613363567711">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
-    <state width="1750" height="119" key="GridCell.Tab.0.bottom/0.25.1792.1095@0.25.1792.1095" timestamp="1613265895464" />
-    <state width="1750" height="119" key="GridCell.Tab.0.center" timestamp="1613265895464">
+    <state width="1750" height="221" key="GridCell.Tab.0.bottom/0.25.1792.1095@0.25.1792.1095" timestamp="1613363567711" />
+    <state width="1750" height="221" key="GridCell.Tab.0.center" timestamp="1613363567711">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
-    <state width="1750" height="119" key="GridCell.Tab.0.center/0.25.1792.1095@0.25.1792.1095" timestamp="1613265895464" />
-    <state width="1750" height="119" key="GridCell.Tab.0.left" timestamp="1613265895463">
+    <state width="1750" height="221" key="GridCell.Tab.0.center/0.25.1792.1095@0.25.1792.1095" timestamp="1613363567711" />
+    <state width="1750" height="221" key="GridCell.Tab.0.left" timestamp="1613363567711">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
-    <state width="1750" height="119" key="GridCell.Tab.0.left/0.25.1792.1095@0.25.1792.1095" timestamp="1613265895463" />
-    <state width="1750" height="119" key="GridCell.Tab.0.right" timestamp="1613265895464">
+    <state width="1750" height="221" key="GridCell.Tab.0.left/0.25.1792.1095@0.25.1792.1095" timestamp="1613363567711" />
+    <state width="1750" height="221" key="GridCell.Tab.0.right" timestamp="1613363567711">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
-    <state width="1750" height="119" key="GridCell.Tab.0.right/0.25.1792.1095@0.25.1792.1095" timestamp="1613265895464" />
-    <state x="397" y="208" key="SettingsEditor" timestamp="1613008745100">
+    <state width="1750" height="221" key="GridCell.Tab.0.right/0.25.1792.1095@0.25.1792.1095" timestamp="1613363567711" />
+    <state x="397" y="208" key="SettingsEditor" timestamp="1613355377751">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
-    <state x="397" y="208" key="SettingsEditor/0.25.1792.1095@0.25.1792.1095" timestamp="1613008745100" />
+    <state x="397" y="208" key="SettingsEditor/0.25.1792.1095@0.25.1792.1095" timestamp="1613355377751" />
     <state x="561" y="269" width="670" height="676" key="search.everywhere.popup" timestamp="1613254977040">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>

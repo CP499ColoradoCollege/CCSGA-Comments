@@ -14,14 +14,15 @@ class CCSGACommentsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routerDelegate: BeamerRouterDelegate(
-        initialLocation: ConversationListLocation(),
+        initialLocation: HomeLocation(),
         notFoundPage: Scaffold(body: Center(child: Text('Not found'))),
       ),
       routeInformationParser: BeamerRouteInformationParser(
         beamLocations: [
+          HomeLocation(),
           ConversationListLocation(),
           NewMessageLocation(),
-          ConversationLocation()
+          ConversationLocation(),
         ],
       ),
       title: 'CCSGA Comments',

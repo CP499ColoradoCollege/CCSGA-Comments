@@ -27,6 +27,7 @@ class NavigationDrawer extends StatelessWidget {
               // ...
               // Then close the drawer
               Navigator.pop(context);
+              context.beamTo(HomeLocation());
             },
           ),
           ListTile(

@@ -1,8 +1,7 @@
 from backend import app
 import flask
 from flask import make_response, render_template, send_from_directory
-from flask_cas import login_required
-from backend.route_wrappers import student_or_admin_required
+from backend.route_wrappers import login_required_with_db_confirm, student_or_admin_required
 
 # This function/route is required to load all the static files from the frontend build.
 # Found on some online help forum. 
@@ -24,7 +23,7 @@ def homepage():
 # Route for a given, existing conversation to which this user has access, if its conversation_id is provided
 @app.route("/conversations", defaults={'conversation_id': None})
 @app.route("/conversations/<conversation_id>")
-@login_required
+@login_required_with_db_confirm
 def conversation_pages(conversation_id = None):
     resp = make_response(render_template('index.html'))
     resp.headers.set('Cache-Control', 'no-store')

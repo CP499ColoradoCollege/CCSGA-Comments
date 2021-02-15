@@ -1,7 +1,7 @@
 import flask
 from flask import request, make_response, jsonify, abort
 from backend import app
-from backend.database_handler import get_conn_and_cursor
+from backend.database_handler import get_conn_and_cursor, confirm_user_in_db
 from datetime import datetime
 
 @app.route("/api/conversations/create", methods=["POST"])
@@ -23,7 +23,18 @@ def create_conversation():
             return make_response(jsonify(message="The required property '" + key + "' was not included in the request"), 400)
     
     conn, cur = get_conn_and_cursor()
-    cur.execute("INSERT IGNORE INTO Users (username, isBanned, isCCSGA, isAdmin, displayName) VALUES (?, 0, 0, 0, ?);", (flask.session.get('CAS_USERNAME'), flask.session.get('CAS_ATTRIBUTES')['cas:displayName']))
+
+    # Confirm that user is in DB
+    username = flask.session.get('CAS_USERNAME')
+    try:
+        displayName = flask.session.get('CAS_ATTRIBUTES')['cas:displayName']
+    except KeyError:
+        print("Missing key 'cas:displayName' (to be used as full name) for user '%s'." % username)
+        print("Using username for full name instead (if needed)")
+        displayName = username
+    confirm_user_in_db(username, displayName)
+    
+    
     cur.callproc("create_conversation", (request_dict["revealIdentity"], flask.session.get('CAS_USERNAME'), 0))
     conversation_id = cur.fetchall()[0][0]
     cur.nextset()

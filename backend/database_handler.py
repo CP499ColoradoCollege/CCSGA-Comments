@@ -123,7 +123,15 @@ def create_stored_procedures():
             if re.match(r"PROCEDURE \S+ already exists", str(e)) == None:
                 raise
 
-# Helper functions for checking user role
+# Helper functions for other files to import
+
+def confirm_user_in_db(username, display_name):
+    '''Insert a record for this user (as a student) into the DB if their username is not yet in the database.'''
+    conn, cur = get_conn_and_cursor()
+    cur.execute("INSERT IGNORE INTO Users (username, isBanned, isCCSGA, isAdmin, displayName) VALUES (?, 0, 0, 0, ?);", (username, display_name))
+    conn.commit()
+
+# Helper functions for checking user role (other files can import these)
 
 def is_student(username):
     '''Return True iff specified user is student (i.e., neither CCSGA rep nor admin).'''

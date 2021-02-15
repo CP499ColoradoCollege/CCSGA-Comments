@@ -11,19 +11,18 @@ class ConversationPage extends BasePage {
 
 class _ConversationPageState extends BaseState<ConversationPage>
     with BasicPage {
-
   final messageFieldController = TextEditingController();
 
   @override
   Widget body() {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
       child: Column(
         children: [
           MessageThread(),
           TextFormField(
             controller: messageFieldController,
-            minLines: 1,
+            minLines: 2,
             maxLines: 6,
             cursorColor: Colors.black,
             decoration: InputDecoration(
@@ -31,8 +30,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
               labelStyle: TextStyle(color: Colors.black),
               border: const OutlineInputBorder(),
               focusedBorder: OutlineInputBorder(
-                borderSide:
-                const BorderSide(color: Colors.black),
+                borderSide: const BorderSide(color: Colors.black),
               ),
               suffixIcon: IconButton(
                 onPressed: () {
@@ -59,7 +57,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
   }
 
   void _sendMessage() {
-    if(this.messageFieldController.text != "") {
+    if (this.messageFieldController.text != "") {
       print("Send message");
     }
   }

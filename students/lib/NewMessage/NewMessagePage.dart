@@ -112,7 +112,7 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
                                   suffixIcon: IconButton(
                                     onPressed: () {
                                       if (_formKey.currentState.validate()) {
-                                        _getConversationData(6);
+                                        _sendMessageInNewConversation();
                                       }
                                     },
                                     icon: Icon(Icons.send_rounded),

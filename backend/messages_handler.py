@@ -87,9 +87,9 @@ def create_message(conversation_id):
     conn.commit()
     return make_response(jsonify({"messageId": message_id}), 201)
 
-
-@app.route("/api/conversations/<conversation_id>", methods=["GET"])
-def get_conversation(conversation_id):
+@app.route("/api/conversations", defaults={'conversation_id': None})
+@app.route("/api/conversations/<conversation_id>")
+def get_conversations(conversation_id = None):
     
     # prevent non-signed in users from accessing
     if flask.session.get('CAS_USERNAME') == None:
@@ -98,43 +98,59 @@ def get_conversation(conversation_id):
         return resp
 
     conn, cur = get_conn_and_cursor()
-    cur.callproc("get_conversation", (conversation_id, flask.session.get('CAS_USERNAME')))
-    messages_query_result = cur.fetchall()
 
-    if messages_query_result == [(-403,)]:
-        return make_response(jsonify({"message": "User is either banned or not authorized to view this conversation"}), 403)
+    if conversation_id == None:
+        # Get all conversations to whiich this user has access
+        cur.callproc("get_conversation_ids", (flask.session.get('CAS_USERNAME'),))
+        conv_ids_to_get = [row[0] for row in cur.fetchall()]
+        cur.nextset()
+        if conv_ids_to_get == [-403]:
+            return make_response(jsonify({"message": "User is banned"}), 403)
+    else:
+        # Get only the conversation specified in the URL
+        conv_ids_to_get = [conversation_id]
 
-    if messages_query_result == [(-404,)]:
-        return make_response(jsonify({"message": "Conversation not found"}), 404)
+    conversations = dict()
+    for curr_conv_id in conv_ids_to_get:
+        cur.callproc("get_conversation", (curr_conv_id, flask.session.get('CAS_USERNAME')))
+        messages_query_result = cur.fetchall()
+        cur.nextset()
 
-    # Handle the messages query
-    messages = dict()
-    for message_id, sender_username, sender_display_name, message_body, dateandtime, isRead in messages_query_result:
-        messages[message_id] = {"sender": {"username": sender_username, "displayName": sender_display_name}, "body": message_body, "dateTime": dateandtime, "isRead": bool(isRead)}
-    
-    # Handle the status query
-    cur.nextset()
-    status = cur.fetchone()[0]
+        if messages_query_result == [(-403,)]:
+            return make_response(jsonify({"message": f"User is either banned or not authorized to view conversation #{curr_conv_id}"}), 403)
 
-    # Handle the labels query
-    cur.nextset()
-    labels = []
-    for row in cur.fetchall():
-        labels.append(row[0])
-    
-    # Handle the isArchived query
-    cur.nextset()
-    isArchived = bool(cur.fetchone()[0])
+        if messages_query_result == [(-404,)]:
+            return make_response(jsonify({"message": f"Conversation #{curr_conv_id} not found"}), 404)
 
-    # Handle the isArchived query
-    cur.nextset()
-    allIdentitiesRevealed = bool(cur.fetchone()[0])
-    
-    # Handle the isArchived query
-    cur.nextset()
-    allMessagesRead = bool(cur.fetchone()[0])
+        # Handle the messages query
+        messages = dict()
+        for message_id, sender_username, sender_display_name, message_body, dateandtime, isRead in messages_query_result:
+            messages[message_id] = {"sender": {"username": sender_username, "displayName": sender_display_name}, "body": message_body, "dateTime": dateandtime, "isRead": bool(isRead)}
+        
+        # Handle the status query
+        status = cur.fetchone()[0]
 
-    cur.nextset()
+        # Handle the labels query
+        cur.nextset()
+        labels = []
+        for row in cur.fetchall():
+            labels.append(row[0])
+        
+        # Handle the isArchived query
+        cur.nextset()
+        isArchived = bool(cur.fetchone()[0])
 
-    return make_response(jsonify({"messages": messages, "status": status, "labels": labels, "isArchived": isArchived, "studentIdentityRevealed": allIdentitiesRevealed, "isRead": allMessagesRead}), 200)
+        # Handle the isArchived query
+        cur.nextset()
+        allIdentitiesRevealed = bool(cur.fetchone()[0])
+        
+        # Handle the isArchived query
+        cur.nextset()
+        allMessagesRead = bool(cur.fetchone()[0])
+
+        cur.nextset()
+
+        conversations[curr_conv_id] = {"messages": messages, "status": status, "labels": labels, "isArchived": isArchived, "studentIdentityRevealed": allIdentitiesRevealed, "isRead": allMessagesRead}
+
+    return make_response(jsonify(conversations if conversation_id == None else conversations[conversation_id]), 200)
 

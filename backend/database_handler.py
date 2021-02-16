@@ -92,6 +92,15 @@ def create_stored_procedures():
                 INSERT INTO AppliedLabels (conversationId, labelId) VALUES (conversationId, labelId);
             END ;
         ''',
+        '''CREATE PROCEDURE get_conversation_ids (IN requester VARCHAR(40))
+            BEGIN
+                IF EXISTS (SELECT username FROM Users WHERE username=requester AND isBanned) THEN
+                    SELECT -403;
+                ELSE
+                    SELECT conversationId FROM ConversationSettings WHERE username = requester;
+                END IF;
+            END ;
+        ''',
         '''CREATE PROCEDURE get_conversation (IN requestedConversationId INT, IN requester VARCHAR(40))
             BEGIN
                 IF EXISTS (SELECT username FROM Users WHERE username=requester AND isBanned) THEN

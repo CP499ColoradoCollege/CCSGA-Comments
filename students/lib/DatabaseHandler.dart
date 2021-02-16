@@ -75,7 +75,7 @@ class DatabaseHandler {
   // get messages and other details of a single conversation
   Future<Tuple2<ChewedResponse, Conversation>> getConversation(
       int conversationId) async {
-    final url = '/api/conversations/$conversationId';
+    final url = '/api/conversations/$conversationId/asfd';
     var response =
         await http.get(url, headers: {"Content-Type": "application/json"});
     var chewedResponse = ChewedResponse();

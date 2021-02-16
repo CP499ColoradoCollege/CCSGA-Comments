@@ -4,6 +4,7 @@ import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:ccsga_comments/NewMessage/ChewedResponseModel.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:tuple/tuple.dart';
 import './Message.dart';
 import './Conversation.dart';
 import './CommitteeModel.dart';
@@ -111,7 +112,7 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
                                   suffixIcon: IconButton(
                                     onPressed: () {
                                       if (_formKey.currentState.validate()) {
-                                        _sendMessageInNewConversation();
+                                        _getConversationData(6);
                                       }
                                     },
                                     icon: Icon(Icons.send_rounded),
@@ -134,7 +135,6 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
     ChewedResponse chewedResponse = await DatabaseHandler.instance
         .initiateNewConversation(
             _isChecked, textFieldController.text, selectedCommitteesStrList);
-    print(chewedResponse.message);
     if (chewedResponse.isSuccessful) {
       _formKey.currentState.reset();
       _selectedCommittees.clear();
@@ -146,6 +146,40 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
     } else {
       setState(() {
         _errorMessage = chewedResponse.message;
+      });
+    }
+  }
+
+  // move this to conversation (thread) page
+  void _sendMessageAsReply() async {
+    ChewedResponse chewedResponse = await DatabaseHandler.instance
+        .sendMessageInConversation(1, textFieldController.text);
+    if (chewedResponse.isSuccessful) {
+      _formKey.currentState.reset();
+      textFieldController.clear();
+      setState(() {
+        _isChecked = false;
+        _successMessage = chewedResponse.message;
+      });
+    } else {
+      setState(() {
+        _errorMessage = chewedResponse.message;
+      });
+    }
+  }
+
+  // move this to Conversation (thread) page
+  void _getConversationData(int conversationId) async {
+    Tuple2<ChewedResponse, Conversation> responseTuple =
+        await DatabaseHandler.instance.getConversation(conversationId);
+    // transaction successful, there was a conv obj sent in response
+    if (responseTuple.item2 != null) {
+      // use setState to update the data in the UI with conv
+      Conversation conv = responseTuple.item2;
+      print(conv);
+    } else {
+      setState(() {
+        _errorMessage = responseTuple.item1.message;
       });
     }
   }

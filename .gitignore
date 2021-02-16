@@ -4,3 +4,4 @@ venv
 config.py
 .env
 __pycache__
+students/pubspec.lock

@@ -53,13 +53,13 @@ def create_stored_procedures():
     commands = [
         '''CREATE PROCEDURE create_conversation (IN revealIdentity BOOL, IN sender VARCHAR(40), OUT conversationId INT)
             BEGIN
-                IF EXISTS (SELECT username FROM Users WHERE (isCCSGA OR isBanned) AND username=sender) THEN
+                IF EXISTS (SELECT username FROM Users WHERE ((isCCSGA AND NOT isAdmin) OR isBanned) AND username=sender) THEN
                     SET conversationId = -403;
                 ELSE
                     INSERT INTO Conversations (status) VALUES ('Delivered');
                     SELECT LAST_INSERT_ID() INTO conversationId;
                     INSERT INTO ConversationSettings (conversationId, username, isArchived, identityRevealed) VALUES (conversationId, sender, 0, revealIdentity);
-                    INSERT INTO ConversationSettings (conversationId, username, isArchived, identityRevealed) SELECT conversationId, Users.username, 0, 1 FROM Users WHERE isCCSGA;
+                    INSERT INTO ConversationSettings (conversationId, username, isArchived, identityRevealed) SELECT conversationId, Users.username, 0, 1 FROM Users WHERE isCCSGA OR isAdmin;
                 END IF;
             END ;
         ''',
@@ -69,7 +69,7 @@ def create_stored_procedures():
                     SET newMessageId = -403;
                 ELSEIF NOT EXISTS (SELECT id FROM Conversations WHERE id = conversationIdInput) THEN
                     SET newMessageId = -404;
-                ELSEIF EXISTS (SELECT username FROM Users WHERE isCCSGA AND username=sender) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = sender AND conversationId = conversationIdInput) THEN
+                ELSEIF EXISTS (SELECT username FROM Users WHERE (isCCSGA OR isAdmin) AND username=sender) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = sender AND conversationId = conversationIdInput) THEN
                     INSERT INTO Messages (conversationId, sender, body, dateandtime) VALUES (conversationIdInput, sender, messageBody, UTC_TIMESTAMP());
                     SELECT LAST_INSERT_ID() INTO newMessageId;
                     INSERT INTO MessageSettings (messageId, username, isRead) SELECT newMessageId, ConversationSettings.username, 0 FROM ConversationSettings WHERE ConversationSettings.conversationId = conversationIdInput;
@@ -101,15 +101,19 @@ def create_stored_procedures():
                 END IF;
             END ;
         ''',
-        '''CREATE PROCEDURE get_conversation (IN requestedConversationId INT, IN requester VARCHAR(40))
+        '''CREATE PROCEDURE get_conversation (IN requestedConversationId INT, IN requester VARCHAR(40), IN anonymityOverrideRequested BOOL)
             BEGIN
                 IF EXISTS (SELECT username FROM Users WHERE username=requester AND isBanned) THEN
                     SELECT -403;
                 ELSEIF NOT EXISTS (SELECT id FROM Conversations WHERE id = requestedConversationId) THEN
                     SELECT -404;
-                ELSEIF EXISTS (SELECT username FROM Users WHERE isCCSGA AND username=requester) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = requester AND conversationId = requestedConversationId) THEN
-                    SELECT Messages.id, Users.username, Users.displayName, Messages.body, Messages.dateandtime, MessageSettings.isRead FROM (((Messages JOIN Users ON Messages.sender = Users.username) JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) JOIN ConversationSettings ON ConversationSettings.username = Messages.sender AND ConversationSettings.conversationId = requestedConversationId) WHERE Messages.conversationId = requestedConversationId AND (ConversationSettings.identityRevealed OR Messages.sender = requester)
-                    UNION SELECT Messages.id, "anonymous", "Anonymous", Messages.body, Messages.dateandtime, MessageSettings.isRead FROM ((Messages JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) JOIN ConversationSettings ON ConversationSettings.username = Messages.sender AND ConversationSettings.conversationId = requestedConversationId) WHERE Messages.conversationId = requestedConversationId AND NOT (ConversationSettings.identityRevealed OR Messages.sender = requester);
+                ELSEIF EXISTS (SELECT username FROM Users WHERE (isCCSGA OR isAdmin) AND username=requester) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = requester AND conversationId = requestedConversationId) THEN
+                    IF anonymityOverrideRequested AND EXISTS (SELECT username FROM Users WHERE username=requester AND isAdmin) THEN
+                        SELECT Messages.id, Users.username, Users.displayName, Messages.body, Messages.dateandtime, MessageSettings.isRead FROM ((Messages JOIN Users ON Messages.sender = Users.username) JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) WHERE Messages.conversationId = requestedConversationId;
+                    ELSE
+                        SELECT Messages.id, Users.username, Users.displayName, Messages.body, Messages.dateandtime, MessageSettings.isRead FROM (((Messages JOIN Users ON Messages.sender = Users.username) JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) JOIN ConversationSettings ON ConversationSettings.username = Messages.sender AND ConversationSettings.conversationId = requestedConversationId) WHERE Messages.conversationId = requestedConversationId AND (ConversationSettings.identityRevealed OR Messages.sender = requester)
+                        UNION SELECT Messages.id, "anonymous", "Anonymous", Messages.body, Messages.dateandtime, MessageSettings.isRead FROM ((Messages JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) JOIN ConversationSettings ON ConversationSettings.username = Messages.sender AND ConversationSettings.conversationId = requestedConversationId) WHERE Messages.conversationId = requestedConversationId AND NOT (ConversationSettings.identityRevealed OR Messages.sender = requester);
+                    END IF;
                 
                     SELECT status FROM Conversations WHERE id = requestedConversationId;
                     SELECT body FROM Labels JOIN AppliedLabels ON Labels.id = AppliedLabels.labelId WHERE AppliedLabels.conversationId = requestedConversationId;

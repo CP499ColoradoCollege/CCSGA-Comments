@@ -110,9 +110,11 @@ def get_conversations(conversation_id = None):
         # Get only the conversation specified in the URL
         conv_ids_to_get = [conversation_id]
 
+    anonymityOverrideRequested = 1 if request.args.get("overrideAnonymity") == "true" else 0
+
     conversations = dict()
     for curr_conv_id in conv_ids_to_get:
-        cur.callproc("get_conversation", (curr_conv_id, flask.session.get('CAS_USERNAME')))
+        cur.callproc("get_conversation", (curr_conv_id, flask.session.get('CAS_USERNAME'), anonymityOverrideRequested))
         messages_query_result = cur.fetchall()
         cur.nextset()
 

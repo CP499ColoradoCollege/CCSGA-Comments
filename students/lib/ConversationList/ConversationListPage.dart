@@ -15,7 +15,8 @@ class ConversationListPage extends BasePage {
   _ConversationListPageState createState() => _ConversationListPageState();
 }
 
-class _ConversationListPageState extends BaseState<ConversationListPage> with BasicPage {
+class _ConversationListPageState extends BaseState<ConversationListPage>
+    with BasicPage {
   @override
   String screenName() {
     return "Messages";
@@ -25,12 +26,25 @@ class _ConversationListPageState extends BaseState<ConversationListPage> with Ba
 
   Widget body() {
     return Center(
-      child: RefreshIndicator(
-        onRefresh: _pullRefresh,
-        child: ListView(
-          padding: const EdgeInsets.all(8),
-          children: _messages,
-        ),
+      child: Stack(
+        children: [
+          Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  "Pull to refresh",
+                  style: TextStyle(color: Colors.grey[400]),
+                ),
+              )),
+          RefreshIndicator(
+            onRefresh: _pullRefresh,
+            child: ListView(
+              padding: const EdgeInsets.all(8),
+              children: _messages,
+            ),
+          ),
+        ],
       ),
     );
   }

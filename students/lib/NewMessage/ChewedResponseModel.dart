@@ -28,6 +28,8 @@ class ChewedResponse {
       this.message =
           'Your account may have been banned. Please contact the Administrator';
     } else if (statusCode == 404) {
+      this.isSuccessful = false;
+      this.message = 'Page/resource cannot be found';
     } else {
       this.isSuccessful = false;
       this.message = 'Failed to send your message';

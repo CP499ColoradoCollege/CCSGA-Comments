@@ -33,8 +33,9 @@ class DatabaseHandler {
   //   if (response.statusCode == 200) {
   //     //we need a conv list here somehow
   //     //another class for a ConvList? loop through JSON attr and fromJson them all?
-  //     List<Conversation> convList =
-  //         Conversation.fromJson(jsonDecode(response.body));
+  //     var json = decode(response);
+  //     List<Conversation> convList = Map.from(json["messages"])
+  //           .map((k, v) => MapEntry<String, Message>(k, Message.fromJson(v)))
   //   }
   //   // PLACEHOLDER, replace with ^^ when figured out
   //   List<Conversation> conversationList = [Conversation()];
@@ -87,18 +88,19 @@ class DatabaseHandler {
     }
   }
 
-  // get details of a single message based on ID
-  Future<Tuple2<ChewedResponse, Message>> getMessage(int messageId) async {
-    final url = '/api/conversations/<conversationId>/messages/$messageId';
-    var response =
-        await http.get(url, headers: {"Content-Type": "application/json"});
-    var chewedResponse = ChewedResponse();
-    chewedResponse.chewStatusCode(response.statusCode);
-    if (response.statusCode == 200) {
-      Message msg = Message.fromJson(jsonDecode(response.body));
-      return Tuple2<ChewedResponse, Message>(chewedResponse, msg);
-    } else {
-      return Tuple2<ChewedResponse, Message>(chewedResponse, null);
-    }
-  }
+// WE'LL PROB NOT HAVE THIS ON THE BACKEND
+//   // get details of a single message based on ID
+//   Future<Tuple2<ChewedResponse, Message>> getMessage(int messageId) async {
+//     final url = '/api/conversations/<conversationId>/messages/$messageId';
+//     var response =
+//         await http.get(url, headers: {"Content-Type": "application/json"});
+//     var chewedResponse = ChewedResponse();
+//     chewedResponse.chewStatusCode(response.statusCode);
+//     if (response.statusCode == 200) {
+//       Message msg = Message.fromJson(jsonDecode(response.body));
+//       return Tuple2<ChewedResponse, Message>(chewedResponse, msg);
+//     } else {
+//       return Tuple2<ChewedResponse, Message>(chewedResponse, null);
+//     }
+//   }
 }

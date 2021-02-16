@@ -1,4 +1,7 @@
+import 'package:ccsga_comments/ConversationList/ConversationListPage.dart';
+import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:flutter/material.dart';
+import 'package:beamer/beamer.dart';
 
 class NavigationDrawer extends StatelessWidget {
   @override
@@ -24,16 +27,19 @@ class NavigationDrawer extends StatelessWidget {
               // ...
               // Then close the drawer
               Navigator.pop(context);
+              context.beamTo(HomeLocation());
             },
           ),
           ListTile(
-            title: Text('Messages'),
+            title: Text('Conversations'),
             onTap: () {
               print("Messages Page Tapped");
               // Update the state of the app
-              // ...
+
               // Then close the drawer
               Navigator.pop(context);
+
+              context.beamTo(ConversationListLocation());
             },
           ),
           ListTile(

@@ -5,11 +5,10 @@ import 'package:ccsga_comments/NewMessage/ChewedResponseModel.dart';
 import 'package:ccsga_comments/NewMessage/Conversation.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
-
-import 'Inbox/InboxCard.dart';
 import 'package:http/http.dart' as http;
-import 'NewMessage/Message.dart';
 import 'dart:convert';
+import 'NewMessage/Message.dart';
+import 'ConversationList/ConversationListCard.dart';
 
 class DatabaseHandler {
   // The Database instance variable used for database calls

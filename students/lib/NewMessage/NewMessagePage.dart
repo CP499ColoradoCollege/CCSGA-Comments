@@ -8,6 +8,19 @@ import 'package:tuple/tuple.dart';
 import './Message.dart';
 import './Conversation.dart';
 import './CommitteeModel.dart';
+import 'package:flutter/material.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:ccsga_comments/Conversation/MessageThread.dart';
+
+class Committee {
+  final int id;
+  final String name;
+
+  Committee({
+    this.id,
+    this.name,
+  });
+}
 
 class NewMessagePage extends BasePage {
   NewMessagePage({Key key, this.title}) : super(key: key);
@@ -20,9 +33,9 @@ class NewMessagePage extends BasePage {
 
 class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
   static List<Committee> _committees = [
-    new Committee(0, 'Internal Affairs'),
-    new Committee(1, 'Outreach'),
-    new Committee(2, 'Diversity and Inclusion')
+    new Committee(id: 0, name: 'Internal Affairs'),
+    new Committee(id: 1, name: 'Outreach'),
+    new Committee(id: 2, name: 'Diversity and Inclusion')
   ];
   List<Committee> _selectedCommittees = [];
 

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class InboxCard extends StatelessWidget {
+class ConversationListCard extends StatelessWidget {
   final String name;
   final String message;
   final DateTime time;
 
-  InboxCard(this.name, this.message, this.time);
+  ConversationListCard(this.name, this.message, this.time);
 
   @override
   Widget build(BuildContext context) {

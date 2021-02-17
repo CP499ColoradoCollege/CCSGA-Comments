@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 
 class ConversationPage extends BasePage {
-  ConversationPage({Key key}) : super(key: key);
+  final int conversationId;
+
+  ConversationPage({Key key, @required this.conversationId}) : super(key: key);
 
   @override
   _ConversationPageState createState() => _ConversationPageState();
@@ -16,6 +18,12 @@ class ConversationPage extends BasePage {
 class _ConversationPageState extends BaseState<ConversationPage>
     with BasicPage {
   final messageFieldController = TextEditingController();
+
+  @override
+  void initState() {
+    _getConversationData();
+    super.initState();
+  }
 
   @override
   Widget body() {
@@ -60,9 +68,9 @@ class _ConversationPageState extends BaseState<ConversationPage>
     return "Conversation Thread";
   }
 
-  void _getConversationData(int conversationId) async {
+  void _getConversationData() async {
     Tuple2<ChewedResponse, Conversation> responseTuple =
-        await DatabaseHandler.instance.getConversation(conversationId);
+        await DatabaseHandler.instance.getConversation(widget.conversationId);
     // transaction successful, there was a conv obj sent in response
     if (responseTuple.item2 != null) {
       // use setState to update the data in the UI with conv

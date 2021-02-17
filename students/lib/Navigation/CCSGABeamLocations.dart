@@ -19,11 +19,11 @@ class HomeLocation extends BeamLocation {
 
   @override
   List<BeamPage> get pages => [
-    BeamPage(
-      key: ValueKey('home'),
-      child: HomePage(),
-    ),
-  ];
+        BeamPage(
+          key: ValueKey('home'),
+          child: HomePage(),
+        ),
+      ];
 }
 
 class ConversationListLocation extends BeamLocation {
@@ -35,32 +35,35 @@ class ConversationListLocation extends BeamLocation {
 
   @override
   List<BeamPage> get pages => [
-    BeamPage(
-      key: ValueKey('conversation_list'),
-      child: ConversationListPage(),
-    ),
-  ];
+        BeamPage(
+          key: ValueKey('conversation_list'),
+          child: ConversationListPage(),
+        ),
+      ];
 }
 
 class ConversationLocation extends BeamLocation {
   ConversationLocation({
     @required Map<String, String> pathParameters,
   }) : super(
-    pathBlueprint: _conversationPath.last,
-    pathParameters: pathParameters,
-  );
+          pathBlueprint: _conversationPath.last,
+          pathParameters: pathParameters,
+        );
+
+  // final int conversationId = int.parse(pathParameters['id']);
 
   @override
   List<String> get pathBlueprints => _conversationPath;
 
   @override
   List<BeamPage> get pages => [
-    ...ConversationListLocation().pages,
-    BeamPage(
-      key: ValueKey('conversation-${pathParameters['id'] ?? ''}'),
-      child: ConversationPage(),
-    )
-  ];
+        ...ConversationListLocation().pages,
+        BeamPage(
+          key: ValueKey('conversation-${pathParameters['id'] ?? ''}'),
+          child:
+              ConversationPage(conversationId: int.parse(pathParameters['id'])),
+        )
+      ];
 }
 
 class NewMessageLocation extends BeamLocation {
@@ -73,9 +76,9 @@ class NewMessageLocation extends BeamLocation {
 
   @override
   List<BeamPage> get pages => [
-    BeamPage(
-      key: ValueKey('new_message'),
-      child: NewMessagePage(),
-    ),
-  ];
+        BeamPage(
+          key: ValueKey('new_message'),
+          child: NewMessagePage(),
+        ),
+      ];
 }

@@ -73,8 +73,11 @@ class DatabaseHandler {
         await http.get(url, headers: {"Content-Type": "application/json"});
     var chewedResponse = ChewedResponse();
     chewedResponse.chewStatusCode(response.statusCode);
+    // only if the transaction is successful, will there will be a conversation obj in the response
     if (response.statusCode == 200) {
       Conversation conv = Conversation.fromJson(jsonDecode(response.body));
+      // the conv id comes from the request, not from the response
+      conv.id = conversationId;
       return Tuple2<ChewedResponse, Conversation>(chewedResponse, conv);
     } else {
       return Tuple2<ChewedResponse, Conversation>(chewedResponse, null);

@@ -8,6 +8,7 @@ String conversationToJson(Conversation data) => json.encode(data.toJson());
 
 class Conversation {
   Conversation({
+    this.id,
     this.messages,
     this.status,
     this.labels,
@@ -16,6 +17,7 @@ class Conversation {
     this.isRead,
   });
 
+  int id;
   Map<String, Message> messages;
   String status;
   List<String> labels;

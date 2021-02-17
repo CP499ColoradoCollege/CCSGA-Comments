@@ -18,6 +18,7 @@ class ConversationPage extends BasePage {
 class _ConversationPageState extends BaseState<ConversationPage>
     with BasicPage {
   final messageFieldController = TextEditingController();
+  Conversation conversation;
 
   @override
   void initState() {
@@ -31,7 +32,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
       padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
       child: Column(
         children: [
-          MessageThread(),
+          MessageThread(conv: this.conversation),
           TextFormField(
             controller: messageFieldController,
             minLines: 2,
@@ -71,11 +72,10 @@ class _ConversationPageState extends BaseState<ConversationPage>
   void _getConversationData() async {
     Tuple2<ChewedResponse, Conversation> responseTuple =
         await DatabaseHandler.instance.getConversation(widget.conversationId);
-    // transaction successful, there was a conv obj sent in response
+    // transaction successful, there was a conv obj sent in response, otherwise null
     if (responseTuple.item2 != null) {
       // use setState to update the data in the UI with conv
-      Conversation conv = responseTuple.item2;
-      print(conv);
+      this.conversation = responseTuple.item2;
     } else {
       setState(() {
         // _errorMessage = responseTuple.item1.message;

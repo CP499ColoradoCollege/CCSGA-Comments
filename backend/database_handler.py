@@ -125,6 +125,18 @@ def create_stored_procedures():
                     SELECT -403;
                 END IF;
             END ;
+        ''',
+        '''CREATE PROCEDURE set_status (IN conversationIdToUpdate INT, IN requester VARCHAR(40), IN newStatus VARCHAR(40))
+            BEGIN
+                IF NOT EXISTS (SELECT username FROM Users WHERE username=requester AND (isCCSGA OR isAdmin) AND NOT isBanned) THEN
+                    SELECT -403;
+                ELSEIF NOT EXISTS (SELECT id FROM Conversations WHERE id = conversationIdToUpdate) THEN
+                    SELECT -404;
+                ELSE
+                    UPDATE Conversations SET status = newStatus WHERE id = conversationIdToUpdate;
+                    SELECT -200;
+                END IF;
+            END ;
         '''
     ]
     

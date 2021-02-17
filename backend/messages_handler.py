@@ -165,3 +165,40 @@ def get_conversations(conversation_id = None):
     conn.close()
     return make_response(jsonify(conversations if conversation_id == None else conversations[conversation_id]), 200)
 
+
+@app.route("/api/conversations/<conversation_id>", methods=["PATCH"])
+def update_conversation(conversation_id):
+
+    # prevent non-signed in users from accessing
+    if flask.session.get('CAS_USERNAME') == None:
+        resp = make_response(jsonify({"message": "User not authenticated"}), 401)
+        resp.headers.set('WWW-Authenticate', 'CAS')
+        return resp
+
+    request_dict = request.get_json()
+    if request_dict == None:
+        return make_response(jsonify(message="Bad request. Please check that Content-Type is application/json"), 400)
+    
+    conn, cur = get_conn_and_cursor()
+    success_messages = []
+    
+    # Update conversation status, if so requested
+    if 'setStatus' in request_dict:
+        cur.callproc("set_status", (conversation_id, flask.session.get('CAS_USERNAME'), request_dict['setStatus']))
+        status_query_result = cur.fetchone()[0]
+        cur.nextset()
+
+        if status_query_result == -403:
+            conn.close()
+            return make_response(jsonify({"message": "User is either banned or not authorized to set conversation status"}), 403)
+
+        if status_query_result == -404:
+            conn.close()
+            return make_response(jsonify({"message": f"Conversation #{conversation_id} not found"}), 404)
+        
+        # Successful!
+        conn.commit()
+        success_messages.append(f"Successfully set status to '{request_dict['setStatus']}'")
+    
+    conn.close()
+    return make_response(jsonify({"message": ", ".join(success_messages)}), 200)

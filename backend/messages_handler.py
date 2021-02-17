@@ -195,10 +195,27 @@ def update_conversation(conversation_id):
         if status_query_result == -404:
             conn.close()
             return make_response(jsonify({"message": f"Conversation #{conversation_id} not found"}), 404)
+
+        # Successful!
+        success_messages.append(f"Successfully set status of conversation #{conversation_id} to '{request_dict['setStatus']}'")
+    
+    # Update archived/unarchived, if so requested
+    if 'setArchived' in request_dict:
+        cur.callproc("set_archived", (conversation_id, flask.session.get('CAS_USERNAME'), request_dict['setArchived']))
+        archived_query_result = cur.fetchone()[0]
+        cur.nextset()
+
+        if archived_query_result == -403:
+            conn.close()
+            return make_response(jsonify({"message": f"User is either banned or not involved in conversation #{conversation_id}"}), 403)
+
+        if archived_query_result == -404:
+            conn.close()
+            return make_response(jsonify({"message": f"Conversation #{conversation_id} not found"}), 404)
         
         # Successful!
-        conn.commit()
-        success_messages.append(f"Successfully set status to '{request_dict['setStatus']}'")
+        success_messages.append(f"Successfully {'archived' if request_dict['setArchived'] else 'unarchived'} conversation #{conversation_id}")
     
+    conn.commit() # Commit down here so that either everything succeeds or nothing does, consistent with the response code/message
     conn.close()
     return make_response(jsonify({"message": ", ".join(success_messages)}), 200)

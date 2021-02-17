@@ -137,6 +137,20 @@ def create_stored_procedures():
                     SELECT -200;
                 END IF;
             END ;
+        ''',
+        '''CREATE PROCEDURE set_archived (IN conversationIdToUpdate INT, IN requester VARCHAR(40), IN newIsArchived BOOL)
+            BEGIN
+                IF EXISTS (SELECT username FROM Users WHERE username=requester AND isBanned) THEN
+                    SELECT -403;
+                ELSEIF NOT EXISTS (SELECT id FROM Conversations WHERE id = conversationIdToUpdate) THEN
+                    SELECT -404;
+                ELSEIF NOT EXISTS (SELECT id FROM ConversationSettings WHERE conversationId = conversationIdToUpdate AND username = requester) THEN
+                    SELECT -403;
+                ELSE
+                    UPDATE ConversationSettings SET isArchived = newIsArchived WHERE conversationId = conversationIdToUpdate AND username = requester;
+                    SELECT -200;
+                END IF;
+            END ;
         '''
     ]
     

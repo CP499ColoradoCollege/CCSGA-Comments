@@ -47,6 +47,7 @@ def create_tables():
     cur.execute("CREATE TABLE IF NOT EXISTS AppliedLabels (id INT AUTO_INCREMENT, conversationId INT, labelId INT, PRIMARY KEY (id), FOREIGN KEY (conversationId) REFERENCES Conversations(id), FOREIGN KEY (labelId) REFERENCES Labels(id));")
     cur.execute("CREATE TABLE IF NOT EXISTS Links (id INT AUTO_INCREMENT, icon TEXT, body TEXT, url TEXT, dateandtime DATETIME, PRIMARY KEY (id));")
     cur.execute("CREATE TABLE IF NOT EXISTS Announcements (id INT AUTO_INCREMENT, icon TEXT, body TEXT, dateandtime DATETIME, PRIMARY KEY (id));")
+    conn.close()
 
 def create_stored_procedures():
     '''Creates all the stored procedures for the database. Doesn't modify those that currently exist.'''
@@ -134,7 +135,10 @@ def create_stored_procedures():
         except mariadb.OperationalError as e: # Procedure already exists, hopefully
             # Still raise the execption if it wasn't due to the procedure already existing
             if re.match(r"PROCEDURE \S+ already exists", str(e)) == None:
+                conn.close()
                 raise
+    
+    conn.close()
 
 # Helper functions for other files to import
 
@@ -143,6 +147,7 @@ def confirm_user_in_db(username, display_name):
     conn, cur = get_conn_and_cursor()
     cur.execute("INSERT IGNORE INTO Users (username, isBanned, isCCSGA, isAdmin, displayName) VALUES (?, 0, 0, 0, ?);", (username, display_name))
     conn.commit()
+    conn.close()
 
 # Helper functions for checking user role (other files can import these)
 
@@ -152,7 +157,7 @@ def is_student(username):
     conn, cur = get_conn_and_cursor()
     cur.execute("SELECT isCCSGA, isAdmin FROM Users WHERE username = ?", (username,))
     isCCSGA, isAdmin = cur.fetchone()
-    cur.nextset()
+    conn.close()
     return not (isCCSGA or isAdmin)
 
 def is_ccsga(username):
@@ -161,7 +166,7 @@ def is_ccsga(username):
     conn, cur = get_conn_and_cursor()
     cur.execute("SELECT isCCSGA FROM Users WHERE username = ?", (username,))
     isCCSGA = cur.fetchone()[0]
-    cur.nextset()
+    conn.close()
     return bool(isCCSGA)
 
 def is_admin(username):
@@ -170,7 +175,7 @@ def is_admin(username):
     conn, cur = get_conn_and_cursor()
     cur.execute("SELECT isAdmin FROM Users WHERE username = ?", (username,))
     isAdmin = cur.fetchone()[0]
-    cur.nextset()
+    conn.close()
     return bool(isAdmin) 
 
 

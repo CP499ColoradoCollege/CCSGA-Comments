@@ -41,6 +41,7 @@ def create_conversation():
 
     if conversation_id == -403:
         conn.rollback()
+        conn.close()
         return make_response(jsonify({"message": "User is either banned or a CCSGA rep, neither of whom is authorized to initiate new conversations."}), 403)
 
     cur.callproc("create_message", (conversation_id, flask.session.get('CAS_USERNAME'), request_dict['messageBody'], 0))
@@ -51,6 +52,7 @@ def create_conversation():
         cur.callproc("apply_label", (conversation_id, label_body))
     
     conn.commit()
+    conn.close()
     return make_response(jsonify({"conversationId": conversation_id, "messageId": message_id}), 201)
 
 @app.route("/api/conversations/<conversation_id>/messages/create", methods=["POST"])
@@ -78,13 +80,16 @@ def create_message(conversation_id):
     
     if message_id == -403:
         conn.rollback()
+        conn.close()
         return make_response(jsonify({"message": "User is either banned or not authorized to post to this conversation"}), 403)
     
     if message_id == -404:
         conn.rollback()
+        conn.close()
         return make_response(jsonify({"message": "Conversation not found"}), 404)
 
     conn.commit()
+    conn.close()
     return make_response(jsonify({"messageId": message_id}), 201)
 
 @app.route("/api/conversations", defaults={'conversation_id': None})
@@ -105,6 +110,7 @@ def get_conversations(conversation_id = None):
         conv_ids_to_get = [row[0] for row in cur.fetchall()]
         cur.nextset()
         if conv_ids_to_get == [-403]:
+            conn.close()
             return make_response(jsonify({"message": "User is banned"}), 403)
     else:
         # Get only the conversation specified in the URL
@@ -119,9 +125,11 @@ def get_conversations(conversation_id = None):
         cur.nextset()
 
         if messages_query_result == [(-403,)]:
+            conn.close()
             return make_response(jsonify({"message": f"User is either banned or not authorized to view conversation #{curr_conv_id}"}), 403)
 
         if messages_query_result == [(-404,)]:
+            conn.close()
             return make_response(jsonify({"message": f"Conversation #{curr_conv_id} not found"}), 404)
 
         # Handle the messages query
@@ -154,5 +162,6 @@ def get_conversations(conversation_id = None):
 
         conversations[curr_conv_id] = {"messages": messages, "status": status, "labels": labels, "isArchived": isArchived, "studentIdentityRevealed": allIdentitiesRevealed, "isRead": allMessagesRead}
 
+    conn.close()
     return make_response(jsonify(conversations if conversation_id == None else conversations[conversation_id]), 200)
 

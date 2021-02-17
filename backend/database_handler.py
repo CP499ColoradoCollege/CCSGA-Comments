@@ -47,19 +47,20 @@ def create_tables():
     cur.execute("CREATE TABLE IF NOT EXISTS AppliedLabels (id INT AUTO_INCREMENT, conversationId INT, labelId INT, PRIMARY KEY (id), FOREIGN KEY (conversationId) REFERENCES Conversations(id), FOREIGN KEY (labelId) REFERENCES Labels(id));")
     cur.execute("CREATE TABLE IF NOT EXISTS Links (id INT AUTO_INCREMENT, icon TEXT, body TEXT, url TEXT, dateandtime DATETIME, PRIMARY KEY (id));")
     cur.execute("CREATE TABLE IF NOT EXISTS Announcements (id INT AUTO_INCREMENT, icon TEXT, body TEXT, dateandtime DATETIME, PRIMARY KEY (id));")
+    conn.close()
 
 def create_stored_procedures():
     '''Creates all the stored procedures for the database. Doesn't modify those that currently exist.'''
     commands = [
         '''CREATE PROCEDURE create_conversation (IN revealIdentity BOOL, IN sender VARCHAR(40), OUT conversationId INT)
             BEGIN
-                IF EXISTS (SELECT username FROM Users WHERE (isCCSGA OR isBanned) AND username=sender) THEN
+                IF EXISTS (SELECT username FROM Users WHERE ((isCCSGA AND NOT isAdmin) OR isBanned) AND username=sender) THEN
                     SET conversationId = -403;
                 ELSE
                     INSERT INTO Conversations (status) VALUES ('Delivered');
                     SELECT LAST_INSERT_ID() INTO conversationId;
                     INSERT INTO ConversationSettings (conversationId, username, isArchived, identityRevealed) VALUES (conversationId, sender, 0, revealIdentity);
-                    INSERT INTO ConversationSettings (conversationId, username, isArchived, identityRevealed) SELECT conversationId, Users.username, 0, 1 FROM Users WHERE isCCSGA;
+                    INSERT INTO ConversationSettings (conversationId, username, isArchived, identityRevealed) SELECT conversationId, Users.username, 0, 1 FROM Users WHERE isCCSGA OR isAdmin;
                 END IF;
             END ;
         ''',
@@ -69,7 +70,7 @@ def create_stored_procedures():
                     SET newMessageId = -403;
                 ELSEIF NOT EXISTS (SELECT id FROM Conversations WHERE id = conversationIdInput) THEN
                     SET newMessageId = -404;
-                ELSEIF EXISTS (SELECT username FROM Users WHERE isCCSGA AND username=sender) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = sender AND conversationId = conversationIdInput) THEN
+                ELSEIF EXISTS (SELECT username FROM Users WHERE (isCCSGA OR isAdmin) AND username=sender) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = sender AND conversationId = conversationIdInput) THEN
                     INSERT INTO Messages (conversationId, sender, body, dateandtime) VALUES (conversationIdInput, sender, messageBody, UTC_TIMESTAMP());
                     SELECT LAST_INSERT_ID() INTO newMessageId;
                     INSERT INTO MessageSettings (messageId, username, isRead) SELECT newMessageId, ConversationSettings.username, 0 FROM ConversationSettings WHERE ConversationSettings.conversationId = conversationIdInput;
@@ -101,15 +102,19 @@ def create_stored_procedures():
                 END IF;
             END ;
         ''',
-        '''CREATE PROCEDURE get_conversation (IN requestedConversationId INT, IN requester VARCHAR(40))
+        '''CREATE PROCEDURE get_conversation (IN requestedConversationId INT, IN requester VARCHAR(40), IN anonymityOverrideRequested BOOL)
             BEGIN
                 IF EXISTS (SELECT username FROM Users WHERE username=requester AND isBanned) THEN
                     SELECT -403;
                 ELSEIF NOT EXISTS (SELECT id FROM Conversations WHERE id = requestedConversationId) THEN
                     SELECT -404;
-                ELSEIF EXISTS (SELECT username FROM Users WHERE isCCSGA AND username=requester) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = requester AND conversationId = requestedConversationId) THEN
-                    SELECT Messages.id, Users.username, Users.displayName, Messages.body, Messages.dateandtime, MessageSettings.isRead FROM (((Messages JOIN Users ON Messages.sender = Users.username) JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) JOIN ConversationSettings ON ConversationSettings.username = Messages.sender AND ConversationSettings.conversationId = requestedConversationId) WHERE Messages.conversationId = requestedConversationId AND (ConversationSettings.identityRevealed OR Messages.sender = requester)
-                    UNION SELECT Messages.id, "anonymous", "Anonymous", Messages.body, Messages.dateandtime, MessageSettings.isRead FROM ((Messages JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) JOIN ConversationSettings ON ConversationSettings.username = Messages.sender AND ConversationSettings.conversationId = requestedConversationId) WHERE Messages.conversationId = requestedConversationId AND NOT (ConversationSettings.identityRevealed OR Messages.sender = requester);
+                ELSEIF EXISTS (SELECT username FROM Users WHERE (isCCSGA OR isAdmin) AND username=requester) OR EXISTS (SELECT username FROM ConversationSettings WHERE username = requester AND conversationId = requestedConversationId) THEN
+                    IF anonymityOverrideRequested AND EXISTS (SELECT username FROM Users WHERE username=requester AND isAdmin) THEN
+                        SELECT Messages.id, Users.username, Users.displayName, Messages.body, Messages.dateandtime, MessageSettings.isRead FROM ((Messages JOIN Users ON Messages.sender = Users.username) JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) WHERE Messages.conversationId = requestedConversationId;
+                    ELSE
+                        SELECT Messages.id, Users.username, Users.displayName, Messages.body, Messages.dateandtime, MessageSettings.isRead FROM (((Messages JOIN Users ON Messages.sender = Users.username) JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) JOIN ConversationSettings ON ConversationSettings.username = Messages.sender AND ConversationSettings.conversationId = requestedConversationId) WHERE Messages.conversationId = requestedConversationId AND (ConversationSettings.identityRevealed OR Messages.sender = requester)
+                        UNION SELECT Messages.id, "anonymous", "Anonymous", Messages.body, Messages.dateandtime, MessageSettings.isRead FROM ((Messages JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId) JOIN ConversationSettings ON ConversationSettings.username = Messages.sender AND ConversationSettings.conversationId = requestedConversationId) WHERE Messages.conversationId = requestedConversationId AND NOT (ConversationSettings.identityRevealed OR Messages.sender = requester);
+                    END IF;
                 
                     SELECT status FROM Conversations WHERE id = requestedConversationId;
                     SELECT body FROM Labels JOIN AppliedLabels ON Labels.id = AppliedLabels.labelId WHERE AppliedLabels.conversationId = requestedConversationId;
@@ -130,7 +135,10 @@ def create_stored_procedures():
         except mariadb.OperationalError as e: # Procedure already exists, hopefully
             # Still raise the execption if it wasn't due to the procedure already existing
             if re.match(r"PROCEDURE \S+ already exists", str(e)) == None:
+                conn.close()
                 raise
+    
+    conn.close()
 
 # Helper functions for other files to import
 
@@ -139,6 +147,7 @@ def confirm_user_in_db(username, display_name):
     conn, cur = get_conn_and_cursor()
     cur.execute("INSERT IGNORE INTO Users (username, isBanned, isCCSGA, isAdmin, displayName) VALUES (?, 0, 0, 0, ?);", (username, display_name))
     conn.commit()
+    conn.close()
 
 # Helper functions for checking user role (other files can import these)
 
@@ -148,7 +157,7 @@ def is_student(username):
     conn, cur = get_conn_and_cursor()
     cur.execute("SELECT isCCSGA, isAdmin FROM Users WHERE username = ?", (username,))
     isCCSGA, isAdmin = cur.fetchone()
-    cur.nextset()
+    conn.close()
     return not (isCCSGA or isAdmin)
 
 def is_ccsga(username):
@@ -157,7 +166,7 @@ def is_ccsga(username):
     conn, cur = get_conn_and_cursor()
     cur.execute("SELECT isCCSGA FROM Users WHERE username = ?", (username,))
     isCCSGA = cur.fetchone()[0]
-    cur.nextset()
+    conn.close()
     return bool(isCCSGA)
 
 def is_admin(username):
@@ -166,7 +175,7 @@ def is_admin(username):
     conn, cur = get_conn_and_cursor()
     cur.execute("SELECT isAdmin FROM Users WHERE username = ?", (username,))
     isAdmin = cur.fetchone()[0]
-    cur.nextset()
+    conn.close()
     return bool(isAdmin) 
 
 

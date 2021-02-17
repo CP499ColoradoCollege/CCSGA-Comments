@@ -19,12 +19,18 @@ def homepage():
     resp.headers.set('Cache-Control', 'no-store')
     return resp
 
-# Route for the list of all the conversations to which this user has access, if no conversation_id is provided
-# Route for a given, existing conversation to which this user has access, if its conversation_id is provided
-@app.route("/conversations", defaults={'conversation_id': None})
-@app.route("/conversations/<conversation_id>")
+# Route for the list of all the conversations to which this user has access
+@app.route("/conversation_list")
 @login_required_with_db_confirm
-def conversation_pages(conversation_id = None):
+def all_conversations_page():
+    resp = make_response(render_template('index.html'))
+    resp.headers.set('Cache-Control', 'no-store')
+    return resp
+
+# Route for a given, existing conversation to which this user has access
+@app.route("/conversation/<conversation_id>")
+@login_required_with_db_confirm
+def indiv_conversation_page(conversation_id):
     resp = make_response(render_template('index.html'))
     resp.headers.set('Cache-Control', 'no-store')
     return resp

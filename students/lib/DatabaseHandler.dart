@@ -1,14 +1,8 @@
-//import 'package:firebase/firebase.dart'; // for web
-// import 'package:firebase_core/firebase_core.dart'; // for mobile
-// import 'package:firebase_database/firebase_database.dart'; // for mobile
-import 'package:ccsga_comments/NewMessage/ChewedResponseModel.dart';
-import 'package:ccsga_comments/NewMessage/Conversation.dart';
-import 'package:flutter/material.dart';
+import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
+import 'package:ccsga_comments/Models/Conversation.dart';
 import 'package:tuple/tuple.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'NewMessage/Message.dart';
-import 'ConversationList/ConversationListCard.dart';
 
 class DatabaseHandler {
   // The Database instance variable used for database calls

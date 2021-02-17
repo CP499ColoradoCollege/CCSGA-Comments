@@ -1,6 +1,10 @@
 import 'package:ccsga_comments/BasePage/BasePage.dart';
 import 'package:ccsga_comments/Conversation/MessageThread.dart';
+import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
+import 'package:ccsga_comments/DatabaseHandler.dart';
+import 'package:ccsga_comments/Models/Conversation.dart';
 import 'package:flutter/material.dart';
+import 'package:tuple/tuple.dart';
 
 class ConversationPage extends BasePage {
   ConversationPage({Key key}) : super(key: key);
@@ -56,9 +60,35 @@ class _ConversationPageState extends BaseState<ConversationPage>
     return "Conversation Thread";
   }
 
-  void _sendMessage() {
+  void _getConversationData(int conversationId) async {
+    Tuple2<ChewedResponse, Conversation> responseTuple =
+        await DatabaseHandler.instance.getConversation(conversationId);
+    // transaction successful, there was a conv obj sent in response
+    if (responseTuple.item2 != null) {
+      // use setState to update the data in the UI with conv
+      Conversation conv = responseTuple.item2;
+      print(conv);
+    } else {
+      setState(() {
+        // _errorMessage = responseTuple.item1.message;
+      });
+    }
+  }
+
+  void _sendMessage() async {
     if (this.messageFieldController.text != "") {
-      print("Send message");
+      ChewedResponse chewedResponse = await DatabaseHandler.instance
+          .sendMessageInConversation(1, messageFieldController.text);
+      if (chewedResponse.isSuccessful) {
+        messageFieldController.clear();
+        setState(() {
+          // _successMessage = chewedResponse.message;
+        });
+      } else {
+        setState(() {
+          // _errorMessage = chewedResponse.message;
+        });
+      }
     }
   }
 }

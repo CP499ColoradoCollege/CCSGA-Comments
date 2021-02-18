@@ -23,7 +23,7 @@ class CCSGACommentsApp extends StatelessWidget {
           HomeLocation(),
           ConversationListLocation(),
           NewMessageLocation(),
-          ConversationLocation(),
+          ConversationLocation(pathParameters: {'id': '6'}),
         ],
       ),
       title: 'CCSGA Comments',

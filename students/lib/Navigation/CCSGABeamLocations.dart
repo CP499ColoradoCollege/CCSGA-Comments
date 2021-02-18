@@ -50,8 +50,6 @@ class ConversationLocation extends BeamLocation {
           pathParameters: pathParameters,
         );
 
-  // final int conversationId = int.parse(pathParameters['id']);
-
   @override
   List<String> get pathBlueprints => _conversationPath;
 

@@ -2,7 +2,11 @@ import sys
 sys.path.append('..')
 import unittest
 import requests
-from database_handler import get_conn_and_cursor, confirm_user_in_db
+try:
+    from database_handler import get_conn_and_cursor, confirm_user_in_db
+except ModuleNotFoundError:
+    print("Make sure you're actually in the test directory when you run this program.")
+    exit(1)
 
 # Configure these constants as needed
 PORT = 8001
@@ -34,7 +38,7 @@ class TestAdminRoutes(unittest.TestCase):
         # Change message sender so that the signed-in user can't just automatically view their own info
         test_username, test_disp_name = 'test_user_1', 'Test User 1'
         conn, cur = get_conn_and_cursor()
-        cur.execute("INSERT IGNORE INTO Users (username, isBanned, isCCSGA, isAdmin, displayName) VALUES (?, ?, ?, ?, ?);", (test_username, 0, 0, 0, test_disp_name))
+        cur.execute("INSERT IGNORE INTO Users (username, isBanned, isCCSGA, isAdmin, displayName, rolesLastUpdated) VALUES (?, ?, ?, ?, ?, UTC_TIMESTAMP());", (test_username, 0, 0, 0, test_disp_name))
         cur.execute("UPDATE ConversationSettings SET username = ? WHERE conversationId = ? AND username = ?;", (test_username, new_conv_id, SIGNED_IN_USERNAME))
         cur.execute("UPDATE Messages SET sender = ? WHERE id = ?;", (test_username, new_message_id))
         cur.execute("UPDATE MessageSettings SET username = ? WHERE messageId = ? AND username = ?;", (test_username, new_message_id, SIGNED_IN_USERNAME))

@@ -147,7 +147,6 @@ def confirm_user_in_db(username, display_name):
     conn, cur = get_conn_and_cursor()
     cur.execute("INSERT IGNORE INTO Users (username, isBanned, isCCSGA, isAdmin, displayName) VALUES (?, 0, 0, 0, ?);", (username, display_name))
     conn.commit()
-    conn.close()
 
 # Helper functions for checking user role (other files can import these)
 

@@ -23,13 +23,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c55fb4b5-9a91-4d64-8ae9-fdb732a28e86" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/students/lib/Settings/SettingsDrawer.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/students/lib/Settings/ConversationListSettingsDrawer.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/students/lib/Settings/ConversationSettingsDrawer.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/students/lib/BasePage/BasePage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/BasePage/BasePage.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/lib/Navigation/NavigationDrawer.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Navigation/NavigationDrawer.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/Conversation/ConversationPage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Conversation/ConversationPage.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/Conversation/MessageCard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Conversation/MessageCard.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/Conversation/MessageThread.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Conversation/MessageThread.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/ConversationList/ConversationListPage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/ConversationList/ConversationListPage.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/Settings/SettingsDrawer.dart" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/students/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/students/pubspec.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,6 +64,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
     <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
     <property name="settings.editor.selected.configurable" value="flutter.settings" />
     <property name="show.migrate.to.gradle.popup" value="false" />
@@ -121,30 +125,30 @@
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
     <state x="528" y="312" key="#main.dart/0.25.1792.1095@0.25.1792.1095" timestamp="1613008506696" />
-    <state width="1750" height="222" key="GridCell.Tab.0.bottom" timestamp="1613516469704">
+    <state width="1750" height="222" key="GridCell.Tab.0.bottom" timestamp="1613611537298">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
-    <state width="1750" height="222" key="GridCell.Tab.0.bottom/0.25.1792.1095@0.25.1792.1095" timestamp="1613516469704" />
-    <state width="1750" height="222" key="GridCell.Tab.0.center" timestamp="1613516469703">
+    <state width="1750" height="222" key="GridCell.Tab.0.bottom/0.25.1792.1095@0.25.1792.1095" timestamp="1613611537298" />
+    <state width="1750" height="222" key="GridCell.Tab.0.center" timestamp="1613611537297">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
-    <state width="1750" height="222" key="GridCell.Tab.0.center/0.25.1792.1095@0.25.1792.1095" timestamp="1613516469703" />
-    <state width="1750" height="222" key="GridCell.Tab.0.left" timestamp="1613516469703">
+    <state width="1750" height="222" key="GridCell.Tab.0.center/0.25.1792.1095@0.25.1792.1095" timestamp="1613611537297" />
+    <state width="1750" height="222" key="GridCell.Tab.0.left" timestamp="1613611537297">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
-    <state width="1750" height="222" key="GridCell.Tab.0.left/0.25.1792.1095@0.25.1792.1095" timestamp="1613516469703" />
-    <state width="1750" height="222" key="GridCell.Tab.0.right" timestamp="1613516469704">
+    <state width="1750" height="222" key="GridCell.Tab.0.left/0.25.1792.1095@0.25.1792.1095" timestamp="1613611537297" />
+    <state width="1750" height="222" key="GridCell.Tab.0.right" timestamp="1613611537298">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
-    <state width="1750" height="222" key="GridCell.Tab.0.right/0.25.1792.1095@0.25.1792.1095" timestamp="1613516469704" />
+    <state width="1750" height="222" key="GridCell.Tab.0.right/0.25.1792.1095@0.25.1792.1095" timestamp="1613611537298" />
     <state x="397" y="208" key="SettingsEditor" timestamp="1613402892729">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
     <state x="397" y="208" key="SettingsEditor/0.25.1792.1095@0.25.1792.1095" timestamp="1613402892729" />
-    <state x="561" y="269" width="670" height="676" key="search.everywhere.popup" timestamp="1613516664296">
+    <state x="561" y="269" width="670" height="676" key="search.everywhere.popup" timestamp="1613612397572">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
-    <state x="561" y="269" width="670" height="676" key="search.everywhere.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613516664296" />
+    <state x="561" y="269" width="670" height="676" key="search.everywhere.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613612397572" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

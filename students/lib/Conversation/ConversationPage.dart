@@ -1,5 +1,6 @@
 import 'package:ccsga_comments/BasePage/BasePage.dart';
 import 'package:ccsga_comments/Conversation/MessageThread.dart';
+import 'package:ccsga_comments/Settings/ConversationSettingsDrawer.dart';
 import 'package:flutter/material.dart';
 
 class ConversationPage extends BasePage {
@@ -54,6 +55,11 @@ class _ConversationPageState extends BaseState<ConversationPage>
   @override
   String screenName() {
     return "Conversation Thread";
+  }
+
+  @override
+  Widget settingsDrawer() {
+    return ConversationSettingsDrawer(false);
   }
 
   void _sendMessage() {

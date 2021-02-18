@@ -2,6 +2,7 @@ import 'package:ccsga_comments/BasePage/BasePage.dart';
 import 'package:ccsga_comments/Conversation/ConversationPage.dart';
 import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:ccsga_comments/NewMessage/NewMessagePage.dart';
+import 'package:ccsga_comments/Settings/ConversationListSettingsDrawer.dart';
 import 'package:flutter/material.dart';
 import 'ConversationListCard.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
@@ -59,6 +60,22 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
       icon: Icon(Icons.add),
       backgroundColor: Theme.of(context).accentColor,
     );
+  }
+
+  @override
+  Widget settingsDrawer() {
+    return ConversationListSettingsDrawer(false);
+  }
+
+  @override
+  Widget rightIconButton() {
+    return IconButton(
+        icon: Icon(Icons.filter_alt_outlined),
+        onPressed: _filterDrawerButtonPressed);
+  }
+
+  void _filterDrawerButtonPressed() {
+    print("open end drawer");
   }
 
   void _newMessage() {

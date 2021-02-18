@@ -27,7 +27,7 @@ class CCSGACommentsApp extends StatelessWidget {
       ),
       title: 'CCSGA Comments',
       theme: ThemeData(primarySwatch: Colors.amber),
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
     );
   }
 }

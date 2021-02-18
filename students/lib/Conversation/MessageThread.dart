@@ -14,58 +14,13 @@ class _MessageThreadState extends State<MessageThread> {
 
   List<MessageModel> messages = [
     MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true)
+        "Sam Doggett", "Placeholder message body", DateTime.now(), false),
+    MessageModel("Fer", "Placeholder message body", DateTime.now(), true)
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Flexible(
+    return Expanded(
         child: ListView.builder(
       itemCount: messages.length,
       shrinkWrap: true,

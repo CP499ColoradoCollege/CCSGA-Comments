@@ -22,25 +22,14 @@ class _ConversationSettingsDrawerState
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          widget.isMobileLayout
-              ? Container(
-                  height: 56.0,
-                  child: DrawerHeader(
-                      child: Text('Settings',
-                          style: TextStyle(color: Colors.white, fontSize: 20)),
-                      decoration:
-                          BoxDecoration(color: Theme.of(context).accentColor),
-                      margin: EdgeInsets.all(0.0),
-                      padding: EdgeInsets.all(10.0)),
-                )
-              : Center(
-                  child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    "Conversation Settings",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                )),
+          Center(
+              child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Text(
+              "Conversation Settings",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          )),
           SwitchListTile(
             title: Text(
               'Anonymous',

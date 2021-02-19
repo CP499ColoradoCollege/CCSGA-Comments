@@ -62,6 +62,9 @@ class _ConversationPageState extends BaseState<ConversationPage>
     return ConversationSettingsDrawer(false);
   }
 
+  @override
+  Icon get rightButtonIcon => Icon(Icons.settings);
+
   void _sendMessage() {
     if (this.messageFieldController.text != "") {
       print("Send message");

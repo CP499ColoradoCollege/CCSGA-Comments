@@ -13,11 +13,18 @@ abstract class BaseState<Page extends BasePage> extends State<Page> {
 
 mixin BasicPage<Page extends BasePage> on BaseState<Page> {
   @override
-  final GlobalKey scaffoldKey = GlobalKey();
+  final GlobalKey<BaseState> scaffoldKey = GlobalKey<BaseState>();
 
   Widget build(BuildContext context) {
     List<Widget> bodyChildren = [Expanded(child: body())];
-    Widget rightButtonAction = rightIconButton();
+
+    Widget rightActionButton = Builder(
+      builder: (context) => rightButtonIcon != null
+          ? IconButton(
+              icon: rightButtonIcon,
+              onPressed: () => Scaffold.of(context).openEndDrawer())
+          : Container(),
+    );
 
     if (isMobileLayout(context) == false) {
       bodyChildren.insert(
@@ -30,7 +37,7 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
         padding: EdgeInsets.only(left: 10),
         child: getSettingsDrawer(),
       ));
-      rightButtonAction = Container();
+      rightActionButton = Container();
     }
 
     return Scaffold(
@@ -41,7 +48,7 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
         leading: Builder(
           builder: (context) => drawerButton(context),
         ),
-        actions: [rightButtonAction],
+        actions: [rightActionButton],
       ),
       body: Container(
         child: Row(
@@ -68,7 +75,7 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
   // Override fab to add a floating action button to the page
   Widget fab() => Container();
   // Override rightIconButton to add an icon button to the right side of the app bar
-  Widget rightIconButton() => Container();
+  Icon rightButtonIcon;
 
   Widget drawerButton(BuildContext context) {
     if (isMobileLayout(context) == false) {
@@ -98,5 +105,9 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
         child: drawer,
       );
     }
+  }
+
+  void openEndDrawer() {
+    Scaffold.of(scaffoldKey.currentState.context).openEndDrawer();
   }
 }

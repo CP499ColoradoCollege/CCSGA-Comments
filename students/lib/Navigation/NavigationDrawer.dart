@@ -19,14 +19,15 @@ class NavigationDrawer extends StatelessWidget {
           hasHeader
               ? Container(
                   height: 56.0,
-                  child: DrawerHeader(
-                      child: Text('CCSGA Comments',
-                          style: TextStyle(color: Colors.white, fontSize: 24)),
-                      decoration:
-                          BoxDecoration(color: Theme.of(context).accentColor),
-                      margin: EdgeInsets.all(0.0),
-                      padding: EdgeInsets.all(10.0)),
-                )
+                  child: Padding(
+                    child: Text('CCSGA Comments',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold)),
+                    padding: EdgeInsets.only(top: 25),
+                  ))
               : Container(),
           ListTile(
             title: Center(

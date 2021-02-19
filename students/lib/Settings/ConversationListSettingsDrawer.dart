@@ -6,13 +6,6 @@ enum _FilterBy {
 }
 
 class ConversationListSettingsDrawer extends StatefulWidget {
-  var isMobileLayout = false;
-
-  @required
-  ConversationListSettingsDrawer(bool isMobileLayout) {
-    this.isMobileLayout = isMobileLayout;
-  }
-
   _ConversationListSettingsDrawerState createState() =>
       _ConversationListSettingsDrawerState();
 }
@@ -27,25 +20,14 @@ class _ConversationListSettingsDrawerState
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          widget.isMobileLayout
-              ? Container(
-                  height: 56.0,
-                  child: DrawerHeader(
-                      child: Text('Filter',
-                          style: TextStyle(color: Colors.white, fontSize: 20)),
-                      decoration:
-                          BoxDecoration(color: Theme.of(context).accentColor),
-                      margin: EdgeInsets.all(0.0),
-                      padding: EdgeInsets.all(10.0)),
-                )
-              : Center(
-                  child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    "Conversations Filter",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                )),
+          Center(
+              child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Text(
+              "Conversations Filter",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          )),
           Padding(
             padding: EdgeInsets.all(10),
             child: DropdownButton<_FilterBy>(

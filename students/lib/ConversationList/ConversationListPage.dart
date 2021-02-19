@@ -64,15 +64,11 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
 
   @override
   Widget settingsDrawer() {
-    return ConversationListSettingsDrawer(false);
+    return ConversationListSettingsDrawer();
   }
 
   @override
-  Widget rightIconButton() {
-    return IconButton(
-        icon: Icon(Icons.filter_alt_outlined),
-        onPressed: _filterDrawerButtonPressed);
-  }
+  Icon get rightButtonIcon => Icon(Icons.filter_alt_outlined);
 
   void _filterDrawerButtonPressed() {
     print("open end drawer");

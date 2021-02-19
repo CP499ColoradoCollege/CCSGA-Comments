@@ -9,7 +9,7 @@ import 'package:tuple/tuple.dart';
 class ConversationPage extends BasePage {
   final int conversationId;
 
-  ConversationPage({Key key, @required this.conversationId}) : super(key: key);
+  ConversationPage({Key key, this.conversationId}) : super(key: key);
 
   @override
   _ConversationPageState createState() => _ConversationPageState();
@@ -19,11 +19,17 @@ class _ConversationPageState extends BaseState<ConversationPage>
     with BasicPage {
   final messageFieldController = TextEditingController();
   Conversation conversation;
+  Map pathParams;
+  int conversationId;
 
   @override
   void initState() {
-    _getConversationData();
     super.initState();
+    this.pathParams = getPathParameters();
+    //if a convId is passed in when creating the page, use that.
+    // if not, check the url for the id (pathParams)
+    this.conversationId = widget.conversationId ?? int.parse(pathParams['id']);
+    _getConversationData();
   }
 
   @override
@@ -71,7 +77,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
 
   void _getConversationData() async {
     Tuple2<ChewedResponse, Conversation> responseTuple =
-        await DatabaseHandler.instance.getConversation(widget.conversationId);
+        await DatabaseHandler.instance.getConversation(this.conversationId);
     // transaction successful, there was a conv obj sent in response, otherwise null
     if (responseTuple.item2 != null) {
       // use setState to update the data in the UI with conv

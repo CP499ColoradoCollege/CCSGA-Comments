@@ -159,6 +159,8 @@ def create_stored_procedures():
             BEGIN
                 IF NOT EXISTS (SELECT username FROM Users WHERE isAdmin AND username = adder) THEN
                     SELECT -403;
+                ELSEIF EXISTS (SELECT username FROM Users WHERE username = newCCSGA AND isCCSGA) THEN
+                    SELECT -200;
                 ELSE
                     IF EXISTS (SELECT username FROM Users WHERE username = newCCSGA) THEN
                         UPDATE Users SET isBanned = 0, isCCSGA = 1, rolesLastUpdated = UTC_TIMESTAMP(), updatedBy = adder WHERE username = newCCSGA;
@@ -168,7 +170,7 @@ def create_stored_procedures():
                     INSERT IGNORE INTO ConversationSettings (conversationId, username, isArchived, identityRevealed, isInitiator) SELECT Conversations.id, newCCSGA, 0, 1, 0 FROM Conversations;
                     UPDATE ConversationSettings SET isAccessible = 1 WHERE username = newCCSGA;
                     INSERT IGNORE INTO MessageSettings (messageId, username, isRead) SELECT Messages.id, newCCSGA, 1 FROM Messages;
-                    SELECT -200;
+                    SELECT -201;
                 END IF;
             END ;
         ''',
@@ -176,6 +178,8 @@ def create_stored_procedures():
             BEGIN
                 IF NOT EXISTS (SELECT username FROM Users WHERE isAdmin AND username = adder) THEN
                     SELECT -403;
+                ELSEIF EXISTS (SELECT username FROM Users WHERE username = newAdmin AND isAdmin) THEN
+                    SELECT -200;
                 ELSE
                     IF EXISTS (SELECT username FROM Users WHERE username = newAdmin) THEN
                         UPDATE Users SET isBanned = 0, isAdmin = 1, rolesLastUpdated = UTC_TIMESTAMP(), updatedBy = adder WHERE username = newAdmin;
@@ -185,7 +189,7 @@ def create_stored_procedures():
                     INSERT IGNORE INTO ConversationSettings (conversationId, username, isArchived, identityRevealed, isInitiator) SELECT Conversations.id, newAdmin, 0, 1, 0 FROM Conversations;
                     UPDATE ConversationSettings SET isAccessible = 1 WHERE username = newAdmin;
                     INSERT IGNORE INTO MessageSettings (messageId, username, isRead) SELECT Messages.id, newAdmin, 1 FROM Messages;
-                    SELECT -200;
+                    SELECT -201;
                 END IF;
             END ;
         ''',
@@ -193,6 +197,8 @@ def create_stored_procedures():
             BEGIN
                 IF NOT EXISTS (SELECT username FROM Users WHERE isAdmin AND username = remover) THEN
                     SELECT -403;
+                ELSEIF NOT EXISTS (SELECT username FROM Users WHERE username = ccsgaToRemove AND isCCSGA) THEN
+                    SELECT -404;
                 ELSE
                     UPDATE Users SET isCCSGA = 0, rolesLastUpdated = UTC_TIMESTAMP(), updatedBy = remover WHERE username = ccsgaToRemove;
                     IF NOT EXISTS (SELECT username FROM Users WHERE username = ccsgaToRemove AND isAdmin) THEN
@@ -206,6 +212,8 @@ def create_stored_procedures():
             BEGIN
                 IF NOT EXISTS (SELECT username FROM Users WHERE isAdmin AND username = remover) THEN
                     SELECT -403;
+                ELSEIF NOT EXISTS (SELECT username FROM Users WHERE username = adminToRemove AND isAdmin) THEN
+                    SELECT -404;
                 ELSE
                     IF (SELECT COUNT(username) FROM Users WHERE isAdmin) = 1 THEN
                         SELECT -400;
@@ -223,6 +231,8 @@ def create_stored_procedures():
             BEGIN
                 IF NOT EXISTS (SELECT username FROM Users WHERE isAdmin AND username = adder) THEN
                     SELECT -403;
+                ELSEIF EXISTS (SELECT username FROM Users WHERE username = userToBan AND isBanned) THEN
+                    SELECT -200;
                 ELSE
                     IF EXISTS (SELECT username FROM Users WHERE username = userToBan) THEN
                         UPDATE Users SET isBanned = 1, isCCSGA = 0, isAdmin = 0, rolesLastUpdated = UTC_TIMESTAMP(), updatedBy = adder WHERE username = userToBan;
@@ -230,7 +240,7 @@ def create_stored_procedures():
                         INSERT INTO Users (username, displayName, isBanned, isCCSGA, isAdmin, rolesLastUpdated, updatedBy) VALUES (userToBan, CONCAT(userToBan, " (display name not set)"), 1, 0, 0, UTC_TIMESTAMP(), adder);
                     END IF;
                     UPDATE ConversationSettings SET isAccessible = 0 WHERE username = userToBan;
-                    SELECT -200;
+                    SELECT -201;
                 END IF;
             END ;
         ''',
@@ -238,6 +248,8 @@ def create_stored_procedures():
             BEGIN
                 IF NOT EXISTS (SELECT username FROM Users WHERE isAdmin AND username = remover) THEN
                     SELECT -403;
+                ELSEIF NOT EXISTS (SELECT username FROM Users WHERE username = userToUnban AND isBanned) THEN
+                    SELECT -404;
                 ELSE
                     UPDATE Users SET isBanned = 0, rolesLastUpdated = UTC_TIMESTAMP(), updatedBy = remover WHERE username = userToUnban;
                     UPDATE ConversationSettings SET isAccessible = 1 WHERE username = userToUnban AND isInitiator;

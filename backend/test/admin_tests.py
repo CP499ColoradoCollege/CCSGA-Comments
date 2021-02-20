@@ -17,6 +17,7 @@ SIGNED_IN_USERNAME = "e_merenstein" # So that the tests know whose roles to upda
 BASE_API_URL = f"https://localhost:{PORT}/api"
 GET_HEADERS = {"Cookie": COOKIE}
 POST_HEADERS = {"Cookie": COOKIE, "Content-Type": "application/json"}
+DELETE_HEADERS = {"Cookie": COOKIE}
 
 class TestAdminRoutes(unittest.TestCase):
     
@@ -70,7 +71,60 @@ class TestAdminRoutes(unittest.TestCase):
         self.assertEqual('Anonymous', conv["messages"][str(new_message_id)]["sender"]["displayName"])
 
         conn.close()
+
+    def test_add_admin(self):
         
+        # Ensure signed-in user is not currently an admin, to check the unauthorized check
+        conn, cur = get_conn_and_cursor()
+        confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        conn.commit()
+
+        # Ensure the admin soon to be added is not currently an admin
+        test_username, test_disp_name = 'test_user_1', 'Test User 1'
+        confirm_user_in_db(test_username, test_disp_name)
+        cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        conn.commit()
+
+        # Make request to add admin but with NO authentication
+        req = requests.post(f"{BASE_API_URL}/admins/create", verify=False, json={"newAdmin": test_username})
+        self.assertEqual(401, req.status_code)
+        cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
+        is_admin = cur.fetchone()[0]
+        cur.nextset()
+        self.assertFalse(is_admin)
+
+        # Make unauthorized request to add admin (i.e., signed in but not as an admin)
+        req = requests.post(f"{BASE_API_URL}/admins/create", verify=False, json={"newAdmin": test_username}, headers=POST_HEADERS)
+        self.assertEqual(403, req.status_code)
+        cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
+        is_admin = cur.fetchone()[0]
+        cur.nextset()
+        self.assertFalse(is_admin)
+
+        # Give superficial admin privilege (although not actual conversation access) to signed in user
+        cur.execute("UPDATE Users SET isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        conn.commit()
+
+        # Make authorized request to add admin
+        req = requests.post(f"{BASE_API_URL}/admins/create", verify=False, json={"newAdmin": test_username}, headers=POST_HEADERS)
+        self.assertEqual(201, req.status_code)
+        cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
+        is_admin = cur.fetchone()[0]
+        cur.nextset()
+        self.assertTrue(is_admin)
+
+        # Make request to add admin again; make sure their already-admin status is indicated in the response status code
+        req = requests.post(f"{BASE_API_URL}/admins/create", verify=False, json={"newAdmin": test_username}, headers=POST_HEADERS)
+        self.assertEqual(200, req.status_code)
+        cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
+        is_admin = cur.fetchone()[0]
+        cur.nextset()
+        self.assertTrue(is_admin)
+
+        conn.close()
+
+
     def tearDown(self):
         conn, cur = get_conn_and_cursor()
 
@@ -80,7 +134,7 @@ class TestAdminRoutes(unittest.TestCase):
         for conv_id in self.conv_ids_for_cleanup:
             cur.execute("DELETE FROM ConversationSettings WHERE conversationId = ?;", (conv_id,))
             cur.execute("DELETE FROM Conversations WHERE id = ?;", (conv_id,))
-        cur.execute("UPDATE Users SET isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         conn.commit()
         self.message_ids_for_cleanup.clear()
         self.conv_ids_for_cleanup.clear()

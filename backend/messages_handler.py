@@ -2,7 +2,6 @@ import flask
 from flask import request, make_response, jsonify, abort
 from backend import app
 from backend.database_handler import get_conn_and_cursor, confirm_user_in_db
-from datetime import datetime
 
 @app.route("/api/conversations/create", methods=["POST"])
 def create_conversation():

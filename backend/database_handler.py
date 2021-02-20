@@ -256,6 +256,33 @@ def create_stored_procedures():
                     SELECT -200;
                 END IF;
             END ;
+        ''',
+        '''CREATE PROCEDURE get_admins (IN requester VARCHAR(40))
+            BEGIN
+                IF NOT EXISTS (SELECT username FROM Users WHERE isAdmin AND username = requester) THEN
+                    SELECT -403;
+                ELSE
+                    SELECT username FROM Users WHERE isAdmin;
+                END IF;
+            END ;
+        ''',
+        '''CREATE PROCEDURE get_ccsga_reps (IN requester VARCHAR(40))
+            BEGIN
+                IF NOT EXISTS (SELECT username FROM Users WHERE isAdmin AND username = requester) THEN
+                    SELECT -403;
+                ELSE
+                    SELECT username FROM Users WHERE isCCSGA;
+                END IF;
+            END ;
+        ''',
+        '''CREATE PROCEDURE get_banned_users (IN requester VARCHAR(40))
+            BEGIN
+                IF NOT EXISTS (SELECT username FROM Users WHERE isAdmin AND username = requester) THEN
+                    SELECT -403;
+                ELSE
+                    SELECT username FROM Users WHERE isBanned;
+                END IF;
+            END ;
         '''
     ]
 
@@ -278,7 +305,8 @@ def create_stored_procedures():
 # Helper functions for other files to import
 
 def confirm_user_in_db(username, display_name):
-    '''Insert a record for this user (as a student) into the DB if their username is not yet in the database.'''
+    '''Insert a record for this user (as a student) into the DB if their username is not yet in the database.
+    This function also updates the user's display name if it has changed since the last time it was checked.'''
     conn, cur = get_conn_and_cursor()
     cur.execute("INSERT IGNORE INTO Users (username, isBanned, isCCSGA, isAdmin, displayName, rolesLastUpdated) VALUES (?, 0, 0, 0, ?, UTC_TIMESTAMP());", (username, display_name))
     cur.execute("UPDATE Users SET displayName = ? WHERE username = ?;", (display_name, username))

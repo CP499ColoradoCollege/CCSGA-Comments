@@ -3,6 +3,8 @@ import 'package:ccsga_comments/Conversation/MessageThread.dart';
 import 'package:ccsga_comments/Settings/ConversationSettingsDrawer.dart';
 import 'package:flutter/material.dart';
 
+import 'ConversationStatus.dart';
+
 class ConversationPage extends BasePage {
   ConversationPage({Key key}) : super(key: key);
 
@@ -20,6 +22,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
       padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
       child: Column(
         children: [
+          ConversationStatus("Pending"),
           MessageThread(),
           TextFormField(
             controller: messageFieldController,

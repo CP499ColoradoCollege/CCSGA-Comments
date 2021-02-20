@@ -8,7 +8,6 @@ class User {
   User({
     this.isSignedIn,
     this.username,
-    this.notSignedIn,
     this.displayName,
     this.isBanned,
     this.isCcsga,
@@ -17,7 +16,6 @@ class User {
 
   bool isSignedIn;
   String username;
-  bool notSignedIn;
   String displayName;
   bool isBanned;
   bool isCcsga;
@@ -26,7 +24,6 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) => User(
         isSignedIn: json["isSignedIn"],
         username: json["username"],
-        notSignedIn: json["not_signed_in"],
         displayName: json["displayName"],
         isBanned: json["isBanned"],
         isCcsga: json["isCCSGA"],
@@ -36,7 +33,6 @@ class User {
   Map<String, dynamic> toJson() => {
         "isSignedIn": isSignedIn,
         "username": username,
-        "not_signed_in": notSignedIn,
         "displayName": displayName,
         "isBanned": isBanned,
         "isCCSGA": isCcsga,

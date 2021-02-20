@@ -14,6 +14,10 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
   List<User> admins = [];
   List<User> representatives = [];
 
+  TextEditingController _textEditingController = TextEditingController();
+  bool _isAdminChecked = true;
+  bool _isRepresentativeChecked = false;
+
   @override
   Widget body() {
     getUsers();
@@ -60,79 +64,92 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
   Widget fab() {
     return FloatingActionButton.extended(
       onPressed: () {
-        promoteUser();
+        return showDialog<void>(
+          context: context,
+          barrierDismissible: true,
+          builder: (context) {
+            return StatefulBuilder(builder: (context, setState) {
+              return AlertDialog(
+                title: Text("Promote New User"),
+                content: SizedBox(
+                  height: 250,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                            "Please select the role you wish to promote the user to:"),
+                        CheckboxListTile(
+                          title: Text("Admin"),
+                          value: _isAdminChecked,
+                          onChanged: (newValue) {
+                            setState(() {
+                              _isAdminChecked = newValue;
+                              _isRepresentativeChecked = !newValue;
+                            });
+                          },
+                          controlAffinity: ListTileControlAffinity
+                              .leading, //  <-- leading Checkbox
+                        ),
+                        CheckboxListTile(
+                          title: Text("Representative"),
+                          value: _isRepresentativeChecked,
+                          onChanged: (newValue) {
+                            setState(() {
+                              _isRepresentativeChecked = newValue;
+                              _isAdminChecked = !newValue;
+                            });
+                          },
+                          controlAffinity: ListTileControlAffinity
+                              .leading, //  <-- leading Checkbox
+                        ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        Text("Please enter the email address of the user:"),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextField(
+                          controller: _textEditingController,
+                          decoration: InputDecoration(
+                            labelText: 'Email address:',
+                            labelStyle: TextStyle(color: Colors.black),
+                            border: const OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Confirm"),
+                    onPressed: () {
+                      bool isAdmin = _isAdminChecked;
+                      String email = _textEditingController.text;
+                      //TODO ADD USER TO BACKEND HERE
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
+          },
+        );
       },
       label: Text('Promote New User'),
       icon: Icon(Icons.upgrade),
       backgroundColor: Theme.of(context).accentColor,
-    );
-  }
-
-  TextEditingController _textEditingController = TextEditingController();
-  String _promoteUserDropdownValue = "rep";
-
-  void promoteUser() async {
-    DropdownButton dropdownButton = DropdownButton(
-        value: _promoteUserDropdownValue,
-        items: [
-          DropdownMenuItem(
-            child: Text("Representative"),
-            value: "rep",
-          ),
-          DropdownMenuItem(
-            child: Text("Admin"),
-            value: "admin",
-          ),
-        ],
-        onChanged: (value) {
-          setState(() {
-            _promoteUserDropdownValue = value;
-          });
-        });
-
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Promote New User"),
-          content: Column(
-            children: [
-              Text("Please select the role you wish to promote the user to:"),
-              dropdownButton,
-              Text("Please enter the email address of the user:"),
-              TextField(
-                controller: _textEditingController,
-                decoration: InputDecoration(
-                  labelText: 'Write a message',
-                  labelStyle: TextStyle(color: Colors.black),
-                  border: const OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.black),
-                  ),
-                ),
-              )
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text("Cancel"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text("Continue"),
-              onPressed: () {
-                bool isAdmin = dropdownButton.value == "admin" ? true : false;
-                String email = _textEditingController.text;
-                //TODO ADD USER TO BACKEND HERE
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -145,7 +162,6 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
           isBanned: false,
           isCcsga: false,
           isSignedIn: false,
-          notSignedIn: false,
           username: "admin1"),
       User(
           displayName: "Ely",
@@ -153,7 +169,6 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
           isBanned: false,
           isCcsga: false,
           isSignedIn: false,
-          notSignedIn: false,
           username: "admin2"),
       User(
           displayName: "Viktor",
@@ -161,7 +176,6 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
           isBanned: false,
           isCcsga: false,
           isSignedIn: false,
-          notSignedIn: false,
           username: "admin3"),
     ];
 
@@ -172,7 +186,6 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
           isBanned: false,
           isCcsga: false,
           isSignedIn: false,
-          notSignedIn: false,
           username: "rep1"),
       User(
           displayName: "Sarah",
@@ -180,7 +193,6 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
           isBanned: false,
           isCcsga: false,
           isSignedIn: false,
-          notSignedIn: false,
           username: "rep2"),
     ];
   }

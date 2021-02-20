@@ -63,7 +63,7 @@ class _UserCardState extends State<UserCard> {
               },
             ),
             TextButton(
-              child: Text("Continue"),
+              child: Text("Remove"),
               onPressed: () {
                 removeUser();
                 Navigator.of(context).pop();

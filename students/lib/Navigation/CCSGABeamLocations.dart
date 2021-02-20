@@ -7,7 +7,7 @@ import 'package:ccsga_comments/Conversation/ConversationPage.dart';
 
 const List<String> _homePath = [''];
 const List<String> _conversationListPath = ['conversation_list'];
-const List<String> _conversationPath = ['conversation/:conversationID'];
+const List<String> _conversationPath = ['conversation/:conversationId'];
 const List<String> _newMessagePath = ['new_message'];
 
 class HomeLocation extends BeamLocation {
@@ -50,8 +50,6 @@ class ConversationLocation extends BeamLocation {
           pathParameters: pathParameters,
         );
 
-  // final int conversationId = int.parse(pathParameters['id']);
-
   @override
   List<String> get pathBlueprints => _conversationPath;
 
@@ -59,9 +57,10 @@ class ConversationLocation extends BeamLocation {
   List<BeamPage> get pages => [
         ...ConversationListLocation().pages,
         BeamPage(
-          key: ValueKey('conversation-${pathParameters['id'] ?? ''}'),
-          child:
-              ConversationPage(conversationId: int.parse(pathParameters['id'])),
+          key: ValueKey(
+              'conversation-${pathParameters['conversationId'] ?? ''}'),
+          child: ConversationPage(
+              conversationId: int.parse(pathParameters['conversationId'] ?? 0)),
         )
       ];
 }

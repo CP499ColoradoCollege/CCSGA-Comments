@@ -20,6 +20,33 @@
       <excludeFolder url="file://$MODULE_DIR$/students/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/students/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/students/build" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/firebase_core/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/firebase_core/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/firebase_core/build" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/firebase_core/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/firebase_core/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/firebase_core/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/firebase_database/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/firebase_database/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/firebase_database/build" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/firebase_database/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/firebase_database/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/firebase_database/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/integration_test/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/integration_test/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/integration_test/build" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/integration_test/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/integration_test/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/integration_test/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/integration_test/integration_test_macos/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/integration_test/integration_test_macos/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/integration_test/integration_test_macos/build" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/url_launcher/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/url_launcher/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/url_launcher/build" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/url_launcher/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/url_launcher/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/students/ios/.symlinks/plugins/url_launcher/example/build" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 30 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

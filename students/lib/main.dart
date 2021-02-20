@@ -4,7 +4,7 @@ import 'Navigation/CCSGABeamLocations.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 void main() {
-  setPathUrlStrategy();
+  // setPathUrlStrategy();
   runApp(CCSGACommentsApp());
 }
 
@@ -23,6 +23,7 @@ class CCSGACommentsApp extends StatelessWidget {
           ConversationListLocation(),
           NewMessageLocation(),
           ConversationLocation(),
+          AdminLocation(),
         ],
       ),
       title: 'CCSGA Comments',

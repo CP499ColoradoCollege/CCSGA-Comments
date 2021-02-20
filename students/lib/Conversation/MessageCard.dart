@@ -1,29 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ccsga_comments/Models/MessageModel.dart';
+import 'package:ccsga_comments/Models/Message.dart';
 
 class MessageCard extends StatelessWidget {
-  final MessageModel message;
+  final Message message;
+  final bool isMyMessage;
 
-  MessageCard(this.message);
+  MessageCard({this.message, this.isMyMessage});
 
   @override
   Widget build(BuildContext context) {
     return Container(
         padding: EdgeInsets.symmetric(vertical: 5),
         child: FractionallySizedBox(
-          alignment: this.message.isSender
-              ? Alignment.centerLeft
-              : Alignment.centerRight,
+          alignment:
+              this.isMyMessage ? Alignment.centerLeft : Alignment.centerRight,
           widthFactor: 0.66,
           child: Align(
-            alignment: (this.message.isSender
-                ? Alignment.topLeft
-                : Alignment.topRight),
+            alignment:
+                (this.isMyMessage ? Alignment.topLeft : Alignment.topRight),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: (this.message.isSender
+                color: (this.isMyMessage
                     ? Colors.grey.shade200
                     : Colors.blue[200]),
               ),
@@ -45,7 +44,7 @@ class MessageCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        this.message.senderName,
+                        this.message.sender.displayName,
                         textAlign: TextAlign.left,
                       ),
                       Expanded(
@@ -54,7 +53,7 @@ class MessageCard extends StatelessWidget {
                       Text(
                         DateFormat("MMM d -")
                             .add_jm()
-                            .format(this.message.time)
+                            .format(DateTime.parse(this.message.dateTime))
                             .toString(),
                         textAlign: TextAlign.right,
                       )

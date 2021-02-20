@@ -32,4 +32,8 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
   Widget body();
   // Override fab to add a floating action button to the page
   Widget fab() => Container();
+
+  Map<String, String> getPathParameters() {
+    return Beamer.of(context).currentLocation.pathParameters;
+  }
 }

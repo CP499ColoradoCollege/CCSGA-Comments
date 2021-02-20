@@ -1,9 +1,13 @@
 import 'package:ccsga_comments/Conversation/MessageCard.dart';
 import 'package:ccsga_comments/Models/MessageModel.dart';
+import 'package:ccsga_comments/Models/Message.dart';
+import 'package:ccsga_comments/Models/Conversation.dart';
+
 import 'package:flutter/material.dart';
 
 class MessageThread extends StatefulWidget {
-  const MessageThread({Key key}) : super(key: key);
+  final Conversation conv;
+  const MessageThread({Key key, @required this.conv}) : super(key: key);
 
   @override
   _MessageThreadState createState() => _MessageThreadState();
@@ -12,59 +16,64 @@ class MessageThread extends StatefulWidget {
 class _MessageThreadState extends State<MessageThread> {
   final ScrollController _scrollController = ScrollController();
 
-  List<MessageModel> messages = [
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true),
-    MessageModel(
-        "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-    MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-        DateTime.now(), true)
-  ];
+  List<Message> messages;
+
+  // List<MessageModel> messages = [
+  //   MessageModel(
+  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+  //       DateTime.now(), true),
+  //   MessageModel(
+  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+  //       DateTime.now(), true),
+  //   MessageModel(
+  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+  //       DateTime.now(), true),
+  //   MessageModel(
+  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+  //       DateTime.now(), true),
+  //   MessageModel(
+  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+  //       DateTime.now(), true),
+  //   MessageModel(
+  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+  //       DateTime.now(), true),
+  //   MessageModel(
+  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+  //       DateTime.now(), true),
+  //   MessageModel(
+  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+  //       DateTime.now(), true),
+  //   MessageModel(
+  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+  //       DateTime.now(), true),
+  //   MessageModel(
+  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+  //       DateTime.now(), true),
+  //   MessageModel(
+  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+  //       DateTime.now(), true),
+  //   MessageModel(
+  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
+  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
+  //       DateTime.now(), true)
+  // ];
 
   @override
   Widget build(BuildContext context) {
+    // get list of messages from the conversation object
+    messages = widget.conv.messages.values;
+
     return Flexible(
         child: ListView.builder(
       itemCount: messages.length,
@@ -73,7 +82,11 @@ class _MessageThreadState extends State<MessageThread> {
       physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
       controller: _scrollController,
       itemBuilder: (context, index) {
-        return MessageCard(messages[index]);
+        bool isMyMessage = false;
+        if (index % 2 == 0) {
+          isMyMessage = true;
+        }
+        return MessageCard(message: messages[index], isMyMessage: isMyMessage);
       },
     ));
   }

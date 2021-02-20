@@ -1,7 +1,10 @@
 /* 
- * Specify this.message in the constructor if a success message
+ * This class helps digest an http response.
+ * Based on the status code, it figures out whether the transaction 
+ * was @param isSuccessful, and if not, provides a helpful error @param message
+ * Specify @param message in the constructor if a success message
  * is necessary (otherwise message == null on success)
- * @param this.message is a success or error message
+ * @param message is a success or error message
  */
 class ChewedResponse {
   bool isSuccessful;

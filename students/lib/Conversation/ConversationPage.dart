@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 
 class ConversationPage extends BasePage {
-  ConversationPage({Key key}) : super(key: key);
+  final int conversationId;
+
+  ConversationPage({Key key, this.conversationId}) : super(key: key);
 
   @override
   _ConversationPageState createState() => _ConversationPageState();
@@ -16,6 +18,19 @@ class ConversationPage extends BasePage {
 class _ConversationPageState extends BaseState<ConversationPage>
     with BasicPage {
   final messageFieldController = TextEditingController();
+  Conversation conversation;
+  Map pathParams;
+  int conversationId;
+
+  @override
+  void initState() {
+    super.initState();
+    this.pathParams = getPathParameters();
+    //if a convId is passed in when creating the page, use that.
+    // if not, check the url for the id (pathParams)
+    this.conversationId = widget.conversationId ?? int.parse(pathParams['id']);
+    _getConversationData();
+  }
 
   @override
   Widget body() {
@@ -23,7 +38,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
       padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
       child: Column(
         children: [
-          MessageThread(),
+          MessageThread(conv: this.conversation),
           TextFormField(
             controller: messageFieldController,
             minLines: 2,
@@ -60,14 +75,13 @@ class _ConversationPageState extends BaseState<ConversationPage>
     return "Conversation Thread";
   }
 
-  void _getConversationData(int conversationId) async {
+  void _getConversationData() async {
     Tuple2<ChewedResponse, Conversation> responseTuple =
-        await DatabaseHandler.instance.getConversation(conversationId);
-    // transaction successful, there was a conv obj sent in response
+        await DatabaseHandler.instance.getConversation(this.conversationId);
+    // transaction successful, there was a conv obj sent in response, otherwise null
     if (responseTuple.item2 != null) {
       // use setState to update the data in the UI with conv
-      Conversation conv = responseTuple.item2;
-      print(conv);
+      this.conversation = responseTuple.item2;
     } else {
       setState(() {
         // _errorMessage = responseTuple.item1.message;

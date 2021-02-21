@@ -17,6 +17,45 @@ class _MessageThreadState extends State<MessageThread> {
 
   List<Message> messages;
 
+  @override
+  Widget build(BuildContext context) {
+    // get list of messages from the conversation object
+    print("Thread: conv id is -> ${widget.conv.id}");
+    messages = List.from(widget.conv.messages.values);
+    print("first message in msg list -> ${messages.first}");
+
+    return Flexible(
+        child: ListView.builder(
+      itemCount: messages.length,
+      shrinkWrap: true,
+      padding: EdgeInsets.only(top: 10, bottom: 10),
+      physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+      controller: _scrollController,
+      itemBuilder: (context, index) {
+        //TEMP!! in future check whether message was sent by user or not
+        bool isMyMessage = false;
+        if (index % 2 == 0) {
+          isMyMessage = true;
+        }
+        return MessageCard(message: messages[index], isMyMessage: isMyMessage);
+      },
+    ));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => scrollToBottom());
+  }
+
+  void scrollToBottom() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: Duration(seconds: 1),
+      curve: Curves.fastOutSlowIn,
+    );
+  }
+
   // List<MessageModel> messages = [
   //   MessageModel(
   //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
@@ -67,40 +106,4 @@ class _MessageThreadState extends State<MessageThread> {
   //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
   //       DateTime.now(), true)
   // ];
-
-  @override
-  Widget build(BuildContext context) {
-    // get list of messages from the conversation object
-    messages = widget.conv.messages.values;
-
-    return Flexible(
-        child: ListView.builder(
-      itemCount: messages.length,
-      shrinkWrap: true,
-      padding: EdgeInsets.only(top: 10, bottom: 10),
-      physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-      controller: _scrollController,
-      itemBuilder: (context, index) {
-        bool isMyMessage = false;
-        if (index % 2 == 0) {
-          isMyMessage = true;
-        }
-        return MessageCard(message: messages[index], isMyMessage: isMyMessage);
-      },
-    ));
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => scrollToBottom());
-  }
-
-  void scrollToBottom() {
-    _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
-      duration: Duration(seconds: 1),
-      curve: Curves.fastOutSlowIn,
-    );
-  }
 }

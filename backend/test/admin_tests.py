@@ -131,6 +131,86 @@ class TestAdminRoutes(unittest.TestCase):
         self.cur.nextset()
         self.assertTrue(is_admin)
 
+    def test_remove_admin(self):
+        
+        # Ensure signed-in user is not currently an admin, to check the unauthorized check
+        self.conn, self.cur = get_conn_and_cursor()
+        confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+
+        # Ensure the admin soon to be removed is currently, nominally an admin
+        test_username, test_disp_name = 'test_user_1', 'Test User 1'
+        confirm_user_in_db(test_username, test_disp_name)
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 1 WHERE username = ?;", (test_username,))
+        self.conn.commit()
+
+        # Make request to remove admin but with NO authentication
+        req = requests.delete(f"{BASE_API_URL}/admins/{test_username}", verify=False)
+        self.assertEqual(401, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
+        is_admin = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertTrue(is_admin)
+
+        # Make unauthorized request to remove admin (i.e., signed in but not as an admin)
+        req = requests.delete(f"{BASE_API_URL}/admins/{test_username}", verify=False, headers=DELETE_HEADERS)
+        self.assertEqual(403, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
+        is_admin = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertTrue(is_admin)
+
+        # Give superficial admin privilege (although not actual conversation access) to signed in user
+        self.cur.execute("UPDATE Users SET isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+
+        # Make authorized request to remove admin
+        req = requests.delete(f"{BASE_API_URL}/admins/{test_username}", verify=False, headers=DELETE_HEADERS)
+        self.assertEqual(200, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
+        is_admin = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertFalse(is_admin)
+
+        # Make request to add admin again; make sure their already-admin status is indicated in the response status code
+        req = requests.delete(f"{BASE_API_URL}/admins/{test_username}", verify=False, headers=DELETE_HEADERS)
+        self.assertEqual(404, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
+        is_admin = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertFalse(is_admin)
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def tearDown(self):
 

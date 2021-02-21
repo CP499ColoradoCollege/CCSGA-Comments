@@ -1,6 +1,12 @@
+import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
+import 'package:ccsga_comments/Models/Conversation.dart';
+import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 import 'package:beamer/beamer.dart';
 import 'package:ccsga_comments/Navigation/NavigationDrawer.dart';
+import 'package:tuple/tuple.dart';
+
+import '../DatabaseHandler.dart';
 
 //Based on this article: https://medium.com/flutter-community/mixins-and-base-classes-a-recipe-for-success-in-flutter-bc3fbb5da670
 
@@ -114,5 +120,16 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
 
   void openEndDrawer() {
     Scaffold.of(scaffoldKey.currentState.context).openEndDrawer();
+  }
+
+  Future<User> getUserInfo() async {
+    Tuple2<ChewedResponse, User> responseTuple =
+        await DatabaseHandler.instance.getAuthenticatedUser();
+    if (responseTuple.item2 != null) {
+      return responseTuple.item2;
+    } else {
+      print(responseTuple.item1.message);
+      return null;
+    }
   }
 }

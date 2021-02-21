@@ -111,14 +111,14 @@ class _ConversationPageState extends BaseState<ConversationPage>
       return false;
     }
 
-    // Message msg = Message(
-    //     body: "test body",
-    //     dateTime: "2021-02-21 13:00:00",
-    //     isRead: false,
-    //     sender: Sender(displayName: "testDispName", username: "testUserName"));
-    // Conversation conv = Conversation(id: 99, messages: {"99": msg});
-    // _conversation = conv;
-    // return true;
+    Message msg = Message(
+        body: "test body",
+        dateTime: "2021-02-21 13:00:00",
+        isRead: false,
+        sender: Sender(displayName: "testDispName", username: "testUserName"));
+    Conversation conv = Conversation(id: 99, messages: {"99": msg});
+    _conversation = conv;
+    return true;
   }
 
   void _sendMessage() async {

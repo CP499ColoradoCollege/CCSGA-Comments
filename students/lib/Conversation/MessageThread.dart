@@ -1,8 +1,12 @@
 import 'package:ccsga_comments/Conversation/MessageCard.dart';
+import 'package:ccsga_comments/DatabaseHandler.dart';
+import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/Models/Message.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
+import 'package:ccsga_comments/Models/User.dart';
 
 import 'package:flutter/material.dart';
+import 'package:tuple/tuple.dart';
 
 class MessageThread extends StatefulWidget {
   final Conversation conv;
@@ -16,28 +20,36 @@ class _MessageThreadState extends State<MessageThread> {
   final ScrollController _scrollController = ScrollController();
 
   List<Message> messages;
+  User currentAuthenticatedUser;
 
   @override
   Widget build(BuildContext context) {
     // get list of messages from the conversation object
     messages = List.from(widget.conv.messages.values);
-
-    return Expanded(
-        child: ListView.builder(
-      itemCount: messages.length,
-      shrinkWrap: true,
-      padding: EdgeInsets.only(top: 10, bottom: 10),
-      physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-      controller: _scrollController,
-      itemBuilder: (context, index) {
-        //TEMP!! in future check whether message was sent by user or not
-        bool isMyMessage = false;
-        if (index % 2 == 0) {
-          isMyMessage = true;
-        }
-        return MessageCard(message: messages[index], isMyMessage: isMyMessage);
-      },
-    ));
+    FutureBuilder<bool>(
+        future: _getUserInfo(),
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          if (snapshot.hasData) {
+            return Expanded(
+              child: ListView.builder(
+                itemCount: messages.length,
+                shrinkWrap: true,
+                padding: EdgeInsets.only(top: 10, bottom: 10),
+                physics: BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics()),
+                controller: _scrollController,
+                itemBuilder: (context, index) {
+                  return MessageCard(
+                      message: messages[index],
+                      isMyMessage: messages[index].sender.username ==
+                          currentAuthenticatedUser.username);
+                },
+              ),
+            );
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
   }
 
   @override
@@ -54,54 +66,15 @@ class _MessageThreadState extends State<MessageThread> {
     );
   }
 
-  // List<MessageModel> messages = [
-  //   MessageModel(
-  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-  //       DateTime.now(), true),
-  //   MessageModel(
-  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-  //       DateTime.now(), true),
-  //   MessageModel(
-  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-  //       DateTime.now(), true),
-  //   MessageModel(
-  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-  //       DateTime.now(), true),
-  //   MessageModel(
-  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-  //       DateTime.now(), true),
-  //   MessageModel(
-  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-  //       DateTime.now(), true),
-  //   MessageModel(
-  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-  //       DateTime.now(), true),
-  //   MessageModel(
-  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-  //       DateTime.now(), true),
-  //   MessageModel(
-  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-  //       DateTime.now(), true),
-  //   MessageModel(
-  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-  //       DateTime.now(), true),
-  //   MessageModel(
-  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-  //       DateTime.now(), true),
-  //   MessageModel(
-  //       "Sam Doggett", "Placeholder to test scrolling", DateTime.now(), false),
-  //   MessageModel("Fer - Internal Affairs", "Placeholder to test scrolling",
-  //       DateTime.now(), true)
-  // ];
+  Future<bool> _getUserInfo() async {
+    Tuple2<ChewedResponse, User> responseTuple =
+        await DatabaseHandler.instance.getAuthenticatedUser();
+    if (responseTuple.item2 != null) {
+      currentAuthenticatedUser = responseTuple.item2;
+      return true;
+    } else {
+      print(responseTuple.item1.message);
+      return false;
+    }
+  }
 }

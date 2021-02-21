@@ -23,9 +23,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c55fb4b5-9a91-4d64-8ae9-fdb732a28e86" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/lib/Navigation/CCSGABeamLocations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Navigation/CCSGABeamLocations.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/integration_test/app_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/integration_test/app_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/BasePage/BasePage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/BasePage/BasePage.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/Conversation/ConversationPage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Conversation/ConversationPage.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/Conversation/MessageThread.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Conversation/MessageThread.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/DatabaseHandler.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/DatabaseHandler.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +63,7 @@
     <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
     <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
-    <property name="settings.editor.selected.configurable" value="flutter.settings" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
   <component name="RunManager">
@@ -118,30 +122,35 @@
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
     <state x="528" y="312" key="#main.dart/0.25.1792.1095@0.25.1792.1095" timestamp="1613008506696" />
-    <state width="1750" height="147" key="GridCell.Tab.0.bottom" timestamp="1613865740565">
-      <screen x="0" y="25" width="2560" height="1415" />
+    <state width="1750" height="208" key="GridCell.Tab.0.bottom" timestamp="1613941185747">
+      <screen x="2560" y="345" width="1792" height="1095" />
     </state>
     <state width="1750" height="147" key="GridCell.Tab.0.bottom/0.25.1792.1095@0.25.1792.1095" timestamp="1613860710403" />
     <state width="1750" height="147" key="GridCell.Tab.0.bottom/0.25.2560.1415/2560.345.1792.1095@0.25.2560.1415" timestamp="1613865740565" />
-    <state width="1750" height="147" key="GridCell.Tab.0.center" timestamp="1613865740564">
-      <screen x="0" y="25" width="2560" height="1415" />
+    <state width="1750" height="208" key="GridCell.Tab.0.bottom/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613941185747" />
+    <state width="1750" height="208" key="GridCell.Tab.0.center" timestamp="1613941185746">
+      <screen x="2560" y="345" width="1792" height="1095" />
     </state>
     <state width="1750" height="147" key="GridCell.Tab.0.center/0.25.1792.1095@0.25.1792.1095" timestamp="1613860710403" />
     <state width="1750" height="147" key="GridCell.Tab.0.center/0.25.2560.1415/2560.345.1792.1095@0.25.2560.1415" timestamp="1613865740564" />
-    <state width="1750" height="147" key="GridCell.Tab.0.left" timestamp="1613865740564">
-      <screen x="0" y="25" width="2560" height="1415" />
+    <state width="1750" height="208" key="GridCell.Tab.0.center/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613941185746" />
+    <state width="1750" height="208" key="GridCell.Tab.0.left" timestamp="1613941185746">
+      <screen x="2560" y="345" width="1792" height="1095" />
     </state>
     <state width="1750" height="147" key="GridCell.Tab.0.left/0.25.1792.1095@0.25.1792.1095" timestamp="1613860710403" />
     <state width="1750" height="147" key="GridCell.Tab.0.left/0.25.2560.1415/2560.345.1792.1095@0.25.2560.1415" timestamp="1613865740564" />
-    <state width="1750" height="147" key="GridCell.Tab.0.right" timestamp="1613865740565">
-      <screen x="0" y="25" width="2560" height="1415" />
+    <state width="1750" height="208" key="GridCell.Tab.0.left/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613941185746" />
+    <state width="1750" height="208" key="GridCell.Tab.0.right" timestamp="1613941185746">
+      <screen x="2560" y="345" width="1792" height="1095" />
     </state>
     <state width="1750" height="147" key="GridCell.Tab.0.right/0.25.1792.1095@0.25.1792.1095" timestamp="1613860710403" />
     <state width="1750" height="147" key="GridCell.Tab.0.right/0.25.2560.1415/2560.345.1792.1095@0.25.2560.1415" timestamp="1613865740565" />
-    <state x="397" y="208" key="SettingsEditor" timestamp="1613402892729">
-      <screen x="0" y="25" width="1792" height="1095" />
+    <state width="1750" height="208" key="GridCell.Tab.0.right/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613941185746" />
+    <state x="2957" y="528" key="SettingsEditor" timestamp="1613942339783">
+      <screen x="2560" y="345" width="1792" height="1095" />
     </state>
     <state x="397" y="208" key="SettingsEditor/0.25.1792.1095@0.25.1792.1095" timestamp="1613402892729" />
+    <state x="2957" y="528" key="SettingsEditor/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613942339783" />
     <state width="600" height="428" key="javadoc.popup" timestamp="1613784635657">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>

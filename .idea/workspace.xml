@@ -23,13 +23,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c55fb4b5-9a91-4d64-8ae9-fdb732a28e86" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/integration_test/app_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/integration_test/app_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/lib/BasePage/BasePage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/BasePage/BasePage.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/students/lib/Conversation/ConversationPage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Conversation/ConversationPage.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/students/lib/Conversation/MessageThread.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Conversation/MessageThread.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/lib/DatabaseHandler.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/DatabaseHandler.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/Models/User.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Models/User.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -151,6 +148,10 @@
     </state>
     <state x="397" y="208" key="SettingsEditor/0.25.1792.1095@0.25.1792.1095" timestamp="1613402892729" />
     <state x="2957" y="528" key="SettingsEditor/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613942339783" />
+    <state x="588" y="205" width="803" height="735" key="find.popup" timestamp="1613946433562">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="588" y="205" width="803" height="735" key="find.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613946433562" />
     <state width="600" height="428" key="javadoc.popup" timestamp="1613784635657">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
@@ -159,9 +160,9 @@
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
     <state x="561" y="265" key="run.anything.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613868453215" />
-    <state x="561" y="269" width="670" height="158" key="search.everywhere.popup" timestamp="1613793771168">
+    <state x="561" y="269" width="670" height="158" key="search.everywhere.popup" timestamp="1613946410423">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
-    <state x="561" y="269" width="670" height="158" key="search.everywhere.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613793771168" />
+    <state x="561" y="269" width="670" height="158" key="search.everywhere.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613946410423" />
   </component>
 </project>

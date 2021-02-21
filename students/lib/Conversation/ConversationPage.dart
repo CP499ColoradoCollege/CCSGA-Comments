@@ -41,6 +41,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
               future: _getConversationData(),
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                 if (snapshot.hasData) {
+                  print("Message thread returned");
                   return MessageThread(conv: this._conversation);
                 } else {
                   return CircularProgressIndicator();

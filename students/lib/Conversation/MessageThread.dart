@@ -39,6 +39,9 @@ class _MessageThreadState extends State<MessageThread> {
                     parent: AlwaysScrollableScrollPhysics()),
                 controller: _scrollController,
                 itemBuilder: (context, index) {
+                  print("Total messages: " + messages.length.toString());
+                  print("Current user's username: " +
+                      currentAuthenticatedUser.username);
                   return MessageCard(
                       message: messages[index],
                       isMyMessage: messages[index].sender.username ==

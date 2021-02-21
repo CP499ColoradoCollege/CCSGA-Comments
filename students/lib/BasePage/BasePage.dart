@@ -68,6 +68,8 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
     );
   }
 
+  User currentUser;
+
   //Override to add the navigation drawer to the side, will be hidden when screen size too small
   Widget staticDrawer() => Container(
         child: SizedBox(
@@ -120,16 +122,5 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
 
   void openEndDrawer() {
     Scaffold.of(scaffoldKey.currentState.context).openEndDrawer();
-  }
-
-  Future<User> getUserInfo() async {
-    Tuple2<ChewedResponse, User> responseTuple =
-        await DatabaseHandler.instance.getAuthenticatedUser();
-    if (responseTuple.item2 != null) {
-      return responseTuple.item2;
-    } else {
-      print(responseTuple.item1.message);
-      return null;
-    }
   }
 }

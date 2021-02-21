@@ -4,6 +4,7 @@ import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
 import 'package:ccsga_comments/Models/Message.dart';
+import 'package:ccsga_comments/Models/User.dart';
 import 'package:ccsga_comments/Settings/ConversationSettingsDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
@@ -42,7 +43,10 @@ class _ConversationPageState extends BaseState<ConversationPage>
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                 if (snapshot.hasData) {
                   print("Message thread returned");
-                  return MessageThread(conv: this._conversation);
+                  return MessageThread(
+                    conv: this._conversation,
+                    currentUser: currentUser,
+                  );
                 } else {
                   return CircularProgressIndicator();
                 }
@@ -98,6 +102,15 @@ class _ConversationPageState extends BaseState<ConversationPage>
     _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);
     Tuple2<ChewedResponse, Conversation> responseTuple =
         await DatabaseHandler.instance.getConversation(_conversationId);
+    Tuple2<ChewedResponse, User> userResponse =
+        await DatabaseHandler.instance.getAuthenticatedUser();
+
+    if (userResponse.item2 != null) {
+      currentUser = userResponse.item2;
+    } else {
+      return false;
+    }
+
     print("responseTuple.item2.messages -> ${responseTuple.item2.messages}");
     // transaction successful, there was a conv obj sent in response, otherwise null
     if (responseTuple.item2 != null) {

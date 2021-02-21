@@ -1,5 +1,4 @@
 import 'package:ccsga_comments/Conversation/MessageCard.dart';
-import 'package:ccsga_comments/Models/MessageModel.dart';
 import 'package:ccsga_comments/Models/Message.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
 

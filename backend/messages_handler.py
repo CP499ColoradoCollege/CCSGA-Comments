@@ -39,7 +39,6 @@ def create_conversation():
     cur.nextset()
 
     if conversation_id == -403:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": "User is either banned or a CCSGA rep, neither of whom is authorized to initiate new conversations."}), 403)
 
@@ -78,12 +77,10 @@ def create_message(conversation_id):
     cur.nextset()
     
     if message_id == -403:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": "User is either banned or not authorized to post to this conversation"}), 403)
     
     if message_id == -404:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": "Conversation not found"}), 404)
 

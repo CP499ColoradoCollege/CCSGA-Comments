@@ -44,17 +44,9 @@ class MessageCard extends StatelessWidget {
                     children: [
                       Expanded(
                           child: Text(
-                        this.message.body.toString(),
-                        textAlign: TextAlign.left,
-                      ))
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text(
                         this.message.sender.displayName,
                         textAlign: TextAlign.left,
-                      ),
+                      )),
                       Text(
                         DateFormat("MMM d -")
                             .add_jm()

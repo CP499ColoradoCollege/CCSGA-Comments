@@ -106,14 +106,14 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                         SizedBox(
                           height: 25,
                         ),
-                        Text("Please enter the email address of the user:"),
+                        Text("Please enter the CC username:"),
                         SizedBox(
                           height: 10,
                         ),
                         TextField(
                           controller: _textEditingController,
                           decoration: InputDecoration(
-                            labelText: 'Email address:',
+                            labelText: 'Username:',
                             labelStyle: TextStyle(color: Colors.black),
                             border: const OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(

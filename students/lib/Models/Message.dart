@@ -20,17 +20,16 @@ class Message {
   Sender sender;
 
   factory Message.fromJson(Map<String, dynamic> json) => Message(
-        body: json["body"],
-        dateTime: json["dateTime"],
-        isRead: json["isRead"],
-        sender: Sender.fromJson(json["sender"]),
+        body: json["body"] == null ? null : json["body"],
+        dateTime: json["dateTime"] == null ? null : json["dateTime"],
+        isRead: json["isRead"] == null ? null : json["isRead"],
+        sender: json["sender"] == null ? null : Sender.fromJson(json["sender"]),
       );
-
   Map<String, dynamic> toJson() => {
-        "body": body,
-        "dateTime": dateTime,
-        "isRead": isRead,
-        "sender": sender.toJson(),
+        "body": body == null ? null : body,
+        "dateTime": dateTime == null ? null : dateTime,
+        "isRead": isRead == null ? null : isRead,
+        "sender": sender == null ? null : sender.toJson(),
       };
 }
 

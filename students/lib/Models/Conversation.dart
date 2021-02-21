@@ -26,22 +26,32 @@ class Conversation {
   bool isRead;
 
   factory Conversation.fromJson(Map<String, dynamic> json) => Conversation(
-        messages: Map.from(json["messages"])
-            .map((k, v) => MapEntry<String, Message>(k, Message.fromJson(v))),
-        status: json["status"],
-        labels: List<String>.from(json["labels"].map((x) => x)),
-        isArchived: json["isArchived"],
-        studentIdentityRevealed: json["studentIdentityRevealed"],
-        isRead: json["isRead"],
+        messages: json["messages"] == null
+            ? null
+            : Map.from(json["messages"]).map(
+                (k, v) => MapEntry<String, Message>(k, Message.fromJson(v))),
+        status: json["status"] == null ? null : json["status"],
+        labels: json["labels"] == null
+            ? null
+            : List<String>.from(json["labels"].map((x) => x)),
+        isArchived: json["isArchived"] == null ? null : json["isArchived"],
+        studentIdentityRevealed: json["studentIdentityRevealed"] == null
+            ? null
+            : json["studentIdentityRevealed"],
+        isRead: json["isRead"] == null ? null : json["isRead"],
       );
 
   Map<String, dynamic> toJson() => {
-        "messages": Map.from(messages)
-            .map((k, v) => MapEntry<String, dynamic>(k, v.toJson())),
-        "status": status,
-        "labels": List<dynamic>.from(labels.map((x) => x)),
-        "isArchived": isArchived,
-        "studentIdentityRevealed": studentIdentityRevealed,
-        "isRead": isRead,
+        "messages": messages == null
+            ? null
+            : Map.from(messages)
+                .map((k, v) => MapEntry<String, dynamic>(k, v.toJson())),
+        "status": status == null ? null : status,
+        "labels":
+            labels == null ? null : List<dynamic>.from(labels.map((x) => x)),
+        "isArchived": isArchived == null ? null : isArchived,
+        "studentIdentityRevealed":
+            studentIdentityRevealed == null ? null : studentIdentityRevealed,
+        "isRead": isRead == null ? null : isRead,
       };
 }

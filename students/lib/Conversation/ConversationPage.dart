@@ -116,14 +116,17 @@ class _ConversationPageState extends BaseState<ConversationPage>
   void _sendMessage() async {
     if (_messageFieldController.text != "") {
       ChewedResponse chewedResponse = await DatabaseHandler.instance
-          .sendMessageInConversation(1, _messageFieldController.text);
+          .sendMessageInConversation(
+              _conversationId, _messageFieldController.text);
       if (chewedResponse.isSuccessful) {
         _messageFieldController.clear();
+        await _getConversationData();
         setState(() {
           // _successMessage = chewedResponse.message;
         });
       } else {
         setState(() {
+          throw new Error();
           // _errorMessage = chewedResponse.message;
         });
       }

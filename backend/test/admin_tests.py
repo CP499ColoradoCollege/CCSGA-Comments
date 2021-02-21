@@ -1,19 +1,22 @@
+# NOTE: In order to run these tests, make sure you've provided the necessary values in backend/.env
+
 import sys
+import os
 sys.path.append('..')
 import unittest
 import requests
+from dotenv import load_dotenv
 try:
     from database_handler import get_conn_and_cursor, confirm_user_in_db
 except ModuleNotFoundError:
     print("Make sure you're actually in the test directory when you run this program.")
     exit(1)
 
-# Configure these constants as needed
-PORT = 8001
-COOKIE = "" # Paste this from network dev tools after signing into CAS in browser
-SIGNED_IN_USERNAME = "e_merenstein" # So that the tests know whose roles to update for testing various permission levels
+load_dotenv()
 
-# Don't modify these constants
+PORT = os.getenv("TESTING_PORT")
+COOKIE = os.getenv("TESTING_COOKIE")
+SIGNED_IN_USERNAME = os.getenv("TESTING_USERNAME")
 BASE_API_URL = f"https://localhost:{PORT}/api"
 GET_HEADERS = {"Cookie": COOKIE}
 POST_HEADERS = {"Cookie": COOKIE, "Content-Type": "application/json"}

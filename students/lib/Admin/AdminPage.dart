@@ -13,6 +13,7 @@ class AdminPage extends BasePage {
 class _AdminPageState extends BaseState<AdminPage> with BasicPage {
   List<User> admins = [];
   List<User> representatives = [];
+  List<User> bannedUsers = [];
 
   TextEditingController _textEditingController = TextEditingController();
   bool _isAdminChecked = true;
@@ -23,12 +24,14 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
     getUsers();
 
     return Container(
-      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-      child: Column(
+      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+      child: ListView(
         children: [
-          Text(
-            "Admins",
-            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+          Center(
+            child: Text(
+              "Admins",
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+            ),
           ),
           ListView.builder(
               padding: const EdgeInsets.all(8),
@@ -38,9 +41,11 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
               itemBuilder: (BuildContext context, int index) {
                 return UserCard(admins[index]);
               }),
-          Text(
-            "Representatives",
-            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+          Center(
+            child: Text(
+              "Representatives",
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+            ),
           ),
           ListView.builder(
               padding: const EdgeInsets.all(8),
@@ -49,6 +54,20 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
               itemCount: representatives.length,
               itemBuilder: (BuildContext context, int index) {
                 return UserCard(representatives[index]);
+              }),
+          Center(
+            child: Text(
+              "Banned users",
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+            ),
+          ),
+          ListView.builder(
+              padding: const EdgeInsets.all(8),
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: bannedUsers.length,
+              itemBuilder: (BuildContext context, int index) {
+                return UserCard(bannedUsers[index]);
               }),
         ],
       ),
@@ -62,6 +81,19 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
 
   @override
   Widget fab() {
+    return Row(
+      children: [
+        banUserButton(),
+        SizedBox(
+          width: 10,
+        ),
+        promoteNewUserButton(),
+      ],
+      mainAxisAlignment: MainAxisAlignment.end,
+    );
+  }
+
+  Widget promoteNewUserButton() {
     return FloatingActionButton.extended(
       onPressed: () {
         return showDialog<void>(
@@ -153,6 +185,69 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
     );
   }
 
+  Widget banUserButton() {
+    return FloatingActionButton.extended(
+      onPressed: () {
+        return showDialog<void>(
+          context: context,
+          barrierDismissible: true,
+          builder: (context) {
+            return StatefulBuilder(builder: (context, setState) {
+              return AlertDialog(
+                title: Text("Ban user"),
+                content: SizedBox(
+                  height: 90,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Please enter the CC username you wish to ban:"),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextField(
+                          controller: _textEditingController,
+                          decoration: InputDecoration(
+                            labelText: 'Username:',
+                            labelStyle: TextStyle(color: Colors.black),
+                            border: const OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Confirm"),
+                    onPressed: () {
+                      bool isAdmin = _isAdminChecked;
+                      String email = _textEditingController.text;
+                      //TODO ADD USER TO BACKEND HERE
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
+          },
+        );
+      },
+      label: Text('Ban User'),
+      icon: Icon(Icons.not_interested),
+      backgroundColor: Theme.of(context).accentColor,
+    );
+  }
+
   void getUsers() async {
     //TODO Add async get admins and reps
     admins = [
@@ -189,6 +284,23 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
           username: "rep1"),
       User(
           displayName: "Sarah",
+          isAdmin: true,
+          isBanned: false,
+          isCcsga: false,
+          isSignedIn: false,
+          username: "rep2"),
+    ];
+
+    bannedUsers = [
+      User(
+          displayName: "BadGuy",
+          isAdmin: true,
+          isBanned: false,
+          isCcsga: false,
+          isSignedIn: false,
+          username: "rep1"),
+      User(
+          displayName: "MeanieGirl",
           isAdmin: true,
           isBanned: false,
           isCcsga: false,

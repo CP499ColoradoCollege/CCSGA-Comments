@@ -91,34 +91,34 @@ class _ConversationPageState extends BaseState<ConversationPage>
   Icon get rightButtonIcon => Icon(Icons.settings);
 
   Future<bool> _getConversationData() async {
-    // _pathParams = getPathParameters();
-    // //if a convId is passed in when creating the page, use that.
-    // // if not, check the url for the id (pathParams)
-    // _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);
-    // Tuple2<ChewedResponse, Conversation> responseTuple =
-    //     await DatabaseHandler.instance.getConversation(_conversationId);
-    // print("responseTuple.item2.messages -> ${responseTuple.item2.messages}");
-    // // transaction successful, there was a conv obj sent in response, otherwise null
-    // if (responseTuple.item2 != null) {
-    //   // use setState to update the data in the UI with conv
-    //   _conversation = responseTuple.item2;
-    //   // FutureBuilder requires that we return something
-    //   return true;
-    // } else {
-    //   setState(() {
-    //     // _errorMessage = responseTuple.item1.message;
-    //   });
-    //   return false;
-    // }
+    _pathParams = getPathParameters();
+    //if a convId is passed in when creating the page, use that.
+    // if not, check the url for the id (pathParams)
+    _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);
+    Tuple2<ChewedResponse, Conversation> responseTuple =
+        await DatabaseHandler.instance.getConversation(_conversationId);
+    print("responseTuple.item2.messages -> ${responseTuple.item2.messages}");
+    // transaction successful, there was a conv obj sent in response, otherwise null
+    if (responseTuple.item2 != null) {
+      // use setState to update the data in the UI with conv
+      _conversation = responseTuple.item2;
+      // FutureBuilder requires that we return something
+      return true;
+    } else {
+      setState(() {
+        // _errorMessage = responseTuple.item1.message;
+      });
+      return false;
+    }
 
-    Message msg = Message(
-        body: "test body",
-        dateTime: "2021-02-21 13:00:00",
-        isRead: false,
-        sender: Sender(displayName: "testDispName", username: "testUserName"));
-    Conversation conv = Conversation(id: 99, messages: {"99": msg});
-    _conversation = conv;
-    return true;
+    // Message msg = Message(
+    //     body: "test body",
+    //     dateTime: "2021-02-21 13:00:00",
+    //     isRead: false,
+    //     sender: Sender(displayName: "testDispName", username: "testUserName"));
+    // Conversation conv = Conversation(id: 99, messages: {"99": msg});
+    // _conversation = conv;
+    // return true;
   }
 
   void _sendMessage() async {

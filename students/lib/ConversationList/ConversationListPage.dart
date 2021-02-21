@@ -1,12 +1,11 @@
 import 'package:ccsga_comments/BasePage/BasePage.dart';
-import 'package:ccsga_comments/Conversation/ConversationPage.dart';
 import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
-import 'package:ccsga_comments/NewMessage/NewMessagePage.dart';
 import 'package:ccsga_comments/Settings/ConversationListSettingsDrawer.dart';
 import 'package:flutter/material.dart';
 import 'ConversationListCard.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:beamer/beamer.dart';
+import 'package:ccsga_comments/Models/FilterEnums.dart';
 
 class ConversationListPage extends BasePage {
   ConversationListPage({Key key, this.title}) : super(key: key);
@@ -20,10 +19,10 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
     with BasicPage {
   @override
   String screenName() {
-    return "Messages";
+    return "Conversations";
   }
 
-  List<ConversationListCard> _messages = [];
+  List<ConversationListCard> _conversations = [];
 
   Widget body() {
     return Center(
@@ -42,7 +41,7 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
             onRefresh: _pullRefresh,
             child: ListView(
               padding: const EdgeInsets.all(8),
-              children: _messages,
+              children: _conversations,
             ),
           ),
         ],
@@ -64,7 +63,9 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
 
   @override
   Widget settingsDrawer() {
-    return ConversationListSettingsDrawer();
+    return ConversationListSettingsDrawer(
+      filterCallback: filterConversations,
+    );
   }
 
   @override
@@ -82,8 +83,11 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
     DatabaseHandler dbHandler = DatabaseHandler.instance;
     dbHandler.getMessages().then((messages) {
       setState(() {
-        _messages = [...messages];
+        _conversations = [...messages];
       });
     }).catchError((err) => print("Caught an error: $err"));
   }
+
+  void filterConversations(
+      FilterByDate date, FilterByLabel label, bool isApartOfConversation) {}
 }

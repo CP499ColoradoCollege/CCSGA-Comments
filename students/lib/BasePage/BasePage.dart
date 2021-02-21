@@ -64,7 +64,7 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
   //Override to add the navigation drawer to the side, will be hidden when screen size too small
   Widget staticDrawer() => Container(
         child: SizedBox(
-          width: 250,
+          width: 275,
           child: NavigationDrawer(false),
         ),
       );
@@ -101,7 +101,7 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
       return Container();
     } else {
       return SizedBox(
-        width: 250,
+        width: 275,
         child: drawer,
       );
     }

@@ -29,17 +29,6 @@ class HomeLocation extends BeamLocation {
       ];
 }
 
-class AuthenticationLocation extends BeamLocation {
-  AuthenticationLocation() {
-    pathSegments = _loginPath;
-  }
-  @override
-  List<String> get pathBlueprints => _loginPath;
-
-  @override
-  List<BeamPage> get pages => [];
-}
-
 class AdminLocation extends BeamLocation {
   AdminLocation() {
     pathSegments = _adminPath;

@@ -37,7 +37,8 @@ class _MessageThreadState extends State<MessageThread> {
           return MessageCard(
               message: messages[index],
               isMyMessage: messages[index].sender.username ==
-                  widget.currentUser.username);
+                      widget.currentUser.username ??
+                  false);
         },
       ),
     );

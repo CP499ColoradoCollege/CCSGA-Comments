@@ -42,7 +42,6 @@ class _ConversationPageState extends BaseState<ConversationPage>
               future: _getConversationData(),
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                 if (snapshot.hasData) {
-                  print("Message thread returned");
                   return MessageThread(
                     conv: this._conversation,
                     currentUser: currentUser,
@@ -106,22 +105,26 @@ class _ConversationPageState extends BaseState<ConversationPage>
         await DatabaseHandler.instance.getAuthenticatedUser();
 
     if (userResponse.item2 != null) {
+      print("user response successful");
       currentUser = userResponse.item2;
     } else {
+      print("user response unsuccessful");
       return false;
     }
 
-    print("responseTuple.item2.messages -> ${responseTuple.item2.messages}");
     // transaction successful, there was a conv obj sent in response, otherwise null
     if (responseTuple.item2 != null) {
+      print("responseTuple.item2.messages -> ${responseTuple.item2.messages}");
       // use setState to update the data in the UI with conv
       _conversation = responseTuple.item2;
       // FutureBuilder requires that we return something
+      print("conversation response successful");
       return true;
     } else {
       setState(() {
         // _errorMessage = responseTuple.item1.message;
       });
+      print("conversation response unsuccessful");
       return false;
     }
 

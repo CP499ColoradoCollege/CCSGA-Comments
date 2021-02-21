@@ -131,7 +131,7 @@ def get_conversations(conversation_id = None):
         # Handle the messages query
         messages = dict()
         for message_id, sender_username, sender_display_name, message_body, dateandtime, isRead in messages_query_result:
-            messages[message_id] = {"sender": {"username": sender_username, "displayName": sender_display_name}, "body": message_body, "dateTime": dateandtime, "isRead": bool(isRead)}
+            messages[message_id] = {"sender": {"username": sender_username, "displayName": sender_display_name}, "body": message_body, "dateTime": str(dateandtime), "isRead": bool(isRead)}
         
         # Handle the status query
         status = cur.fetchone()[0]

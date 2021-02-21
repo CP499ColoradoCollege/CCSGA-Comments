@@ -11,6 +11,7 @@ const List<String> _conversationListPath = ['conversation_list'];
 const List<String> _conversationPath = ['conversation/:conversationID'];
 const List<String> _newMessagePath = ['new_message'];
 const List<String> _adminPath = ['admin_controls'];
+const List<String> _loginPath = ['login'];
 
 class HomeLocation extends BeamLocation {
   HomeLocation() {
@@ -26,6 +27,17 @@ class HomeLocation extends BeamLocation {
           child: HomePage(),
         ),
       ];
+}
+
+class AuthenticationLocation extends BeamLocation {
+  AuthenticationLocation() {
+    pathSegments = _loginPath;
+  }
+  @override
+  List<String> get pathBlueprints => _loginPath;
+
+  @override
+  List<BeamPage> get pages => [];
 }
 
 class AdminLocation extends BeamLocation {

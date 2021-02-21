@@ -24,11 +24,12 @@ class CCSGACommentsApp extends StatelessWidget {
           ConversationListLocation(),
           NewMessageLocation(),
           ConversationLocation(),
+          AdminLocation(),
         ],
       ),
       title: 'CCSGA Comments',
-      theme: ThemeData(primarySwatch: Colors.indigo),
-      debugShowCheckedModeBanner: true,
+      theme: ThemeData(primarySwatch: Colors.amber),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

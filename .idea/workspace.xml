@@ -23,7 +23,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c55fb4b5-9a91-4d64-8ae9-fdb732a28e86" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/students/lib/BasePage/BasePage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/BasePage/BasePage.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/Navigation/CCSGABeamLocations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Navigation/CCSGABeamLocations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/main.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,6 +102,10 @@
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
     <state x="531" y="263" width="820" height="508" key="#Notifications/0.25.1792.1095@0.25.1792.1095" timestamp="1613404135831" />
+    <state x="496" y="217" key="#Plugins" timestamp="1613516744671">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="496" y="217" key="#Plugins/0.25.1792.1095@0.25.1792.1095" timestamp="1613516744671" />
     <state x="360" y="231" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1613008747895">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
@@ -112,40 +118,41 @@
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
     <state x="528" y="312" key="#main.dart/0.25.1792.1095@0.25.1792.1095" timestamp="1613008506696" />
-    <state width="1750" height="150" key="GridCell.Tab.0.bottom" timestamp="1613678327646">
-      <screen x="0" y="25" width="1792" height="1095" />
+    <state width="1750" height="147" key="GridCell.Tab.0.bottom" timestamp="1613865740565">
+      <screen x="0" y="25" width="2560" height="1415" />
     </state>
-    <state width="1750" height="150" key="GridCell.Tab.0.bottom/0.25.1792.1095@0.25.1792.1095" timestamp="1613678327646" />
-    <state width="1750" height="150" key="GridCell.Tab.0.center" timestamp="1613678327645">
-      <screen x="0" y="25" width="1792" height="1095" />
+    <state width="1750" height="147" key="GridCell.Tab.0.bottom/0.25.1792.1095@0.25.1792.1095" timestamp="1613860710403" />
+    <state width="1750" height="147" key="GridCell.Tab.0.bottom/0.25.2560.1415/2560.345.1792.1095@0.25.2560.1415" timestamp="1613865740565" />
+    <state width="1750" height="147" key="GridCell.Tab.0.center" timestamp="1613865740564">
+      <screen x="0" y="25" width="2560" height="1415" />
     </state>
-    <state width="1750" height="150" key="GridCell.Tab.0.center/0.25.1792.1095@0.25.1792.1095" timestamp="1613678327645" />
-    <state width="1750" height="150" key="GridCell.Tab.0.left" timestamp="1613678327641">
-      <screen x="0" y="25" width="1792" height="1095" />
+    <state width="1750" height="147" key="GridCell.Tab.0.center/0.25.1792.1095@0.25.1792.1095" timestamp="1613860710403" />
+    <state width="1750" height="147" key="GridCell.Tab.0.center/0.25.2560.1415/2560.345.1792.1095@0.25.2560.1415" timestamp="1613865740564" />
+    <state width="1750" height="147" key="GridCell.Tab.0.left" timestamp="1613865740564">
+      <screen x="0" y="25" width="2560" height="1415" />
     </state>
-    <state width="1750" height="150" key="GridCell.Tab.0.left/0.25.1792.1095@0.25.1792.1095" timestamp="1613678327641" />
-    <state width="1750" height="150" key="GridCell.Tab.0.right" timestamp="1613678327646">
-      <screen x="0" y="25" width="1792" height="1095" />
+    <state width="1750" height="147" key="GridCell.Tab.0.left/0.25.1792.1095@0.25.1792.1095" timestamp="1613860710403" />
+    <state width="1750" height="147" key="GridCell.Tab.0.left/0.25.2560.1415/2560.345.1792.1095@0.25.2560.1415" timestamp="1613865740564" />
+    <state width="1750" height="147" key="GridCell.Tab.0.right" timestamp="1613865740565">
+      <screen x="0" y="25" width="2560" height="1415" />
     </state>
-    <state width="1750" height="150" key="GridCell.Tab.0.right/0.25.1792.1095@0.25.1792.1095" timestamp="1613678327646" />
+    <state width="1750" height="147" key="GridCell.Tab.0.right/0.25.1792.1095@0.25.1792.1095" timestamp="1613860710403" />
+    <state width="1750" height="147" key="GridCell.Tab.0.right/0.25.2560.1415/2560.345.1792.1095@0.25.2560.1415" timestamp="1613865740565" />
     <state x="397" y="208" key="SettingsEditor" timestamp="1613402892729">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
     <state x="397" y="208" key="SettingsEditor/0.25.1792.1095@0.25.1792.1095" timestamp="1613402892729" />
-    <state x="561" y="269" width="670" height="676" key="search.everywhere.popup" timestamp="1613254977040">
+    <state width="600" height="428" key="javadoc.popup" timestamp="1613784635657">
       <screen x="0" y="25" width="1792" height="1095" />
     </state>
-    <state x="561" y="269" width="670" height="676" key="search.everywhere.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613254977040" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="Dart">
-          <url>file://$PROJECT_DIR$/students/lib/Navigation/CCSGABeamLocations.dart</url>
-          <line>14</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <state width="600" height="428" key="javadoc.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613784635657" />
+    <state x="561" y="265" key="run.anything.popup" timestamp="1613868453215">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="561" y="265" key="run.anything.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613868453215" />
+    <state x="561" y="269" width="670" height="158" key="search.everywhere.popup" timestamp="1613793771168">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="561" y="269" width="670" height="158" key="search.everywhere.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613793771168" />
   </component>
 </project>

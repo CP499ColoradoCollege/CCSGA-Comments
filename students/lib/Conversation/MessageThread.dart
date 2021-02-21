@@ -20,11 +20,9 @@ class _MessageThreadState extends State<MessageThread> {
   @override
   Widget build(BuildContext context) {
     // get list of messages from the conversation object
-    print("Thread: conv id is -> ${widget.conv.id}");
     messages = List.from(widget.conv.messages.values);
-    print("first message in msg list -> ${messages.first}");
 
-    return Flexible(
+    return Expanded(
         child: ListView.builder(
       itemCount: messages.length,
       shrinkWrap: true,

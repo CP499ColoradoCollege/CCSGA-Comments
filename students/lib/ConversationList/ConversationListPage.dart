@@ -2,6 +2,7 @@ import 'package:ccsga_comments/BasePage/BasePage.dart';
 import 'package:ccsga_comments/Conversation/ConversationPage.dart';
 import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:ccsga_comments/NewMessage/NewMessagePage.dart';
+import 'package:ccsga_comments/Settings/ConversationListSettingsDrawer.dart';
 import 'package:flutter/material.dart';
 import 'ConversationListCard.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
@@ -15,7 +16,8 @@ class ConversationListPage extends BasePage {
   _ConversationListPageState createState() => _ConversationListPageState();
 }
 
-class _ConversationListPageState extends BaseState<ConversationListPage> with BasicPage {
+class _ConversationListPageState extends BaseState<ConversationListPage>
+    with BasicPage {
   @override
   String screenName() {
     return "Messages";
@@ -25,12 +27,25 @@ class _ConversationListPageState extends BaseState<ConversationListPage> with Ba
 
   Widget body() {
     return Center(
-      child: RefreshIndicator(
-        onRefresh: _pullRefresh,
-        child: ListView(
-          padding: const EdgeInsets.all(8),
-          children: _messages,
-        ),
+      child: Stack(
+        children: [
+          Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  "Pull to refresh",
+                  style: TextStyle(color: Colors.grey[400]),
+                ),
+              )),
+          RefreshIndicator(
+            onRefresh: _pullRefresh,
+            child: ListView(
+              padding: const EdgeInsets.all(8),
+              children: _messages,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -45,6 +60,18 @@ class _ConversationListPageState extends BaseState<ConversationListPage> with Ba
       icon: Icon(Icons.add),
       backgroundColor: Theme.of(context).accentColor,
     );
+  }
+
+  @override
+  Widget settingsDrawer() {
+    return ConversationListSettingsDrawer();
+  }
+
+  @override
+  Icon get rightButtonIcon => Icon(Icons.filter_alt_outlined);
+
+  void _filterDrawerButtonPressed() {
+    print("open end drawer");
   }
 
   void _newMessage() {

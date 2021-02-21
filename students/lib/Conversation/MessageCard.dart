@@ -1,31 +1,31 @@
+import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ccsga_comments/Models/MessageModel.dart';
+import 'package:ccsga_comments/Models/Message.dart';
 
 class MessageCard extends StatelessWidget {
-  final MessageModel message;
+  final Message message;
 
   MessageCard(this.message);
 
+  User currentUser = User(username: "samdogg7", displayName: "Sam");
+
   @override
   Widget build(BuildContext context) {
+    bool isCurrentUser = this.message.sender.username != currentUser.username;
     return Container(
         padding: EdgeInsets.symmetric(vertical: 5),
         child: FractionallySizedBox(
-          alignment: this.message.isSender
-              ? Alignment.centerLeft
-              : Alignment.centerRight,
+          alignment:
+              isCurrentUser ? Alignment.centerLeft : Alignment.centerRight,
           widthFactor: 0.66,
           child: Align(
-            alignment: (this.message.isSender
-                ? Alignment.topLeft
-                : Alignment.topRight),
+            alignment: (isCurrentUser ? Alignment.topLeft : Alignment.topRight),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: (this.message.isSender
-                    ? Colors.grey.shade200
-                    : Colors.blue[200]),
+                color:
+                    (isCurrentUser ? Colors.grey.shade200 : Colors.blue[200]),
               ),
               padding: EdgeInsets.all(16),
               child: Column(
@@ -45,14 +45,11 @@ class MessageCard extends StatelessWidget {
                     children: [
                       Expanded(
                           child: Text(
-                        this.message.senderName,
+                        this.message.sender.displayName,
                         textAlign: TextAlign.left,
                       )),
                       Text(
-                        DateFormat("MMM d -")
-                            .add_jm()
-                            .format(this.message.time)
-                            .toString(),
+                        this.message.dateTime,
                         textAlign: TextAlign.right,
                       )
                     ],

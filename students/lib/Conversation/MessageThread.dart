@@ -1,5 +1,5 @@
 import 'package:ccsga_comments/Conversation/MessageCard.dart';
-import 'package:ccsga_comments/Models/MessageModel.dart';
+import 'package:ccsga_comments/Models/Message.dart';
 import 'package:flutter/material.dart';
 
 class MessageThread extends StatefulWidget {
@@ -12,10 +12,17 @@ class MessageThread extends StatefulWidget {
 class _MessageThreadState extends State<MessageThread> {
   final ScrollController _scrollController = ScrollController();
 
-  List<MessageModel> messages = [
-    MessageModel(
-        "Sam Doggett", "Placeholder message body", DateTime.now(), false),
-    MessageModel("Fer", "Placeholder message body", DateTime.now(), true)
+  List<Message> messages = [
+    Message(
+        body: "Body of message",
+        dateTime: DateTime.now().toString(),
+        isRead: true,
+        sender: Sender(displayName: "Sam", username: "samdogg7")),
+    Message(
+        body: "Body of message",
+        dateTime: DateTime.now().toString(),
+        isRead: true,
+        sender: Sender(displayName: "Fer", username: "fer7")),
   ];
 
   @override

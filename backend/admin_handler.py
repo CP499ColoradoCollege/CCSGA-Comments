@@ -26,9 +26,9 @@ def add_admin():
     conn, cur = get_conn_and_cursor()
     cur.callproc('add_admin', (new_admin, flask.session.get('CAS_USERNAME')))
     proc_result = cur.fetchone()[0]
+    cur.nextset()
 
     if proc_result == -403:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     
@@ -64,9 +64,9 @@ def add_ccsga_rep():
     conn, cur = get_conn_and_cursor()
     cur.callproc('add_ccsga', (new_ccsga, flask.session.get('CAS_USERNAME')))
     proc_result = cur.fetchone()[0]
+    cur.nextset()
 
     if proc_result == -403:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     
@@ -102,9 +102,9 @@ def create_banned_user():
     conn, cur = get_conn_and_cursor()
     cur.callproc('add_ban', (user_to_ban, flask.session.get('CAS_USERNAME')))
     proc_result = cur.fetchone()[0]
+    cur.nextset()
 
     if proc_result == -403:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     
@@ -131,7 +131,6 @@ def get_admins():
     proc_result = cur.fetchall()
 
     if proc_result == [(-403,)]:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     
@@ -154,7 +153,6 @@ def get_ccsga_reps():
     proc_result = cur.fetchall()
 
     if proc_result == [(-403,)]:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     
@@ -177,7 +175,6 @@ def get_banned_users():
     proc_result = cur.fetchall()
 
     if proc_result == [(-403,)]:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     
@@ -198,19 +195,17 @@ def remove_admin(admin_to_remove):
     conn, cur = get_conn_and_cursor()
     cur.callproc('remove_admin', (admin_to_remove, flask.session.get('CAS_USERNAME')))
     proc_result = cur.fetchone()[0]
+    cur.nextset()
 
     if proc_result == -403:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     
     if proc_result == -400:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": f"{admin_to_remove} is currently the only admin. Please add another before removing this one."}), 400)
     
     if proc_result == -404:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": f"'{admin_to_remove}' is already not an admin."}), 404)
     
@@ -232,14 +227,13 @@ def remove_ccsga_rep(rep_to_remove):
     conn, cur = get_conn_and_cursor()
     cur.callproc('remove_ccsga', (rep_to_remove, flask.session.get('CAS_USERNAME')))
     proc_result = cur.fetchone()[0]
+    cur.nextset()
 
     if proc_result == -403:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     
     if proc_result == -404:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": f"'{rep_to_remove}' is already not a CCSGA rep."}), 404)
     
@@ -262,14 +256,13 @@ def unban_user(user_to_unban):
     conn, cur = get_conn_and_cursor()
     cur.callproc('remove_ban', (user_to_unban, flask.session.get('CAS_USERNAME')))
     proc_result = cur.fetchone()[0]
+    cur.nextset()
 
     if proc_result == -403:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     
     if proc_result == -404:
-        conn.rollback()
         conn.close()
         return make_response(jsonify({"message": f"'{user_to_unban}' is already not banned."}), 404)
 

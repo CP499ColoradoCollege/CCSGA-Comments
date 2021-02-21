@@ -17,19 +17,22 @@ class ConversationPage extends BasePage {
 
 class _ConversationPageState extends BaseState<ConversationPage>
     with BasicPage {
-  final messageFieldController = TextEditingController();
-  Conversation conversation;
-  Map pathParams;
-  int conversationId;
+  final _messageFieldController = TextEditingController();
+  Conversation _conversation = Conversation();
+  Map _pathParams;
+  int _conversationId;
 
   @override
   void initState() {
     super.initState();
-    this.pathParams = getPathParameters();
-    //if a convId is passed in when creating the page, use that.
-    // if not, check the url for the id (pathParams)
-    this.conversationId = widget.conversationId ?? int.parse(pathParams['id']);
-    _getConversationData();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _pathParams = getPathParameters();
+      //if a convId is passed in when creating the page, use that.
+      // if not, check the url for the id (pathParams)
+      _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);
+      _conversation = await _getConversationData();
+      print("conv id -> ${_conversation.id}");
+    });
   }
 
   @override
@@ -38,9 +41,9 @@ class _ConversationPageState extends BaseState<ConversationPage>
       padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
       child: Column(
         children: [
-          MessageThread(conv: this.conversation),
+          MessageThread(conv: _conversation),
           TextFormField(
-            controller: messageFieldController,
+            controller: _messageFieldController,
             minLines: 2,
             maxLines: 6,
             cursorColor: Colors.black,
@@ -75,26 +78,28 @@ class _ConversationPageState extends BaseState<ConversationPage>
     return "Conversation Thread";
   }
 
-  void _getConversationData() async {
+  Future<Conversation> _getConversationData() async {
     Tuple2<ChewedResponse, Conversation> responseTuple =
-        await DatabaseHandler.instance.getConversation(this.conversationId);
+        await DatabaseHandler.instance.getConversation(_conversationId);
+    print("responseTuple.item2.messages -> ${responseTuple.item2.messages}");
     // transaction successful, there was a conv obj sent in response, otherwise null
     if (responseTuple.item2 != null) {
       // use setState to update the data in the UI with conv
-      this.conversation = responseTuple.item2;
+      return responseTuple.item2;
     } else {
       setState(() {
         // _errorMessage = responseTuple.item1.message;
+        return null;
       });
     }
   }
 
   void _sendMessage() async {
-    if (this.messageFieldController.text != "") {
+    if (_messageFieldController.text != "") {
       ChewedResponse chewedResponse = await DatabaseHandler.instance
-          .sendMessageInConversation(1, messageFieldController.text);
+          .sendMessageInConversation(1, _messageFieldController.text);
       if (chewedResponse.isSuccessful) {
-        messageFieldController.clear();
+        _messageFieldController.clear();
         setState(() {
           // _successMessage = chewedResponse.message;
         });

@@ -24,7 +24,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c55fb4b5-9a91-4d64-8ae9-fdb732a28e86" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/lib/Navigation/CCSGABeamLocations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Navigation/CCSGABeamLocations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/main.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,6 +56,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
     <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
     <property name="settings.editor.selected.configurable" value="flutter.settings" />
     <property name="show.migrate.to.gradle.popup" value="false" />

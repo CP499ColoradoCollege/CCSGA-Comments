@@ -7,7 +7,6 @@ import 'package:ccsga_comments/Models/Representatives.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
-
 import '../DatabaseHandler.dart';
 
 class AdminPage extends BasePage {
@@ -30,7 +29,6 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
   Widget body() {
     return Container(
       padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-<<<<<<< Updated upstream
       child: FutureBuilder<bool>(
           future: _getAdminPageData(),
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
@@ -96,54 +94,6 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
               );
             }
           }),
-=======
-      child: ListView(
-        children: [
-          Center(
-            child: Text(
-              "Admins",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-            ),
-          ),
-          ListView.builder(
-              padding: const EdgeInsets.all(8),
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: admins.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Flexible(child: UserCard(admins[index]));
-              }),
-          Center(
-            child: Text(
-              "Representatives",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-            ),
-          ),
-          ListView.builder(
-              padding: const EdgeInsets.all(8),
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: representatives.length,
-              itemBuilder: (BuildContext context, int index) {
-                return UserCard(representatives[index]);
-              }),
-          Center(
-            child: Text(
-              "Banned users",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-            ),
-          ),
-          ListView.builder(
-              padding: const EdgeInsets.all(8),
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: bannedUsers.length,
-              itemBuilder: (BuildContext context, int index) {
-                return UserCard(bannedUsers[index]);
-              }),
-        ],
-      ),
->>>>>>> Stashed changes
     );
   }
 

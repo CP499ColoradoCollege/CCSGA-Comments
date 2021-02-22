@@ -95,6 +95,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
 
   Widget promoteNewUserButton() {
     return FloatingActionButton.extended(
+      heroTag: "promoteNewUserButton",
       onPressed: () {
         return showDialog<void>(
           context: context,
@@ -187,6 +188,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
 
   Widget banUserButton() {
     return FloatingActionButton.extended(
+      heroTag: "banUserButton",
       onPressed: () {
         return showDialog<void>(
           context: context,

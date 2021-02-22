@@ -1,15 +1,22 @@
+import 'package:ccsga_comments/Models/Conversation.dart';
+import 'package:ccsga_comments/Models/Message.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class ConversationListCard extends StatelessWidget {
-  final String name;
-  final String message;
-  final DateTime time;
+  final Conversation conversation;
 
-  ConversationListCard(this.name, this.message, this.time);
+  ConversationListCard(this.conversation);
 
   @override
   Widget build(BuildContext context) {
+    String joinedLabels = "";
+    for (String label in conversation.labels) {
+      joinedLabels += (" " + label);
+    }
+    List<String> messageKeys = conversation.messages.keys.toList()
+      ..sort((a, b) => a.compareTo(b));
+    Message mostRecentMessage = conversation.messages[messageKeys.last];
+
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -29,8 +36,8 @@ class ConversationListCard extends StatelessWidget {
           children: <Widget>[
             ListTile(
               leading: Icon(Icons.message_outlined),
-              title: Text(this.name),
-              subtitle: Text(this.message),
+              title: Text("CCSGA " + joinedLabels),
+              subtitle: Text(mostRecentMessage.body),
               isThreeLine: true,
             ),
             Padding(
@@ -39,7 +46,7 @@ class ConversationListCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Text(
-                    DateFormat("MMM d -").add_jm().format(this.time).toString(),
+                    mostRecentMessage.dateTime,
                     textAlign: TextAlign.center,
                   )
                 ],

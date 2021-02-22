@@ -1,6 +1,12 @@
+import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
+import 'package:ccsga_comments/Models/Conversation.dart';
+import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 import 'package:beamer/beamer.dart';
 import 'package:ccsga_comments/Navigation/NavigationDrawer.dart';
+import 'package:tuple/tuple.dart';
+
+import '../DatabaseHandler.dart';
 
 //Based on this article: https://medium.com/flutter-community/mixins-and-base-classes-a-recipe-for-success-in-flutter-bc3fbb5da670
 
@@ -62,10 +68,12 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
     );
   }
 
+  User currentUser;
+
   //Override to add the navigation drawer to the side, will be hidden when screen size too small
   Widget staticDrawer() => Container(
         child: SizedBox(
-          width: 250,
+          width: 275,
           child: NavigationDrawer(false),
         ),
       );
@@ -106,7 +114,7 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
       return Container();
     } else {
       return SizedBox(
-        width: 250,
+        width: 275,
         child: drawer,
       );
     }

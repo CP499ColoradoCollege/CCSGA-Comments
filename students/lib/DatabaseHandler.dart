@@ -4,6 +4,8 @@ import 'package:tuple/tuple.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'Models/User.dart';
+
 class DatabaseHandler {
   // The Database instance variable used for database calls
   //final Database db = database();
@@ -78,6 +80,23 @@ class DatabaseHandler {
       return Tuple2<ChewedResponse, Conversation>(chewedResponse, conv);
     } else {
       return Tuple2<ChewedResponse, Conversation>(chewedResponse, null);
+    }
+  }
+
+  // get messages and other details of a single conversation
+  Future<Tuple2<ChewedResponse, User>> getAuthenticatedUser() async {
+    final url = '/api/authenticate';
+    var response =
+        await http.get(url, headers: {"Content-Type": "application/json"});
+    print(response);
+    var chewedResponse = ChewedResponse();
+    chewedResponse.chewStatusCode(response.statusCode);
+    // only if the transaction is successful, will there will be a conversation obj in the response
+    if (response.statusCode == 200) {
+      User user = User.fromJson(jsonDecode(response.body));
+      return Tuple2<ChewedResponse, User>(chewedResponse, user);
+    } else {
+      return Tuple2<ChewedResponse, User>(chewedResponse, null);
     }
   }
 

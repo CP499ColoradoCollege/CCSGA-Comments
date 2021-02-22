@@ -1,9 +1,11 @@
 import 'package:ccsga_comments/BasePage/BasePage.dart';
 import 'package:ccsga_comments/Conversation/MessageThread.dart';
+import 'package:ccsga_comments/Settings/ConversationListSettingsDrawer.dart';
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
 import 'package:ccsga_comments/Models/Message.dart';
+import 'package:ccsga_comments/Models/User.dart';
 import 'package:ccsga_comments/Settings/ConversationSettingsDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
@@ -41,7 +43,10 @@ class _ConversationPageState extends BaseState<ConversationPage>
               future: _getConversationData(),
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                 if (snapshot.hasData) {
-                  return MessageThread(conv: this._conversation);
+                  return MessageThread(
+                    conv: this._conversation,
+                    currentUser: currentUser,
+                  );
                 } else {
                   return CircularProgressIndicator();
                 }
@@ -97,28 +102,41 @@ class _ConversationPageState extends BaseState<ConversationPage>
     _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);
     Tuple2<ChewedResponse, Conversation> responseTuple =
         await DatabaseHandler.instance.getConversation(_conversationId);
-    print("responseTuple.item2.messages -> ${responseTuple.item2.messages}");
+    Tuple2<ChewedResponse, User> userResponse =
+        await DatabaseHandler.instance.getAuthenticatedUser();
+
+    if (userResponse.item2 != null) {
+      print("user response successful");
+      currentUser = userResponse.item2;
+    } else {
+      print("user response unsuccessful");
+      return false;
+    }
+
     // transaction successful, there was a conv obj sent in response, otherwise null
     if (responseTuple.item2 != null) {
+      print("responseTuple.item2.messages -> ${responseTuple.item2.messages}");
       // use setState to update the data in the UI with conv
       _conversation = responseTuple.item2;
       // FutureBuilder requires that we return something
+      print("conversation response successful");
       return true;
     } else {
       setState(() {
         // _errorMessage = responseTuple.item1.message;
       });
+      print("conversation response unsuccessful");
       return false;
     }
 
-    // Message msg = Message(
-    //     body: "test body",
-    //     dateTime: "2021-02-21 13:00:00",
-    //     isRead: false,
-    //     sender: Sender(displayName: "testDispName", username: "testUserName"));
-    // Conversation conv = Conversation(id: 99, messages: {"99": msg});
-    // _conversation = conv;
-    // return true;
+    Message msg = Message(
+        body: "test body",
+        dateTime: "2021-02-21 13:00:00",
+        isRead: false,
+        sender: Sender(displayName: "testDispName", username: "testUserName"));
+    Conversation conv = Conversation(id: 99, messages: {"99": msg});
+    _conversation = conv;
+    return true;
   }
 
   void _sendMessage() async {

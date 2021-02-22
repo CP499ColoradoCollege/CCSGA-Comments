@@ -28,6 +28,7 @@ class _ConversationSettingsDrawerState
 
   @override
   Widget build(BuildContext context) {
+    print(currentUser);
     if (currentUser.isCcsga) {
       anonymousIsSwitched = !widget.conversation.studentIdentityRevealed;
     }
@@ -148,6 +149,7 @@ class _ConversationSettingsDrawerState
 
     if (userResponse.item2 != null) {
       print("user response successful");
+      print(userResponse.item2);
       currentUser = userResponse.item2;
       return true;
     } else {

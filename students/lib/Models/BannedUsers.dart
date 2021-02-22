@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'User.dart';
+import 'package:ccsga_comments/Models/User.dart';
 
-BannedUsers adminsFromJson(String str) =>
+BannedUsers bannedUsersFromJson(String str) =>
     BannedUsers.fromJson(json.decode(str));
 
-String adminsToJson(BannedUsers data) => json.encode(data.toJson());
+String bannedUsersToJson(BannedUsers data) => json.encode(data.toJson());
 
 class BannedUsers {
   BannedUsers({
@@ -14,8 +14,14 @@ class BannedUsers {
   List<User> bannedUsers;
 
   factory BannedUsers.fromJson(Map<String, dynamic> json) => BannedUsers(
-      bannedUsers: json["bannedUsers"] == null ? null : json["bannedUsers"]);
+        bannedUsers: json["bannedUsers"] == null
+            ? null
+            : List<User>.from(json["bannedUsers"].map((x) => User.fromJson(x))),
+      );
 
-  Map<String, dynamic> toJson() =>
-      {"bannedUsers": bannedUsers == null ? null : bannedUsers};
+  Map<String, dynamic> toJson() => {
+        "bannedUsers": bannedUsers == null
+            ? null
+            : List<dynamic>.from(bannedUsers.map((x) => x.toJson())),
+      };
 }

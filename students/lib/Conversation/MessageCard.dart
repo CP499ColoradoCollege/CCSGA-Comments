@@ -5,27 +5,27 @@ import 'package:ccsga_comments/Models/Message.dart';
 
 class MessageCard extends StatelessWidget {
   final Message message;
+  final bool isMyMessage;
 
-  MessageCard(this.message);
-
-  User currentUser = User(username: "samdogg7", displayName: "Sam");
+  MessageCard({this.message, this.isMyMessage});
 
   @override
   Widget build(BuildContext context) {
-    bool isCurrentUser = this.message.sender.username != currentUser.username;
     return Container(
         padding: EdgeInsets.symmetric(vertical: 5),
         child: FractionallySizedBox(
           alignment:
-              isCurrentUser ? Alignment.centerLeft : Alignment.centerRight,
+              this.isMyMessage ? Alignment.centerRight : Alignment.centerLeft,
           widthFactor: 0.66,
           child: Align(
-            alignment: (isCurrentUser ? Alignment.topLeft : Alignment.topRight),
+            alignment:
+                (this.isMyMessage ? Alignment.topRight : Alignment.topLeft),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color:
-                    (isCurrentUser ? Colors.grey.shade200 : Colors.blue[200]),
+                color: (this.isMyMessage
+                    ? Colors.grey.shade200
+                    : Colors.blue[200]),
               ),
               padding: EdgeInsets.all(16),
               child: Column(
@@ -49,7 +49,10 @@ class MessageCard extends StatelessWidget {
                         textAlign: TextAlign.left,
                       )),
                       Text(
-                        this.message.dateTime,
+                        DateFormat("MMM d -")
+                            .add_jm()
+                            .format(DateTime.parse(this.message.dateTime))
+                            .toString(),
                         textAlign: TextAlign.right,
                       )
                     ],

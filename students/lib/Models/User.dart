@@ -22,20 +22,20 @@ class User {
   bool isAdmin;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-        isSignedIn: json["isSignedIn"],
-        username: json["username"],
-        displayName: json["displayName"],
-        isBanned: json["isBanned"],
-        isCcsga: json["isCCSGA"],
-        isAdmin: json["isAdmin"],
+        isSignedIn: json["isSignedIn"] == null ? null : json["isSignedIn"],
+        username: json["username"] == null ? null : json["username"],
+        displayName: json["displayName"] == null ? null : json["displayName"],
+        isBanned: json["isBanned"] == null ? null : json["isBanned"],
+        isCcsga: json["isCCSGA"] == null ? null : json["isCCSGA"],
+        isAdmin: json["isAdmin"] == null ? null : json["isAdmin"],
       );
 
   Map<String, dynamic> toJson() => {
-        "isSignedIn": isSignedIn,
-        "username": username,
-        "displayName": displayName,
-        "isBanned": isBanned,
-        "isCCSGA": isCcsga,
-        "isAdmin": isAdmin,
+        "isSignedIn": isSignedIn == null ? null : isSignedIn,
+        "username": username == null ? null : username,
+        "displayName": displayName == null ? null : displayName,
+        "isBanned": isBanned == null ? null : isBanned,
+        "isCCSGA": isCcsga == null ? null : isCcsga,
+        "isAdmin": isAdmin == null ? null : isAdmin,
       };
 }

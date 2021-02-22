@@ -50,15 +50,18 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
               future: admins,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  print(snapshot.data[0] ?? "No data");
-                  return ListView.builder(
-                      padding: const EdgeInsets.all(8),
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return UserCard(snapshot.data[index]);
-                      });
+                  if (snapshot.data.length == 0) {
+                    return Container();
+                  } else {
+                    return ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return UserCard(snapshot.data[index]);
+                        });
+                  }
                 } else {
                   return Flexible(
                     child: Center(
@@ -81,15 +84,18 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
               future: representatives,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  print(snapshot.data[0] ?? "No data");
-                  return ListView.builder(
-                      padding: const EdgeInsets.all(8),
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return UserCard(snapshot.data[index]);
-                      });
+                  if (snapshot.data.length == 0) {
+                    return Container();
+                  } else {
+                    return ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return UserCard(snapshot.data[index]);
+                        });
+                  }
                 } else {
                   return Flexible(
                     child: Center(
@@ -112,15 +118,18 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
               future: bannedUsers,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  print(snapshot.data[0] ?? "No data");
-                  return ListView.builder(
-                      padding: const EdgeInsets.all(8),
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return UserCard(snapshot.data[index]);
-                      });
+                  if (snapshot.data.length == 0) {
+                    return Container();
+                  } else {
+                    return ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return UserCard(snapshot.data[index]);
+                        });
+                  }
                 } else {
                   return Flexible(
                     child: Center(

@@ -89,7 +89,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
 
   @override
   Widget settingsDrawer() {
-    return ConversationSettingsDrawer(false);
+    return ConversationSettingsDrawer(false, _conversation);
   }
 
   @override

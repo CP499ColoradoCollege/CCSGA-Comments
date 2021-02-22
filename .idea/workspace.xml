@@ -3,17 +3,23 @@
   <component name="ChangeListManager">
     <list default="true" id="637e0bee-50c7-494e-a798-066c3517df4e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/lib/Navigation/NavigationDrawer.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Navigation/NavigationDrawer.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
     <property name="dart.analysis.tool.window.visible" value="false" />
@@ -46,5 +52,9 @@
       <screen x="2560" y="345" width="1792" height="1095" />
     </state>
     <state x="3193" y="686" key="#com.intellij.ide.util.TreeFileChooserDialog/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613961527047" />
+    <state x="561" y="265" key="run.anything.popup" timestamp="1614003434423">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="561" y="265" key="run.anything.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1614003434423" />
   </component>
 </project>

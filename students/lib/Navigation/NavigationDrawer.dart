@@ -15,8 +15,6 @@ class NavigationDrawer extends StatefulWidget {
 }
 
 class _NavigationDrawerState extends State<NavigationDrawer> {
-  bool isLoggedIn = false;
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -75,45 +73,24 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
               context.beamTo(ConversationListLocation());
             },
           ),
-          isLoggedIn
-              ? ListTile(
-                  title: Center(
-                    child: Text(
-                      'Log In',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  contentPadding: EdgeInsets.all(10),
-                  onTap: () {
-                    isLoggedIn = false;
-                    print("Log In Tapped");
-                    // Update the state of the app
-                    setState(() {});
-                    // Then close the drawer
-                    if (widget.hasHeader) {
-                      Navigator.pop(context);
-                    }
-                  },
-                )
-              : ListTile(
-                  title: Center(
-                    child: Text(
-                      'Log Out',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  contentPadding: EdgeInsets.all(10),
-                  onTap: () {
-                    isLoggedIn = true;
-                    print("Log Out Tapped");
-                    // Update the state of the app
-                    setState(() {});
-                    // Then close the drawer
-                    if (widget.hasHeader) {
-                      Navigator.pop(context);
-                    }
-                  },
-                ),
+          ListTile(
+            title: Center(
+              child: Text(
+                'Log Out',
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+            contentPadding: EdgeInsets.all(10),
+            onTap: () {
+              print("Log Out Tapped");
+              // Update the state of the app
+              setState(() {});
+              // Then close the drawer
+              if (widget.hasHeader) {
+                Navigator.pop(context);
+              }
+            },
+          ),
         ],
       ),
     );

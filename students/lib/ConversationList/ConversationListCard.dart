@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class ConversationListCard extends StatelessWidget {
   final Conversation conversation;
 
-  ConversationListCard(this.conversation);
+  ConversationListCard({this.conversation});
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,10 @@
 import 'package:ccsga_comments/BasePage/BasePage.dart';
+import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
+import 'package:ccsga_comments/Models/Conversation.dart';
 import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:ccsga_comments/Settings/ConversationListSettingsDrawer.dart';
 import 'package:flutter/material.dart';
+import 'package:tuple/tuple.dart';
 import 'ConversationListCard.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:beamer/beamer.dart';
@@ -22,7 +25,8 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
     return "Conversations";
   }
 
-  List<ConversationListCard> _conversations = [];
+  List<Conversation> _convList;
+  List<ConversationListCard> _convCards = [];
 
   Widget body() {
     return Center(
@@ -38,15 +42,44 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
                 ),
               )),
           RefreshIndicator(
-            onRefresh: _pullRefresh,
-            child: ListView(
-              padding: const EdgeInsets.all(8),
-              children: _conversations,
-            ),
-          ),
+              onRefresh: _pullRefresh,
+              child: FutureBuilder<bool>(
+                  future: _getConversationList(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                    if (snapshot.hasData) {
+                      return ListView(
+                          padding: const EdgeInsets.all(8),
+                          children: _convCards);
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  })),
         ],
       ),
     );
+  }
+
+  Future<bool> _getConversationList() async {
+    Tuple2<ChewedResponse, List<Conversation>> responseTuple =
+        await DatabaseHandler.instance.getConversationList();
+    // print("responseTuple.item2.messages -> ${responseTuple.item2.messages}");
+    // transaction successful, there was a conv obj sent in response, otherwise null
+    if (responseTuple.item2 != null) {
+      // use setState to update the data in the UI with conv
+      _convList = responseTuple.item2;
+      for (Conversation conv in _convList) {
+        _convCards.add(ConversationListCard(conversation: conv));
+      }
+      // FutureBuilder requires that we return something
+      return true;
+    } else {
+      setState(() {
+        throw new Error();
+        // _errorMessage = responseTuple.item1.message;
+      });
+      return false;
+    }
   }
 
   @override
@@ -80,12 +113,8 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
   }
 
   Future<void> _pullRefresh() async {
-    // DatabaseHandler dbHandler = DatabaseHandler.instance;
-    // dbHandler.getMessages().then((messages) {
-    //   setState(() {
-    //     _messages = [...messages];
-    //   });
-    // }).catchError((err) => print("Caught an error: $err"));
+    _getConversationList();
+    setState(() {});
   }
 
   void filterConversations(

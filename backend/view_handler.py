@@ -14,6 +14,7 @@ def static_proxy(path):
 
 # Route for the homepage of the website
 @app.route("/")
+@login_required_with_db_confirm
 def homepage():
     resp = make_response(render_template('index.html'))
     resp.headers.set('Cache-Control', 'no-store')
@@ -37,7 +38,7 @@ def indiv_conversation_page(conversation_id):
 
 # Route for initiating a new conversation
 @app.route("/new_message")
-@student_or_admin_required
+@login_required_with_db_confirm
 def new_message_page():
     resp = make_response(render_template('index.html'))
     resp.headers.set('Cache-Control', 'no-store')

@@ -56,7 +56,7 @@ class TestAdminRoutes(unittest.TestCase):
         
         # Give admin privilege 
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
-        self.cur.execute("UPDATE Users SET isCCSGA = 0, isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.cur.execute("INSERT INTO ConversationSettings (conversationId, username, isArchived, identityRevealed) VALUES (?, ?, ?, ?);", (new_conv_id, SIGNED_IN_USERNAME, 0, 1))
         self.cur.execute("INSERT INTO MessageSettings (messageId, username, isRead) VALUES (?, ?, ?);", (new_message_id, SIGNED_IN_USERNAME, 0))
         self.conn.commit()
@@ -179,7 +179,7 @@ class TestAdminRoutes(unittest.TestCase):
         self.cur.nextset()
         self.assertFalse(is_admin)
 
-        # Make request to add admin again; make sure their already-admin status is indicated in the response status code
+        # Make request to remove admin again; make sure their already-non-admin status is indicated in the response status code
         req = requests.delete(f"{BASE_API_URL}/admins/{test_username}", verify=False, headers=DELETE_HEADERS)
         self.assertEqual(404, req.status_code)
         self.conn, self.cur = get_conn_and_cursor()
@@ -187,32 +187,226 @@ class TestAdminRoutes(unittest.TestCase):
         is_admin = self.cur.fetchone()[0]
         self.cur.nextset()
         self.assertFalse(is_admin)
+    
+    def test_add_ccsga(self):
+        
+        # Ensure signed-in user is not currently an admin, to check the unauthorized check
+        self.conn, self.cur = get_conn_and_cursor()
+        confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+
+        # Ensure the rep soon to be added is not currently CCSGA
+        test_username, test_disp_name = 'test_user_1', 'Test User 1'
+        confirm_user_in_db(test_username, test_disp_name)
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (test_username,))
+        self.conn.commit()
+
+        # Make request to add CCSGA but with NO authentication
+        req = requests.post(f"{BASE_API_URL}/ccsga_reps/create", verify=False, json={"newCCSGA": test_username})
+        self.assertEqual(401, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
+        is_ccsga = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertFalse(is_ccsga)
+
+        # Make unauthorized request to add CCSGA (i.e., signed in but not as an admin)
+        req = requests.post(f"{BASE_API_URL}/ccsga_reps/create", verify=False, json={"newCCSGA": test_username}, headers=POST_HEADERS)
+        self.assertEqual(403, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
+        is_ccsga = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertFalse(is_ccsga)
+
+        # Give superficial admin privilege (although not actual conversation access) to signed in user
+        self.cur.execute("UPDATE Users SET isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+
+        # Make authorized request to add CCSGA
+        req = requests.post(f"{BASE_API_URL}/ccsga_reps/create", verify=False, json={"newCCSGA": test_username}, headers=POST_HEADERS)
+        self.assertEqual(201, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
+        is_ccsga = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertTrue(is_ccsga)
+
+        # Make request to add CCSGA again; make sure their already-CCSGA status is indicated in the response status code
+        req = requests.post(f"{BASE_API_URL}/ccsga_reps/create", verify=False, json={"newCCSGA": test_username}, headers=POST_HEADERS)
+        self.assertEqual(200, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
+        is_ccsga = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertTrue(is_ccsga)
+
+    def test_remove_ccsga(self):
+        
+        # Ensure signed-in user is not currently an admin, to check the unauthorized check
+        self.conn, self.cur = get_conn_and_cursor()
+        confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+
+        # Ensure the rep soon to be removed is currently, nominally a CCSGA rep
+        test_username, test_disp_name = 'test_user_1', 'Test User 1'
+        confirm_user_in_db(test_username, test_disp_name)
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 1, isAdmin = 0 WHERE username = ?;", (test_username,))
+        self.conn.commit()
+
+        # Make request to remove CCSGA but with NO authentication
+        req = requests.delete(f"{BASE_API_URL}/ccsga_reps/{test_username}", verify=False)
+        self.assertEqual(401, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
+        is_ccsga = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertTrue(is_ccsga)
+
+        # Make unauthorized request to remove CCSGA (i.e., signed in but not as an admin)
+        req = requests.delete(f"{BASE_API_URL}/ccsga_reps/{test_username}", verify=False, headers=DELETE_HEADERS)
+        self.assertEqual(403, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
+        is_ccsga = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertTrue(is_ccsga)
+
+        # Give superficial admin privilege (although not actual conversation access) to signed in user
+        self.cur.execute("UPDATE Users SET isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+
+        # Make authorized request to remove CCSGA
+        req = requests.delete(f"{BASE_API_URL}/ccsga_reps/{test_username}", verify=False, headers=DELETE_HEADERS)
+        self.assertEqual(200, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
+        is_ccsga = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertFalse(is_ccsga)
+
+        # Make request to remove CCSGA again; make sure their already-non-CCSGA status is indicated in the response status code
+        req = requests.delete(f"{BASE_API_URL}/ccsga_reps/{test_username}", verify=False, headers=DELETE_HEADERS)
+        self.assertEqual(404, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
+        is_ccsga = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertFalse(is_ccsga)
+    
+    def test_add_banned(self):
+        
+        # Ensure signed-in user is not currently an admin, to check the unauthorized check
+        self.conn, self.cur = get_conn_and_cursor()
+        confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+
+        # Ensure the user soon to be banned is not currently banned
+        test_username, test_disp_name = 'test_user_1', 'Test User 1'
+        confirm_user_in_db(test_username, test_disp_name)
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (test_username,))
+        self.conn.commit()
+
+        # Make request to add ban but with NO authentication
+        req = requests.post(f"{BASE_API_URL}/banned_users/create", verify=False, json={"userToBan": test_username})
+        self.assertEqual(401, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
+        is_banned = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertFalse(is_banned)
+
+        # Make unauthorized request to add ban (i.e., signed in but not as an admin)
+        req = requests.post(f"{BASE_API_URL}/banned_users/create", verify=False, json={"userToBan": test_username}, headers=POST_HEADERS)
+        self.assertEqual(403, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
+        is_banned = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertFalse(is_banned)
+
+        # Give superficial admin privilege (although not actual conversation access) to signed in user
+        self.cur.execute("UPDATE Users SET isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+
+        # Make authorized request to add ban
+        req = requests.post(f"{BASE_API_URL}/banned_users/create", verify=False, json={"userToBan": test_username}, headers=POST_HEADERS)
+        self.assertEqual(201, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
+        is_banned = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertTrue(is_banned)
+
+        # Make request to add ban again; make sure their already-banned status is indicated in the response status code
+        req = requests.post(f"{BASE_API_URL}/banned_users/create", verify=False, json={"userToBan": test_username}, headers=POST_HEADERS)
+        self.assertEqual(200, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
+        is_banned = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertTrue(is_banned)
+
+    def test_remove_banned(self):
+        
+        # Ensure signed-in user is not currently an admin, to check the unauthorized check
+        self.conn, self.cur = get_conn_and_cursor()
+        confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+
+        # Ensure the user soon to be unbanned is currently, nominally banned
+        test_username, test_disp_name = 'test_user_1', 'Test User 1'
+        confirm_user_in_db(test_username, test_disp_name)
+        self.cur.execute("UPDATE Users SET isBanned = 1, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (test_username,))
+        self.conn.commit()
+
+        # Make request to remove ban but with NO authentication
+        req = requests.delete(f"{BASE_API_URL}/banned_users/{test_username}", verify=False)
+        self.assertEqual(401, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
+        is_banned = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertTrue(is_banned)
+
+        # Make unauthorized request to remove ban (i.e., signed in but not as an admin)
+        req = requests.delete(f"{BASE_API_URL}/banned_users/{test_username}", verify=False, headers=DELETE_HEADERS)
+        self.assertEqual(403, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
+        is_banned = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertTrue(is_banned)
+
+        # Give superficial admin privilege (although not actual conversation access) to signed in user
+        self.cur.execute("UPDATE Users SET isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+
+        # Make authorized request to remove ban
+        req = requests.delete(f"{BASE_API_URL}/banned_users/{test_username}", verify=False, headers=DELETE_HEADERS)
+        self.assertEqual(200, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
+        is_banned = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertFalse(is_banned)
+
+        # Make request to remove ban again; make sure their already-unbanned status is indicated in the response status code
+        req = requests.delete(f"{BASE_API_URL}/banned_users/{test_username}", verify=False, headers=DELETE_HEADERS)
+        self.assertEqual(404, req.status_code)
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
+        is_banned = self.cur.fetchone()[0]
+        self.cur.nextset()
+        self.assertFalse(is_banned)
+    
 
 
     
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     def tearDown(self):

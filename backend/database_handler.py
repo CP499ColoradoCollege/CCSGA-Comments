@@ -54,7 +54,7 @@ def create_stored_procedures():
     messages_commands = [
         '''CREATE PROCEDURE create_conversation (IN revealIdentity BOOL, IN sender VARCHAR(40), OUT conversationId INT)
             BEGIN
-                IF EXISTS (SELECT username FROM Users WHERE ((isCCSGA AND NOT isAdmin) OR isBanned) AND username=sender) THEN
+                IF EXISTS (SELECT username FROM Users WHERE isBanned AND username=sender) THEN
                     SET conversationId = -403;
                 ELSE
                     INSERT INTO Conversations (status) VALUES ('Delivered');
@@ -148,6 +148,20 @@ def create_stored_procedures():
                     SELECT -403;
                 ELSE
                     UPDATE ConversationSettings SET isArchived = newIsArchived WHERE conversationId = conversationIdToUpdate AND username = requester;
+                    SELECT -200;
+                END IF;
+            END ;
+        ''',
+        '''CREATE PROCEDURE reveal_identity (IN conversationIdToUpdate INT, IN requester VARCHAR(40))
+            BEGIN
+                IF EXISTS (SELECT username FROM Users WHERE username=requester AND isBanned) THEN
+                    SELECT -403;
+                ELSEIF NOT EXISTS (SELECT id FROM Conversations WHERE id = conversationIdToUpdate) THEN
+                    SELECT -404;
+                ELSEIF NOT EXISTS (SELECT id FROM ConversationSettings WHERE username=requester AND conversationId=conversationIdToUpdate AND isAccessible) THEN
+                    SELECT -403;
+                ELSE
+                    UPDATE ConversationSettings SET identityRevealed = 1 WHERE username=requester AND id = conversationIdToUpdate;
                     SELECT -200;
                 END IF;
             END ;

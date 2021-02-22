@@ -1,6 +1,7 @@
 import 'package:ccsga_comments/BasePage/BasePage.dart';
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
+import 'package:ccsga_comments/Models/Message.dart';
 import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:ccsga_comments/Settings/ConversationListSettingsDrawer.dart';
 import 'package:flutter/material.dart';
@@ -68,8 +69,23 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
     if (responseTuple.item2 != null) {
       // use setState to update the data in the UI with conv
       _convList = responseTuple.item2;
+
       for (Conversation conv in _convList) {
-        _convCards.add(ConversationListCard(conversation: conv));
+        String joinedLabels = '';
+        for (String label in conv.labels) {
+          // print("we're in the label joiner loop!");
+          joinedLabels += (" " + label);
+        }
+        List<String> messageKeys = conv.messages.keys.toList()
+          ..sort((a, b) => a.compareTo(b));
+        // print("we're after messageKeys!");
+        Message mostRecentMessage = conv.messages[messageKeys.last];
+
+        _convCards.add(ConversationListCard(
+          joinedLabels: joinedLabels,
+          mostRecentMessageBody: mostRecentMessage.body,
+          mostRecentMessageDateTime: mostRecentMessage.dateTime,
+        ));
       }
       // FutureBuilder requires that we return something
       return true;

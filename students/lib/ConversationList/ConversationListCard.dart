@@ -3,19 +3,27 @@ import 'package:ccsga_comments/Models/Message.dart';
 import 'package:flutter/material.dart';
 
 class ConversationListCard extends StatelessWidget {
-  final Conversation conversation;
+  final String joinedLabels;
+  final String mostRecentMessageBody;
+  final String mostRecentMessageDateTime;
 
-  ConversationListCard({this.conversation});
+  ConversationListCard(
+      {this.joinedLabels,
+      this.mostRecentMessageBody,
+      this.mostRecentMessageDateTime});
 
   @override
   Widget build(BuildContext context) {
-    String joinedLabels = "";
-    for (String label in conversation.labels) {
-      joinedLabels += (" " + label);
-    }
-    List<String> messageKeys = conversation.messages.keys.toList()
-      ..sort((a, b) => a.compareTo(b));
-    Message mostRecentMessage = conversation.messages[messageKeys.last];
+    // print("we're in the builder!");
+    // String joinedLabels = "";
+    // print("we're after the loop!");
+    // List<String> messageKeys = conversation.messages.keys.toList()
+    //   ..sort((a, b) => a.compareTo(b));
+    // print("we're after messageKeys!");
+    // Message mostRecentMessage = conversation.messages[messageKeys.last];
+    // print("we're after mostRecentMessage!");
+    // print(
+    //     "joinedLabels -> ${joinedLabels}, messageKeys: ${messageKeys}, mostRecentMessage.body -> ${mostRecentMessage.body}, mostRecentMessage.dateTime -> ${mostRecentMessage.dateTime}");
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -37,7 +45,7 @@ class ConversationListCard extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.message_outlined),
               title: Text("CCSGA " + joinedLabels),
-              subtitle: Text(mostRecentMessage.body),
+              subtitle: Text(mostRecentMessageBody),
               isThreeLine: true,
             ),
             Padding(
@@ -46,7 +54,7 @@ class ConversationListCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Text(
-                    mostRecentMessage.dateTime,
+                    mostRecentMessageDateTime,
                     textAlign: TextAlign.center,
                   )
                 ],

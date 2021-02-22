@@ -412,14 +412,16 @@ class TestAdminRoutes(unittest.TestCase):
         self.conn.commit()
 
         # Make request to get admins but with NO authentication
-        req = requests.get(f"{BASE_API_URL}/admins/", verify=False)
+        req = requests.get(f"{BASE_API_URL}/admins", verify=False)
         self.assertEqual(401, req.status_code)
-        self.assertEqual(0, len(req.json()))
+        self.assertEqual(1, len(req.json()))
+        self.assertNotIn("admins", req.json().keys())
 
         # Make unauthorized request to get admins (i.e., signed in but not as an admin)
-        req = requests.get(f"{BASE_API_URL}/admins/", verify=False, headers=GET_HEADERS)
+        req = requests.get(f"{BASE_API_URL}/admins", verify=False, headers=GET_HEADERS)
         self.assertEqual(403, req.status_code)
-        self.assertEqual(0, len(req.json()))
+        self.assertEqual(1, len(req.json()))
+        self.assertNotIn("admins", req.json().keys())
 
         # Give superficial admin privilege (although not actual conversation access) to signed in user
         self.conn, self.cur = get_conn_and_cursor()
@@ -430,16 +432,19 @@ class TestAdminRoutes(unittest.TestCase):
         admin_username, admin_display_name = "test_user_1", "Test User 1"
         confirm_user_in_db(admin_username, admin_display_name)
         self.cur.callproc("add_admin", (admin_username, SIGNED_IN_USERNAME))
+        self.cur.nextset()
         self.cur.callproc("remove_ccsga", (admin_username, SIGNED_IN_USERNAME))
+        self.cur.nextset()
         non_admin_username, non_admin_display_name = "test_user_2", "Test User 2"
         confirm_user_in_db(non_admin_username, non_admin_display_name)
-        self.cur.callproc("remove_admin", (admin_username, SIGNED_IN_USERNAME))
+        self.cur.callproc("remove_admin", (non_admin_username, SIGNED_IN_USERNAME))
+        self.cur.nextset()
         self.conn.commit()
 
         # Make authorized request to get admins
-        req = requests.get(f"{BASE_API_URL}/admins/", verify=False, headers=GET_HEADERS)
+        req = requests.get(f"{BASE_API_URL}/admins", verify=False, headers=GET_HEADERS)
         self.assertEqual(200, req.status_code)
-        self.assertIn({"username": admin_username, "displayName": admin_display_name, "isBanned": True, "isCCSGA": True, "isAdmin": True}, req.json().get("admins"))
+        self.assertIn({"username": admin_username, "displayName": admin_display_name, "isBanned": False, "isCCSGA": False, "isAdmin": True}, req.json().get("admins"))
         self.assertIn(admin_username, [admin["username"] for admin in req.json().get("admins")])
         self.assertNotIn(non_admin_username, [admin["username"] for admin in req.json().get("admins")])
 

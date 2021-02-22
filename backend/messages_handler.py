@@ -40,7 +40,7 @@ def create_conversation():
 
     if conversation_id == -403:
         conn.close()
-        return make_response(jsonify({"message": "User is either banned or a CCSGA rep, neither of whom is authorized to initiate new conversations."}), 403)
+        return make_response(jsonify({"message": "User is banned and therefore is not authorized to initiate new conversations."}), 403)
 
     cur.callproc("create_message", (conversation_id, flask.session.get('CAS_USERNAME'), request_dict['messageBody'], 0))
     message_id = cur.fetchall()[0][0]

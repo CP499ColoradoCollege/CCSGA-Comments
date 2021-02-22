@@ -54,7 +54,7 @@ def create_stored_procedures():
     messages_commands = [
         '''CREATE PROCEDURE create_conversation (IN revealIdentity BOOL, IN sender VARCHAR(40), OUT conversationId INT)
             BEGIN
-                IF EXISTS (SELECT username FROM Users WHERE ((isCCSGA AND NOT isAdmin) OR isBanned) AND username=sender) THEN
+                IF EXISTS (SELECT username FROM Users WHERE isBanned AND username=sender) THEN
                     SET conversationId = -403;
                 ELSE
                     INSERT INTO Conversations (status) VALUES ('Delivered');

@@ -1,15 +1,16 @@
 import 'dart:convert';
+import 'User.dart';
 
-Admins userFromJson(String str) => Admins.fromJson(json.decode(str));
+Admins adminsFromJson(String str) => Admins.fromJson(json.decode(str));
 
-String userToJson(Admins data) => json.encode(data.toJson());
+String adminsToJson(Admins data) => json.encode(data.toJson());
 
 class Admins {
   Admins({
     this.admins,
   });
 
-  List<String> admins;
+  List<User> admins;
 
   factory Admins.fromJson(Map<String, dynamic> json) =>
       Admins(admins: json["admins"] == null ? null : json["admins"]);

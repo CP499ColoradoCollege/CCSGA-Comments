@@ -1,7 +1,9 @@
 import 'package:ccsga_comments/Admin/UserCard.dart';
 import 'package:ccsga_comments/BasePage/BasePage.dart';
 import 'package:ccsga_comments/Models/Admins.dart';
+import 'package:ccsga_comments/Models/BannedUsers.dart';
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
+import 'package:ccsga_comments/Models/Representatives.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
@@ -16,7 +18,7 @@ class AdminPage extends BasePage {
 }
 
 class _AdminPageState extends BaseState<AdminPage> with BasicPage {
-  List<String> admins = [];
+  List<User> admins = [];
   List<User> representatives = [];
   List<User> bannedUsers = [];
 
@@ -29,7 +31,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
     return Container(
       padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
       child: FutureBuilder<bool>(
-          future: _getAdminsData(),
+          future: _getAdminPageData(),
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
             if (snapshot.hasData) {
               return ListView(
@@ -47,13 +49,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                       shrinkWrap: true,
                       itemCount: admins.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return UserCard(User(
-                            isAdmin: true,
-                            isBanned: false,
-                            isCcsga: false,
-                            isSignedIn: true,
-                            username: admins[index],
-                            displayName: ""));
+                        return UserCard(admins[index]);
                       }),
                   Center(
                     child: Text(
@@ -88,19 +84,50 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                 ],
               );
             } else {
-              return CircularProgressIndicator();
+              return Flexible(
+                child: Center(
+                  child: SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              );
             }
           }),
     );
   }
 
-  Future<bool> _getAdminsData() async {
-    Tuple2<ChewedResponse, Admins> adminsReponse =
+  Future<bool> _getAdminPageData() async {
+    Tuple2<ChewedResponse, Admins> adminsResponse =
         await DatabaseHandler.instance.getAdmins();
 
-    if (adminsReponse.item2 != null) {
+    Tuple2<ChewedResponse, BannedUsers> bannedUsersResponse =
+        await DatabaseHandler.instance.getBannedUsers();
+
+    Tuple2<ChewedResponse, Representatives> repsResponse =
+        await DatabaseHandler.instance.getRepresentatives();
+
+    if (bannedUsersResponse.item2 != null) {
+      print("bannedUsers response successful");
+      bannedUsers = bannedUsersResponse.item2.bannedUsers;
+    } else {
+      print("bannedUsers response unsuccessful");
+      return false;
+    }
+
+    if (repsResponse.item2 != null) {
+      print("representatives response successful");
+      representatives = repsResponse.item2.ccsgaReps;
+    } else {
+      print("representatives response unsuccessful");
+      return false;
+    }
+
+    if (adminsResponse.item2 != null) {
       print("admins response successful");
-      admins = adminsReponse.item2.admins;
+      admins = adminsResponse.item2.admins;
+      return true;
     } else {
       print("admins response unsuccessful");
       return false;

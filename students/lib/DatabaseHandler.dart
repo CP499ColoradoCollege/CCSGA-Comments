@@ -1,6 +1,8 @@
+import 'package:ccsga_comments/Models/BannedUsers.dart';
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
 import 'package:ccsga_comments/Models/ConversationUpdate.dart';
+import 'package:ccsga_comments/Models/Representatives.dart';
 import 'package:tuple/tuple.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -98,7 +100,37 @@ class DatabaseHandler {
     );
   }
 
-  // get messages and other details of a single conversation
+  Future<Tuple2<ChewedResponse, BannedUsers>> getBannedUsers() async {
+    final url = '/api/banned_users';
+    var response =
+        await http.get(url, headers: {"Content-Type": "application/json"});
+    var chewedResponse = ChewedResponse();
+    chewedResponse.chewStatusCode(response.statusCode);
+    // only if the transaction is successful, will there will be a conversation obj in the response
+    if (response.statusCode == 200) {
+      BannedUsers bannedUsers = BannedUsers.fromJson(jsonDecode(response.body));
+      return Tuple2<ChewedResponse, BannedUsers>(chewedResponse, bannedUsers);
+    } else {
+      return Tuple2<ChewedResponse, BannedUsers>(chewedResponse, null);
+    }
+  }
+
+  Future<Tuple2<ChewedResponse, Representatives>> getRepresentatives() async {
+    final url = '/api/ccsga_reps';
+    var response =
+        await http.get(url, headers: {"Content-Type": "application/json"});
+    var chewedResponse = ChewedResponse();
+    chewedResponse.chewStatusCode(response.statusCode);
+    // only if the transaction is successful, will there will be a conversation obj in the response
+    if (response.statusCode == 200) {
+      Representatives reps =
+          Representatives.fromJson(jsonDecode(response.body));
+      return Tuple2<ChewedResponse, Representatives>(chewedResponse, reps);
+    } else {
+      return Tuple2<ChewedResponse, Representatives>(chewedResponse, null);
+    }
+  }
+
   Future<Tuple2<ChewedResponse, Admins>> getAdmins() async {
     final url = '/api/admins';
     var response =

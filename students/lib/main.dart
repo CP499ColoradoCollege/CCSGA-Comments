@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:ccsga_comments/NewMessage/NewMessagePage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:beamer/beamer.dart';
 import 'Navigation/CCSGABeamLocations.dart';
+import 'dart:io';
 import 'package:url_strategy/url_strategy.dart';
 
 void main() {
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.dumpErrorToConsole(details);
+    if (kReleaseMode) exit(1);
+  };
   setPathUrlStrategy();
   runApp(CCSGACommentsApp());
 }

@@ -42,7 +42,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               print(snapshot.data[0] ?? "No data");
-              return UserCard(snapshot.data[0]);
+              return Text(snapshot.data.first.username);
               // return ListView.builder(
               //     padding: const EdgeInsets.all(8),
               //     scrollDirection: Axis.vertical,

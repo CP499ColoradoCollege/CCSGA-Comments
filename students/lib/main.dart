@@ -6,10 +6,6 @@ import 'dart:io';
 import 'package:url_strategy/url_strategy.dart';
 
 void main() {
-  FlutterError.onError = (FlutterErrorDetails details) {
-    FlutterError.dumpErrorToConsole(details);
-    if (kReleaseMode) exit(1);
-  };
   setPathUrlStrategy();
   runApp(CCSGACommentsApp());
 }

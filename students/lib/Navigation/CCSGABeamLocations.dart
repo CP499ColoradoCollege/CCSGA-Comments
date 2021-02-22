@@ -1,6 +1,5 @@
 import 'package:beamer/beamer.dart';
 import 'package:ccsga_comments/Admin/AdminPage.dart';
-import 'package:ccsga_comments/Admin/AdminPageWOBase.dart';
 import 'package:ccsga_comments/Home/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:ccsga_comments/ConversationList/ConversationListPage.dart';
@@ -41,7 +40,7 @@ class AdminLocation extends BeamLocation {
   List<BeamPage> get pages => [
         BeamPage(
           key: ValueKey('admin'),
-          child: AdminPageWOBase(),
+          child: AdminPage(),
         ),
       ];
 }

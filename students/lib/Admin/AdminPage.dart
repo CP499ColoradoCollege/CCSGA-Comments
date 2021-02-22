@@ -57,7 +57,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                       shrinkWrap: true,
                       itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return Text(snapshot.data[index].username);
+                        return UserCard(snapshot.data[index]);
                       });
                 } else {
                   return Flexible(

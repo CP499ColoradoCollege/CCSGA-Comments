@@ -49,14 +49,15 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
               future: admins,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return ListView.builder(
-                      padding: const EdgeInsets.all(8),
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return UserCard(snapshot.data[index]);
-                      });
+                  print(snapshot.data[0] ?? "No data");
+                  return UserCard(snapshot.data[0]);
+                  // return ListView.builder(
+                  //     padding: const EdgeInsets.all(8),
+                  //     scrollDirection: Axis.vertical,
+                  //     shrinkWrap: true,
+                  //     itemCount: snapshot.data.length,
+                  //     itemBuilder: (BuildContext context, int index) {
+                  //     });
                 } else {
                   return Flexible(
                     child: Center(
@@ -79,6 +80,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
               future: representatives,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
+                  print(snapshot.data[0] ?? "No data");
                   return ListView.builder(
                       padding: const EdgeInsets.all(8),
                       scrollDirection: Axis.vertical,
@@ -109,6 +111,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
               future: bannedUsers,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
+                  print(snapshot.data[0] ?? "No data");
                   return ListView.builder(
                       padding: const EdgeInsets.all(8),
                       scrollDirection: Axis.vertical,

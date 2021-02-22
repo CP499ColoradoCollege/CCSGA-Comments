@@ -26,7 +26,7 @@ class _UserCardState extends State<UserCard> {
         child: ListTile(
           contentPadding: EdgeInsets.all(7.5),
           leading: Icon(Icons.person_outline),
-          title: Text(widget.user.displayName),
+          title: Text(widget.user.username),
           trailing: IconButton(
             icon: Icon(Icons.remove_circle_outline),
             color: Colors.red,

@@ -16,8 +16,14 @@ class Representatives {
 
   factory Representatives.fromJson(Map<String, dynamic> json) =>
       Representatives(
-          ccsgaReps: json["ccsgaReps"] == null ? null : json["ccsgaReps"]);
+        ccsgaReps: json["ccsgaReps"] == null
+            ? null
+            : List<User>.from(json["ccsgaReps"].map((x) => User.fromJson(x))),
+      );
 
-  Map<String, dynamic> toJson() =>
-      {"ccsgaReps": ccsgaReps == null ? null : ccsgaReps};
+  Map<String, dynamic> toJson() => {
+        "ccsgaReps": ccsgaReps == null
+            ? null
+            : List<dynamic>.from(ccsgaReps.map((x) => x.toJson())),
+      };
 }

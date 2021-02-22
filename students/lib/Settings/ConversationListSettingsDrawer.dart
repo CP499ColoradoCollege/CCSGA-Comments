@@ -132,11 +132,13 @@ class _ConversationListSettingsDrawerState
                 ],
               );
             } else {
-              return SizedBox(
+              return Flexible(
+                  child: Center(
+                      child: SizedBox(
                 width: 50,
                 height: 50,
                 child: CircularProgressIndicator(),
-              );
+              )));
             }
           }),
     );

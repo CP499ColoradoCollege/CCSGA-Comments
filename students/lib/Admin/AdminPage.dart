@@ -38,6 +38,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
     return Container(
       padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
       child: ListView(
+        shrinkWrap: true,
         children: [
           Center(
             child: Text(

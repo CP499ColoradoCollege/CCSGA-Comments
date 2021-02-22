@@ -79,7 +79,6 @@ class TestAdminRoutes(unittest.TestCase):
         self.assertEqual('anonymous', conv["messages"][str(new_message_id)]["sender"]["username"])
         self.assertEqual('Anonymous', conv["messages"][str(new_message_id)]["sender"]["displayName"])
 
-
     def test_add_admin(self):
         
         # Ensure signed-in user is not currently an admin, to check the unauthorized check
@@ -404,9 +403,45 @@ class TestAdminRoutes(unittest.TestCase):
         self.cur.nextset()
         self.assertFalse(is_banned)
     
+    def test_get_admins(self):
 
+        # Ensure signed-in user is not currently an admin, to check unauthorized requests
+        self.conn, self.cur = get_conn_and_cursor()
+        confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
 
-    
+        # Make request to get admins but with NO authentication
+        req = requests.get(f"{BASE_API_URL}/admins/", verify=False)
+        self.assertEqual(401, req.status_code)
+        self.assertEqual(0, len(req.json()))
+
+        # Make unauthorized request to get admins (i.e., signed in but not as an admin)
+        req = requests.get(f"{BASE_API_URL}/admins/", verify=False, headers=GET_HEADERS)
+        self.assertEqual(403, req.status_code)
+        self.assertEqual(0, len(req.json()))
+
+        # Give superficial admin privilege (although not actual conversation access) to signed in user
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("UPDATE Users SET isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+        
+        # Set up an admin and a non-admin
+        admin_username, admin_display_name = "test_user_1", "Test User 1"
+        confirm_user_in_db(admin_username, admin_display_name)
+        self.cur.callproc("add_admin", (admin_username, SIGNED_IN_USERNAME))
+        self.cur.callproc("remove_ccsga", (admin_username, SIGNED_IN_USERNAME))
+        non_admin_username, non_admin_display_name = "test_user_2", "Test User 2"
+        confirm_user_in_db(non_admin_username, non_admin_display_name)
+        self.cur.callproc("remove_admin", (admin_username, SIGNED_IN_USERNAME))
+        self.conn.commit()
+
+        # Make authorized request to get admins
+        req = requests.get(f"{BASE_API_URL}/admins/", verify=False, headers=GET_HEADERS)
+        self.assertEqual(200, req.status_code)
+        self.assertIn({"username": admin_username, "displayName": admin_display_name, "isBanned": True, "isCCSGA": True, "isAdmin": True}, req.json().get("admins"))
+        self.assertIn(admin_username, [admin["username"] for admin in req.json().get("admins")])
+        self.assertNotIn(non_admin_username, [admin["username"] for admin in req.json().get("admins")])
 
 
     def tearDown(self):

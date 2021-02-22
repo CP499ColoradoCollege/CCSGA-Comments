@@ -2,7 +2,13 @@ import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 
 class UserCard extends StatefulWidget {
-  User user;
+  User user = User(
+      isCcsga: false,
+      isBanned: false,
+      isAdmin: false,
+      displayName: "Test",
+      username: "username",
+      isSignedIn: false);
 
   @required
   UserCard(this.user);
@@ -14,6 +20,7 @@ class UserCard extends StatefulWidget {
 class _UserCardState extends State<UserCard> {
   @override
   Widget build(BuildContext context) {
+    print("User card created for: " + widget.user.toString());
     return Center(
       child: Card(
         shape: RoundedRectangleBorder(
@@ -53,7 +60,7 @@ class _UserCardState extends State<UserCard> {
           title: Text("Remove User"),
           content: Text("Are you sure you would you like to remove the" +
               (user.isAdmin ? " admin: " : " representative ") +
-              user.displayName +
+              user.username +
               "?"),
           actions: [
             TextButton(

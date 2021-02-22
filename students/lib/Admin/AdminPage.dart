@@ -297,8 +297,8 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                     child: Text("Confirm"),
                     onPressed: () {
                       bool isAdmin = _isAdminChecked;
-                      String email = _textEditingController.text;
-                      //TODO ADD USER TO BACKEND HERE
+                      String username = _textEditingController.text;
+                      DatabaseHandler.instance.banUser(username);
                       Navigator.of(context).pop();
                     },
                   ),

@@ -5,6 +5,7 @@ import 'package:ccsga_comments/Models/ConversationUpdate.dart';
 import 'package:ccsga_comments/Models/NewAdmin.dart';
 import 'package:ccsga_comments/Models/NewRepresentative.dart';
 import 'package:ccsga_comments/Models/Representatives.dart';
+import 'package:ccsga_comments/Models/UserToBan.dart';
 import 'package:tuple/tuple.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -122,6 +123,13 @@ class DatabaseHandler {
     var response = await http.post(url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(NewRepresentative(newCCSGA: username)));
+  }
+
+  Future<void> banUser(String username) async {
+    final url = '/api/banned_users/create';
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(UserToBan(userToBan: username)));
   }
 
   Future<void> addAdmin(String username) async {

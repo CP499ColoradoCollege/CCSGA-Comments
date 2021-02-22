@@ -26,8 +26,26 @@ class DatabaseHandler {
         ChewedResponse(statusCode: response.statusCode);
     if (response.statusCode == 200) {
       //we need a conv list here somehow
-      Map<String, Conversation> jsonConvsMap = jsonDecode(response.body);
-      List<Conversation> conversationList = List.from(jsonConvsMap.values);
+      Map<String, dynamic> jsonConvsMap = jsonDecode(response.body);
+      // List<Conversation> conversationList = List.from(jsonConvsMap.values);
+      List<Conversation> conversationList = [];
+      for (var conv in jsonConvsMap.values.toList()) {
+        conversationList.add(Conversation.fromJson(conv));
+      }
+      print("in DBhandler, convList[0] -> ${conversationList[0]}");
+      print(
+          "in DBhandler, labels of first conv -> ${conversationList[0].labels}");
+      print(
+          "in DBhandler, isArchived of first conv -> ${conversationList[0].isArchived}");
+      print(
+          "in DBhandler, messages of first conv -> ${conversationList[0].messages}");
+      print(
+          "in DBhandler, isRead of first conv -> ${conversationList[0].isRead}");
+      print(
+          "in DBhandler, status of first conv -> ${conversationList[0].status}");
+      print(
+          "in DBhandler, studentAnonymity of first conv -> ${conversationList[0].studentIdentityRevealed}");
+
       return Tuple2<ChewedResponse, List<Conversation>>(
           chewedResponse, conversationList);
     } else {

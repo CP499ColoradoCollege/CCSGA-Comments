@@ -51,7 +51,11 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data.length == 0) {
-                    return Container();
+                    return Center(
+                      child: Card(
+                        child: Text("No users of this type..."),
+                      ),
+                    );
                   } else {
                     return ListView.builder(
                         padding: const EdgeInsets.all(8),
@@ -85,7 +89,11 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data.length == 0) {
-                    return Container();
+                    return Center(
+                      child: Card(
+                        child: Text("No users of this type..."),
+                      ),
+                    );
                   } else {
                     return ListView.builder(
                         padding: const EdgeInsets.all(8),
@@ -119,7 +127,11 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data.length == 0) {
-                    return Container();
+                    return Center(
+                      child: Card(
+                        child: Text("No users of this type..."),
+                      ),
+                    );
                   } else {
                     return ListView.builder(
                         padding: const EdgeInsets.all(8),
@@ -188,42 +200,6 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
       return [];
     }
   }
-
-  // Future<bool> _getAdminPageData() async {
-  //   Tuple2<ChewedResponse, Admins> adminsResponse =
-  //       await DatabaseHandler.instance.getAdmins();
-  //
-  //   Tuple2<ChewedResponse, BannedUsers> bannedUsersResponse =
-  //       await DatabaseHandler.instance.getBannedUsers();
-  //
-  //   Tuple2<ChewedResponse, Representatives> repsResponse =
-  //       await DatabaseHandler.instance.getRepresentatives();
-  //
-  //   if (bannedUsersResponse.item2 != null) {
-  //     print("bannedUsers response successful");
-  //     bannedUsers = bannedUsersResponse.item2.bannedUsers;
-  //   } else {
-  //     print("bannedUsers response unsuccessful");
-  //     return false;
-  //   }
-  //
-  //   if (repsResponse.item2 != null) {
-  //     print("representatives response successful");
-  //     representatives = repsResponse.item2.ccsgaReps;
-  //   } else {
-  //     print("representatives response unsuccessful");
-  //     return false;
-  //   }
-  //
-  //   if (adminsResponse.item2 != null) {
-  //     print("admins response successful");
-  //     admins = adminsResponse.item2.admins;
-  //     return true;
-  //   } else {
-  //     print("admins response unsuccessful");
-  //     return false;
-  //   }
-  // }
 
   @override
   String screenName() {

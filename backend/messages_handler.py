@@ -40,7 +40,7 @@ def create_conversation():
 
     if conversation_id == -403:
         conn.close()
-        return make_response(jsonify({"message": "User is either banned or a CCSGA rep, neither of whom is authorized to initiate new conversations."}), 403)
+        return make_response(jsonify({"message": "User is banned and therefore is not authorized to initiate new conversations."}), 403)
 
     cur.callproc("create_message", (conversation_id, flask.session.get('CAS_USERNAME'), request_dict['messageBody'], 0))
     message_id = cur.fetchall()[0][0]
@@ -179,7 +179,7 @@ def update_conversation(conversation_id):
     success_messages = []
     
     # Update conversation status, if so requested
-    if 'setStatus' in request_dict:
+    if 'setStatus' in request_dict and request_dict['setStatus'] != None:
         cur.callproc("set_status", (conversation_id, flask.session.get('CAS_USERNAME'), request_dict['setStatus']))
         status_query_result = cur.fetchone()[0]
         cur.nextset()
@@ -196,7 +196,7 @@ def update_conversation(conversation_id):
         success_messages.append(f"Successfully set status of conversation #{conversation_id} to '{request_dict['setStatus']}'")
     
     # Update archived/unarchived, if so requested
-    if 'setArchived' in request_dict:
+    if 'setArchived' in request_dict and request_dict['setArchived'] != None:
         cur.callproc("set_archived", (conversation_id, flask.session.get('CAS_USERNAME'), request_dict['setArchived']))
         archived_query_result = cur.fetchone()[0]
         cur.nextset()
@@ -212,6 +212,23 @@ def update_conversation(conversation_id):
         # Successful!
         success_messages.append(f"Successfully {'archived' if request_dict['setArchived'] else 'unarchived'} conversation #{conversation_id}")
     
+    # Reveal one's own identity, if so requested
+    if 'revealIdentity' in request_dict and request_dict['revealIdentity']:
+        cur.callproc("reveal_identity", (conversation_id, flask.session.get('CAS_USERNAME')))
+        reveal_identity_query_result = cur.fetchone()[0]
+        cur.nextset()
+
+        if reveal_identity_query_result == -403:
+            conn.close()
+            return make_response(jsonify({"message": f"User is either banned or not involved in conversation #{conversation_id}"}), 403)
+
+        if reveal_identity_query_result == -404:
+            conn.close()
+            return make_response(jsonify({"message": f"Conversation #{conversation_id} not found"}), 404)
+        
+        # Successful!
+        success_messages.append(f"Successfully revealed own identity in conversation #{conversation_id}")
+
     conn.commit() # Commit down here so that either everything succeeds or nothing does, consistent with the response code/message
     conn.close()
     return make_response(jsonify({"message": ", ".join(success_messages)}), 200)

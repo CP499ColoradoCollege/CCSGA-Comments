@@ -1,7 +1,7 @@
 from backend import app
 import flask
 from flask import make_response, render_template, send_from_directory
-from backend.route_wrappers import login_required_with_db_confirm, student_or_admin_required
+from backend.route_wrappers import login_required_with_db_confirm, student_or_admin_required, admin_required
 
 # This function/route is required to load all the static files from the frontend build.
 # Found on some online help forum. 
@@ -14,6 +14,7 @@ def static_proxy(path):
 
 # Route for the homepage of the website
 @app.route("/")
+@login_required_with_db_confirm
 def homepage():
     resp = make_response(render_template('index.html'))
     resp.headers.set('Cache-Control', 'no-store')
@@ -37,8 +38,16 @@ def indiv_conversation_page(conversation_id):
 
 # Route for initiating a new conversation
 @app.route("/new_message")
-@student_or_admin_required
+@login_required_with_db_confirm
 def new_message_page():
+    resp = make_response(render_template('index.html'))
+    resp.headers.set('Cache-Control', 'no-store')
+    return resp
+
+# Route for the admin panel
+@app.route("/admin_controls")
+@admin_required
+def admin_page():
     resp = make_response(render_template('index.html'))
     resp.headers.set('Cache-Control', 'no-store')
     return resp

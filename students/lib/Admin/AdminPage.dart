@@ -17,9 +17,17 @@ class AdminPage extends BasePage {
 }
 
 class _AdminPageState extends BaseState<AdminPage> with BasicPage {
-  List<User> admins = [];
-  List<User> representatives = [];
-  List<User> bannedUsers = [];
+  Future<List<User>> admins;
+  Future<List<User>> representatives;
+  Future<List<User>> bannedUsers;
+
+  @override
+  void initState() {
+    super.initState();
+    admins = fetchAdmins();
+    representatives = fetchRepresentatives();
+    bannedUsers = fetchBanned();
+  }
 
   TextEditingController _textEditingController = TextEditingController();
   bool _isAdminChecked = true;
@@ -29,109 +37,177 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
   Widget body() {
     return Container(
       padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-      child: FutureBuilder<bool>(
-          future: _getAdminPageData(),
-          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-            if (snapshot.hasData) {
-              return ListView(
-                children: [
-                  Center(
-                    child: Text(
-                      "Admins",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-                    ),
-                  ),
-                  ListView.builder(
+      child: ListView(
+        children: [
+          Center(
+            child: Text(
+              "Admins",
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+            ),
+          ),
+          FutureBuilder<List<User>>(
+              future: admins,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
                       padding: const EdgeInsets.all(8),
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
-                      itemCount: admins.length,
+                      itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return UserCard(admins[index]);
-                      }),
-                  Center(
-                    child: Text(
-                      "Representatives",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                        return UserCard(snapshot.data[index]);
+                      });
+                } else {
+                  return Flexible(
+                    child: Center(
+                      child: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
-                  ),
-                  ListView.builder(
+                  );
+                }
+              }),
+          Center(
+            child: Text(
+              "Representatives",
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+            ),
+          ),
+          FutureBuilder<List<User>>(
+              future: representatives,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
                       padding: const EdgeInsets.all(8),
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
-                      itemCount: representatives.length,
+                      itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return UserCard(representatives[index]);
-                      }),
-                  Center(
-                    child: Text(
-                      "Banned users",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                        return UserCard(snapshot.data[index]);
+                      });
+                } else {
+                  return Flexible(
+                    child: Center(
+                      child: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
-                  ),
-                  ListView.builder(
+                  );
+                }
+              }),
+          Center(
+            child: Text(
+              "Banned users",
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+            ),
+          ),
+          FutureBuilder<List<User>>(
+              future: bannedUsers,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
                       padding: const EdgeInsets.all(8),
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
-                      itemCount: bannedUsers.length,
+                      itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return UserCard(bannedUsers[index]);
-                      }),
-                ],
-              );
-            } else {
-              return Flexible(
-                child: Center(
-                  child: SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-              );
-            }
-          }),
+                        return UserCard(snapshot.data[index]);
+                      });
+                } else {
+                  return Flexible(
+                    child: Center(
+                      child: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  );
+                }
+              }),
+        ],
+      ),
     );
   }
 
-  Future<bool> _getAdminPageData() async {
+  Future<List<User>> fetchAdmins() async {
     Tuple2<ChewedResponse, Admins> adminsResponse =
         await DatabaseHandler.instance.getAdmins();
 
+    if (adminsResponse.item2 != null) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return adminsResponse.item2.admins;
+    } else {
+      throw Exception('Failed to load admins');
+    }
+  }
+
+  Future<List<User>> fetchRepresentatives() async {
+    Tuple2<ChewedResponse, Representatives> repsRepsonse =
+        await DatabaseHandler.instance.getRepresentatives();
+
+    if (repsRepsonse.item2 != null) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return repsRepsonse.item2.ccsgaReps;
+    } else {
+      throw Exception('Failed to load representatives');
+    }
+  }
+
+  Future<List<User>> fetchBanned() async {
     Tuple2<ChewedResponse, BannedUsers> bannedUsersResponse =
         await DatabaseHandler.instance.getBannedUsers();
 
-    Tuple2<ChewedResponse, Representatives> repsResponse =
-        await DatabaseHandler.instance.getRepresentatives();
-
     if (bannedUsersResponse.item2 != null) {
-      print("bannedUsers response successful");
-      bannedUsers = bannedUsersResponse.item2.bannedUsers;
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return bannedUsersResponse.item2.bannedUsers;
     } else {
-      print("bannedUsers response unsuccessful");
-      return false;
-    }
-
-    if (repsResponse.item2 != null) {
-      print("representatives response successful");
-      representatives = repsResponse.item2.ccsgaReps;
-    } else {
-      print("representatives response unsuccessful");
-      return false;
-    }
-
-    if (adminsResponse.item2 != null) {
-      print("admins response successful");
-      admins = adminsResponse.item2.admins;
-      return true;
-    } else {
-      print("admins response unsuccessful");
-      return false;
+      throw Exception('Failed to load admins');
     }
   }
+
+  // Future<bool> _getAdminPageData() async {
+  //   Tuple2<ChewedResponse, Admins> adminsResponse =
+  //       await DatabaseHandler.instance.getAdmins();
+  //
+  //   Tuple2<ChewedResponse, BannedUsers> bannedUsersResponse =
+  //       await DatabaseHandler.instance.getBannedUsers();
+  //
+  //   Tuple2<ChewedResponse, Representatives> repsResponse =
+  //       await DatabaseHandler.instance.getRepresentatives();
+  //
+  //   if (bannedUsersResponse.item2 != null) {
+  //     print("bannedUsers response successful");
+  //     bannedUsers = bannedUsersResponse.item2.bannedUsers;
+  //   } else {
+  //     print("bannedUsers response unsuccessful");
+  //     return false;
+  //   }
+  //
+  //   if (repsResponse.item2 != null) {
+  //     print("representatives response successful");
+  //     representatives = repsResponse.item2.ccsgaReps;
+  //   } else {
+  //     print("representatives response unsuccessful");
+  //     return false;
+  //   }
+  //
+  //   if (adminsResponse.item2 != null) {
+  //     print("admins response successful");
+  //     admins = adminsResponse.item2.admins;
+  //     return true;
+  //   } else {
+  //     print("admins response unsuccessful");
+  //     return false;
+  //   }
+  // }
 
   @override
   String screenName() {

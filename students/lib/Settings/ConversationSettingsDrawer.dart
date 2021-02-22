@@ -24,11 +24,10 @@ class ConversationSettingsDrawer extends StatefulWidget {
 class _ConversationSettingsDrawerState
     extends State<ConversationSettingsDrawer> {
   bool anonymousIsSwitched = true;
-  User currentUser;
+  User currentUser = User(isCcsga: false);
 
   @override
   Widget build(BuildContext context) {
-    print(currentUser);
     if (currentUser.isCcsga) {
       anonymousIsSwitched = !widget.conversation.studentIdentityRevealed;
     }

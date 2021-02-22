@@ -32,13 +32,11 @@ class _MessageThreadState extends State<MessageThread> {
         physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         controller: _scrollController,
         itemBuilder: (context, index) {
-          print("Total messages: " + messages.length.toString());
-          print("Current user's username: " + widget.currentUser.username);
+          bool isMyMessage =
+              messages[index].sender.username == widget.currentUser.username;
+          print("Is my message: " + isMyMessage.toString());
           return MessageCard(
-              message: messages[index],
-              isMyMessage: messages[index].sender.username ==
-                      widget.currentUser.username ??
-                  false);
+              message: messages[index], isMyMessage: isMyMessage);
         },
       ),
     );

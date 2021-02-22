@@ -14,11 +14,11 @@ class MessageCard extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 5),
         child: FractionallySizedBox(
           alignment:
-              this.isMyMessage ? Alignment.centerLeft : Alignment.centerRight,
+              this.isMyMessage ? Alignment.centerRight : Alignment.centerLeft,
           widthFactor: 0.66,
           child: Align(
             alignment:
-                (this.isMyMessage ? Alignment.topLeft : Alignment.topRight),
+                (this.isMyMessage ? Alignment.topRight : Alignment.topLeft),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),

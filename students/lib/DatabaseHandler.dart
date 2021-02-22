@@ -2,6 +2,8 @@ import 'package:ccsga_comments/Models/BannedUsers.dart';
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
 import 'package:ccsga_comments/Models/ConversationUpdate.dart';
+import 'package:ccsga_comments/Models/NewAdmin.dart';
+import 'package:ccsga_comments/Models/NewRepresentative.dart';
 import 'package:ccsga_comments/Models/Representatives.dart';
 import 'package:tuple/tuple.dart';
 import 'package:http/http.dart' as http;
@@ -113,6 +115,20 @@ class DatabaseHandler {
     } else {
       return Tuple2<ChewedResponse, BannedUsers>(chewedResponse, null);
     }
+  }
+
+  Future<void> addRepresentative(String username) async {
+    final url = '/api/ccsga_reps/create';
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(NewRepresentative(newCCSGA: username)));
+  }
+
+  Future<void> addAdmin(String username) async {
+    final url = '/api/admins/create';
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(NewAdmin(newAdmin: username)));
   }
 
   Future<Tuple2<ChewedResponse, Representatives>> getRepresentatives() async {

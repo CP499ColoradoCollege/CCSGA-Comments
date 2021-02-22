@@ -229,8 +229,12 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                     child: Text("Confirm"),
                     onPressed: () {
                       bool isAdmin = _isAdminChecked;
-                      String email = _textEditingController.text;
-                      //TODO ADD USER TO BACKEND HERE
+                      String username = _textEditingController.text;
+                      if (_isAdminChecked) {
+                        DatabaseHandler.instance.addAdmin(username);
+                      } else {
+                        DatabaseHandler.instance.addRepresentative(username);
+                      }
                       Navigator.of(context).pop();
                     },
                   ),

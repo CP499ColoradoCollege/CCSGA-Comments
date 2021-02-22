@@ -119,7 +119,7 @@ def create_banned_user():
 
 @app.route("/api/admins")
 def get_admins():
-
+    
     # prevent non-signed in users from accessing
     if flask.session.get('CAS_USERNAME') == None:
         resp = make_response(jsonify({"message": "User not authenticated"}), 401)
@@ -137,11 +137,14 @@ def get_admins():
     conn.close()
     
     # proc_result == -200:
-    return make_response(jsonify({"admins": [row[0] for row in proc_result]}), 200)
+    admins = []
+    for row in proc_result:
+        admins.append({"username": row[0], "displayName": row[1], "isBanned": bool(row[2]), "isCCSGA": bool(row[3]), "isAdmin": bool(row[4])})
+    return make_response(jsonify({"admins": admins}), 200)
 
 @app.route("/api/ccsga_reps")
 def get_ccsga_reps():
-
+    
     # prevent non-signed in users from accessing
     if flask.session.get('CAS_USERNAME') == None:
         resp = make_response(jsonify({"message": "User not authenticated"}), 401)
@@ -159,11 +162,14 @@ def get_ccsga_reps():
     conn.close()
     
     # proc_result == -200:
-    return make_response(jsonify({"ccsgaReps": [row[0] for row in proc_result]}), 200)
+    reps = []
+    for row in proc_result:
+        reps.append({"username": row[0], "displayName": row[1], "isBanned": bool(row[2]), "isCCSGA": bool(row[3]), "isAdmin": bool(row[4])})
+    return make_response(jsonify({"ccsgaReps": reps}), 200)
 
 @app.route("/api/banned_users")
 def get_banned_users():
-
+    
     # prevent non-signed in users from accessing
     if flask.session.get('CAS_USERNAME') == None:
         resp = make_response(jsonify({"message": "User not authenticated"}), 401)
@@ -181,7 +187,10 @@ def get_banned_users():
     conn.close()
     
     # proc_result == -200:
-    return make_response(jsonify({"bannedUsers": [row[0] for row in proc_result]}), 200)
+    banned_users = []
+    for row in proc_result:
+        banned_users.append({"username": row[0], "displayName": row[1], "isBanned": bool(row[2]), "isCCSGA": bool(row[3]), "isAdmin": bool(row[4])})
+    return make_response(jsonify({"bannedUsers": banned_users}), 200)
 
 @app.route("/api/admins/<admin_to_remove>", methods=["DELETE"])
 def remove_admin(admin_to_remove):

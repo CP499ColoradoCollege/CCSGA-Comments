@@ -262,7 +262,7 @@ def create_stored_procedures():
                 IF NOT EXISTS (SELECT username FROM Users WHERE isAdmin AND username = requester) THEN
                     SELECT -403;
                 ELSE
-                    SELECT username FROM Users WHERE isAdmin;
+                    SELECT username, displayName, isBanned, isCCSGA, isAdmin FROM Users WHERE isAdmin;
                 END IF;
             END ;
         ''',
@@ -271,7 +271,7 @@ def create_stored_procedures():
                 IF NOT EXISTS (SELECT username FROM Users WHERE isAdmin AND username = requester) THEN
                     SELECT -403;
                 ELSE
-                    SELECT username FROM Users WHERE isCCSGA;
+                    SELECT username, displayName, isBanned, isCCSGA, isAdmin FROM Users WHERE isCCSGA;
                 END IF;
             END ;
         ''',
@@ -280,7 +280,7 @@ def create_stored_procedures():
                 IF NOT EXISTS (SELECT username FROM Users WHERE isAdmin AND username = requester) THEN
                     SELECT -403;
                 ELSE
-                    SELECT username FROM Users WHERE isBanned;
+                    SELECT username, displayName, isBanned, isCCSGA, isAdmin FROM Users WHERE isBanned;
                 END IF;
             END ;
         '''

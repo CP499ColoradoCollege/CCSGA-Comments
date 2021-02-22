@@ -1,9 +1,11 @@
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
+import 'package:ccsga_comments/Models/ConversationUpdate.dart';
 import 'package:tuple/tuple.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'Models/Admins.dart';
 import 'Models/User.dart';
 
 class DatabaseHandler {
@@ -83,6 +85,32 @@ class DatabaseHandler {
       return Tuple2<ChewedResponse, Conversation>(chewedResponse, conv);
     } else {
       return Tuple2<ChewedResponse, Conversation>(chewedResponse, null);
+    }
+  }
+
+  Future<void> updateConversation(
+      int conversationId, ConversationUpdate conversationUpdate) async {
+    final url = '/api/conversations/$conversationId';
+    await http.patch(
+      url,
+      body: conversationUpdate,
+      headers: {"Content-Type": "application/json"},
+    );
+  }
+
+  // get messages and other details of a single conversation
+  Future<Tuple2<ChewedResponse, Admins>> getAdmins() async {
+    final url = '/api/admins';
+    var response =
+        await http.get(url, headers: {"Content-Type": "application/json"});
+    var chewedResponse = ChewedResponse();
+    chewedResponse.chewStatusCode(response.statusCode);
+    // only if the transaction is successful, will there will be a conversation obj in the response
+    if (response.statusCode == 200) {
+      Admins admins = Admins.fromJson(jsonDecode(response.body));
+      return Tuple2<ChewedResponse, Admins>(chewedResponse, admins);
+    } else {
+      return Tuple2<ChewedResponse, Admins>(chewedResponse, null);
     }
   }
 

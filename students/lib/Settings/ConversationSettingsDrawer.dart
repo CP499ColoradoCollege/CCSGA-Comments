@@ -1,5 +1,6 @@
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
+import 'package:ccsga_comments/Models/ConversationUpdate.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
@@ -127,6 +128,14 @@ class _ConversationSettingsDrawerState
     );
 
     if (isConfirmed && anonymousIsSwitched) {
+      DatabaseHandler.instance.updateConversation(
+          widget.conversation.id,
+          ConversationUpdate(
+              revealIdentity: true,
+              setArchived: null,
+              setLabels: null,
+              setRead: null,
+              setStatus: null));
       setState(() {
         anonymousIsSwitched = false;
       });

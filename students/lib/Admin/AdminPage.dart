@@ -1,7 +1,12 @@
 import 'package:ccsga_comments/Admin/UserCard.dart';
 import 'package:ccsga_comments/BasePage/BasePage.dart';
+import 'package:ccsga_comments/Models/Admins.dart';
+import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
+import 'package:tuple/tuple.dart';
+
+import '../DatabaseHandler.dart';
 
 class AdminPage extends BasePage {
   AdminPage({Key key}) : super(key: key);
@@ -11,7 +16,7 @@ class AdminPage extends BasePage {
 }
 
 class _AdminPageState extends BaseState<AdminPage> with BasicPage {
-  List<User> admins = [];
+  List<String> admins = [];
   List<User> representatives = [];
   List<User> bannedUsers = [];
 
@@ -21,57 +26,85 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
 
   @override
   Widget body() {
-    getUsers();
-
     return Container(
       padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-      child: ListView(
-        children: [
-          Center(
-            child: Text(
-              "Admins",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-            ),
-          ),
-          ListView.builder(
-              padding: const EdgeInsets.all(8),
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: admins.length,
-              itemBuilder: (BuildContext context, int index) {
-                return UserCard(admins[index]);
-              }),
-          Center(
-            child: Text(
-              "Representatives",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-            ),
-          ),
-          ListView.builder(
-              padding: const EdgeInsets.all(8),
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: representatives.length,
-              itemBuilder: (BuildContext context, int index) {
-                return UserCard(representatives[index]);
-              }),
-          Center(
-            child: Text(
-              "Banned users",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-            ),
-          ),
-          ListView.builder(
-              padding: const EdgeInsets.all(8),
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: bannedUsers.length,
-              itemBuilder: (BuildContext context, int index) {
-                return UserCard(bannedUsers[index]);
-              }),
-        ],
-      ),
+      child: FutureBuilder<bool>(
+          future: _getAdminsData(),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if (snapshot.hasData) {
+              return ListView(
+                children: [
+                  Center(
+                    child: Text(
+                      "Admins",
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                    ),
+                  ),
+                  ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: admins.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return UserCard(User(
+                            isAdmin: true,
+                            isBanned: false,
+                            isCcsga: false,
+                            isSignedIn: true,
+                            username: admins[index],
+                            displayName: ""));
+                      }),
+                  Center(
+                    child: Text(
+                      "Representatives",
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                    ),
+                  ),
+                  ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: representatives.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return UserCard(representatives[index]);
+                      }),
+                  Center(
+                    child: Text(
+                      "Banned users",
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                    ),
+                  ),
+                  ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: bannedUsers.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return UserCard(bannedUsers[index]);
+                      }),
+                ],
+              );
+            } else {
+              return CircularProgressIndicator();
+            }
+          }),
     );
+  }
+
+  Future<bool> _getAdminsData() async {
+    Tuple2<ChewedResponse, Admins> adminsReponse =
+        await DatabaseHandler.instance.getAdmins();
+
+    if (adminsReponse.item2 != null) {
+      print("admins response successful");
+      admins = adminsReponse.item2.admins;
+    } else {
+      print("admins response unsuccessful");
+      return false;
+    }
   }
 
   @override
@@ -248,66 +281,5 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
       icon: Icon(Icons.not_interested),
       backgroundColor: Theme.of(context).accentColor,
     );
-  }
-
-  void getUsers() async {
-    //TODO Add async get admins and reps
-    admins = [
-      User(
-          displayName: "Sam",
-          isAdmin: true,
-          isBanned: false,
-          isCcsga: false,
-          isSignedIn: false,
-          username: "admin1"),
-      User(
-          displayName: "Ely",
-          isAdmin: true,
-          isBanned: false,
-          isCcsga: false,
-          isSignedIn: false,
-          username: "admin2"),
-      User(
-          displayName: "Viktor",
-          isAdmin: true,
-          isBanned: false,
-          isCcsga: false,
-          isSignedIn: false,
-          username: "admin3"),
-    ];
-
-    representatives = [
-      User(
-          displayName: "Fer",
-          isAdmin: true,
-          isBanned: false,
-          isCcsga: false,
-          isSignedIn: false,
-          username: "rep1"),
-      User(
-          displayName: "Sarah",
-          isAdmin: true,
-          isBanned: false,
-          isCcsga: false,
-          isSignedIn: false,
-          username: "rep2"),
-    ];
-
-    bannedUsers = [
-      User(
-          displayName: "BadGuy",
-          isAdmin: true,
-          isBanned: false,
-          isCcsga: false,
-          isSignedIn: false,
-          username: "rep1"),
-      User(
-          displayName: "MeanieGirl",
-          isAdmin: true,
-          isBanned: false,
-          isCcsga: false,
-          isSignedIn: false,
-          username: "rep2"),
-    ];
   }
 }

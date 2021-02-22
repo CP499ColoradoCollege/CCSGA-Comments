@@ -22,6 +22,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
+<<<<<<< Updated upstream
     <list default="true" id="c55fb4b5-9a91-4d64-8ae9-fdb732a28e86" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
 <<<<<<< HEAD
@@ -31,12 +32,16 @@
       <change beforePath="$PROJECT_DIR$/students/lib/Conversation/MessageThread.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Conversation/MessageThread.dart" afterDir="false" />
 >>>>>>> main
     </list>
+=======
+    <list default="true" id="637e0bee-50c7-494e-a798-066c3517df4e" name="Default Changelist" comment="" />
+>>>>>>> Stashed changes
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
+<<<<<<< Updated upstream
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -44,6 +49,8 @@
       </list>
     </option>
   </component>
+=======
+>>>>>>> Stashed changes
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -63,8 +70,11 @@
     <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
     <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
+<<<<<<< Updated upstream
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
     <property name="show.migrate.to.gradle.popup" value="false" />
+=======
+>>>>>>> Stashed changes
   </component>
   <component name="RunManager">
     <configuration default="true" type="FlutterRunConfigurationType" factoryName="Flutter">
@@ -213,8 +223,28 @@
     <state x="3121" y="589" width="670" height="158" key="search.everywhere.popup" timestamp="1613949735546">
       <screen x="2560" y="345" width="1792" height="1095" />
     </state>
+<<<<<<< Updated upstream
     <state x="561" y="269" width="670" height="158" key="search.everywhere.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613946410423" />
     <state x="3121" y="589" width="670" height="158" key="search.everywhere.popup/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613949735546" />
 >>>>>>> main
+=======
+    <state x="3193" y="686" key="#com.intellij.ide.util.TreeFileChooserDialog/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613961527047" />
+    <state width="875" height="210" key="GridCell.Tab.0.bottom" timestamp="1613961651113">
+      <screen x="2560" y="345" width="1792" height="1095" />
+    </state>
+    <state width="875" height="210" key="GridCell.Tab.0.bottom/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613961651113" />
+    <state width="875" height="210" key="GridCell.Tab.0.center" timestamp="1613961651112">
+      <screen x="2560" y="345" width="1792" height="1095" />
+    </state>
+    <state width="875" height="210" key="GridCell.Tab.0.center/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613961651112" />
+    <state width="875" height="210" key="GridCell.Tab.0.left" timestamp="1613961651112">
+      <screen x="2560" y="345" width="1792" height="1095" />
+    </state>
+    <state width="875" height="210" key="GridCell.Tab.0.left/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613961651112" />
+    <state width="875" height="210" key="GridCell.Tab.0.right" timestamp="1613961651112">
+      <screen x="2560" y="345" width="1792" height="1095" />
+    </state>
+    <state width="875" height="210" key="GridCell.Tab.0.right/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613961651112" />
+>>>>>>> Stashed changes
   </component>
 </project>

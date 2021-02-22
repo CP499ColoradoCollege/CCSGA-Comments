@@ -2,13 +2,7 @@ import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 
 class UserCard extends StatefulWidget {
-  User user = User(
-      isCcsga: false,
-      isBanned: false,
-      isAdmin: false,
-      displayName: "Test",
-      username: "username",
-      isSignedIn: false);
+  User user;
 
   @required
   UserCard(this.user);
@@ -20,7 +14,10 @@ class UserCard extends StatefulWidget {
 class _UserCardState extends State<UserCard> {
   @override
   Widget build(BuildContext context) {
-    print("User card created for: " + widget.user.toString());
+    var username = widget.user.username ?? "Null_username";
+    if (widget.user != null) {
+      print("User card created for: " + widget.user.toString());
+    }
     return Center(
       child: Card(
         shape: RoundedRectangleBorder(
@@ -33,7 +30,7 @@ class _UserCardState extends State<UserCard> {
         child: ListTile(
           contentPadding: EdgeInsets.all(7.5),
           leading: Icon(Icons.person_outline),
-          title: Text(widget.user.username),
+          title: Text(username),
           trailing: IconButton(
             icon: Icon(Icons.remove_circle_outline),
             color: Colors.red,
@@ -51,7 +48,9 @@ class _UserCardState extends State<UserCard> {
 
   void _showMyDialog() async {
     User user = widget.user;
-
+    if (user == null) {
+      return;
+    }
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!

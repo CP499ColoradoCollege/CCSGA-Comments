@@ -1,70 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
-  </component>
-  <component name="BranchesTreeState">
-    <expand>
-      <path>
-        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-      </path>
-      <path>
-        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-      </path>
-      <path>
-        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
-      </path>
-    </expand>
-    <select />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="c55fb4b5-9a91-4d64-8ae9-fdb732a28e86" name="Default Changelist" comment="">
+    <list default="true" id="637e0bee-50c7-494e-a798-066c3517df4e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-<<<<<<< HEAD
-      <change beforePath="$PROJECT_DIR$/students/lib/ConversationList/ConversationListCard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/ConversationList/ConversationListCard.dart" afterDir="false" />
-=======
-      <change beforePath="$PROJECT_DIR$/students/lib/Conversation/MessageCard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Conversation/MessageCard.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/lib/Conversation/MessageThread.dart" beforeDir="false" afterPath="$PROJECT_DIR$/students/lib/Conversation/MessageThread.dart" afterDir="false" />
->>>>>>> main
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Dart File" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectId" id="1oJcrVb9VvWX9YGqh948CFMoo0H" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
-  <component name="ProjectViewState">
-    <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showLibraryContents" value="true" />
-  </component>
   <component name="PropertiesComponent">
-    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
-    <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
     <property name="dart.analysis.tool.window.visible" value="false" />
-    <property name="io.flutter.reload.alreadyRun" value="true" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
-    <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
   <component name="RunManager">
     <configuration default="true" type="FlutterRunConfigurationType" factoryName="Flutter">
@@ -80,141 +32,19 @@
     <configuration />
   </component>
   <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="c55fb4b5-9a91-4d64-8ae9-fdb732a28e86" name="Default Changelist" comment="" />
-      <created>1613008332242</created>
-      <option name="number" value="Default" />
-      <option name="presentableId" value="Default" />
-      <updated>1613008332242</updated>
-    </task>
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="531" y="263" width="820" height="508" key="#Notifications" timestamp="1613404135831">
-      <screen x="0" y="25" width="1792" height="1095" />
-    </state>
-    <state x="531" y="263" width="820" height="508" key="#Notifications/0.25.1792.1095@0.25.1792.1095" timestamp="1613404135831" />
-    <state x="496" y="217" key="#Plugins" timestamp="1613516744671">
-      <screen x="0" y="25" width="1792" height="1095" />
-    </state>
-    <state x="496" y="217" key="#Plugins/0.25.1792.1095@0.25.1792.1095" timestamp="1613516744671" />
-    <state x="360" y="231" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1613008747895">
-      <screen x="0" y="25" width="1792" height="1095" />
-    </state>
-    <state x="360" y="231" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.25.1792.1095@0.25.1792.1095" timestamp="1613008747895" />
-    <state x="633" y="366" key="#com.intellij.ide.util.TreeFileChooserDialog" timestamp="1613008668365">
-      <screen x="0" y="25" width="1792" height="1095" />
-    </state>
-    <state x="633" y="366" key="#com.intellij.ide.util.TreeFileChooserDialog/0.25.1792.1095@0.25.1792.1095" timestamp="1613008668365" />
-    <state x="3194" y="643" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1613933179627">
+    <state x="2920" y="551" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1613961548253">
       <screen x="2560" y="345" width="1792" height="1095" />
     </state>
-    <state x="3194" y="643" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613933179627" />
-    <state x="528" y="312" key="#main.dart" timestamp="1613008506696">
-      <screen x="0" y="25" width="1792" height="1095" />
-    </state>
-    <state x="528" y="312" key="#main.dart/0.25.1792.1095@0.25.1792.1095" timestamp="1613008506696" />
-<<<<<<< HEAD
-    <state width="1750" height="288" key="GridCell.Tab.0.bottom" timestamp="1613934965125">
-=======
-    <state x="2575" y="360" width="1762" height="1065" maximized="true" key="DiffContextDialog" timestamp="1613951628201">
+    <state x="2920" y="551" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613961548253" />
+    <state x="3193" y="686" key="#com.intellij.ide.util.TreeFileChooserDialog" timestamp="1613961527047">
       <screen x="2560" y="345" width="1792" height="1095" />
     </state>
-    <state x="2575" y="360" width="1762" height="1065" maximized="true" key="DiffContextDialog/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613951628201" />
-    <state width="1750" height="208" key="GridCell.Tab.0.bottom" timestamp="1613941185747">
->>>>>>> main
-      <screen x="2560" y="345" width="1792" height="1095" />
-    </state>
-    <state width="1750" height="147" key="GridCell.Tab.0.bottom/0.25.1792.1095@0.25.1792.1095" timestamp="1613860710403" />
-    <state width="1750" height="147" key="GridCell.Tab.0.bottom/0.25.2560.1415/2560.345.1792.1095@0.25.2560.1415" timestamp="1613865740565" />
-<<<<<<< HEAD
-    <state width="1750" height="288" key="GridCell.Tab.0.bottom/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613934965125" />
-    <state width="1750" height="288" key="GridCell.Tab.0.center" timestamp="1613934965125">
-=======
-    <state width="1750" height="208" key="GridCell.Tab.0.bottom/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613941185747" />
-    <state width="1750" height="208" key="GridCell.Tab.0.center" timestamp="1613941185746">
->>>>>>> main
-      <screen x="2560" y="345" width="1792" height="1095" />
-    </state>
-    <state width="1750" height="147" key="GridCell.Tab.0.center/0.25.1792.1095@0.25.1792.1095" timestamp="1613860710403" />
-    <state width="1750" height="147" key="GridCell.Tab.0.center/0.25.2560.1415/2560.345.1792.1095@0.25.2560.1415" timestamp="1613865740564" />
-<<<<<<< HEAD
-    <state width="1750" height="288" key="GridCell.Tab.0.center/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613934965125" />
-    <state width="1750" height="288" key="GridCell.Tab.0.left" timestamp="1613934965124">
-=======
-    <state width="1750" height="208" key="GridCell.Tab.0.center/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613941185746" />
-    <state width="1750" height="208" key="GridCell.Tab.0.left" timestamp="1613941185746">
->>>>>>> main
-      <screen x="2560" y="345" width="1792" height="1095" />
-    </state>
-    <state width="1750" height="147" key="GridCell.Tab.0.left/0.25.1792.1095@0.25.1792.1095" timestamp="1613860710403" />
-    <state width="1750" height="147" key="GridCell.Tab.0.left/0.25.2560.1415/2560.345.1792.1095@0.25.2560.1415" timestamp="1613865740564" />
-<<<<<<< HEAD
-    <state width="1750" height="288" key="GridCell.Tab.0.left/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613934965124" />
-    <state width="1750" height="288" key="GridCell.Tab.0.right" timestamp="1613934965125">
-=======
-    <state width="1750" height="208" key="GridCell.Tab.0.left/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613941185746" />
-    <state width="1750" height="208" key="GridCell.Tab.0.right" timestamp="1613941185746">
->>>>>>> main
-      <screen x="2560" y="345" width="1792" height="1095" />
-    </state>
-    <state width="1750" height="147" key="GridCell.Tab.0.right/0.25.1792.1095@0.25.1792.1095" timestamp="1613860710403" />
-    <state width="1750" height="147" key="GridCell.Tab.0.right/0.25.2560.1415/2560.345.1792.1095@0.25.2560.1415" timestamp="1613865740565" />
-<<<<<<< HEAD
-    <state width="1750" height="288" key="GridCell.Tab.0.right/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613934965125" />
-    <state x="397" y="208" key="SettingsEditor" timestamp="1613402892729">
-      <screen x="0" y="25" width="1792" height="1095" />
-    </state>
-    <state x="397" y="208" key="SettingsEditor/0.25.1792.1095@0.25.1792.1095" timestamp="1613402892729" />
-    <state x="3239" y="810" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1613934008991">
-      <screen x="2560" y="345" width="1792" height="1095" />
-    </state>
-    <state x="3239" y="810" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613934008991" />
-=======
-    <state width="1750" height="208" key="GridCell.Tab.0.right/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613941185746" />
-    <state x="2957" y="528" key="SettingsEditor" timestamp="1613949738029">
-      <screen x="2560" y="345" width="1792" height="1095" />
-    </state>
-    <state x="397" y="208" key="SettingsEditor/0.25.1792.1095@0.25.1792.1095" timestamp="1613402892729" />
-    <state x="2957" y="528" key="SettingsEditor/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613949738029" />
-    <state x="3148" y="525" width="803" height="735" key="find.popup" timestamp="1613948927707">
-      <screen x="2560" y="345" width="1792" height="1095" />
-    </state>
-    <state x="588" y="205" width="803" height="735" key="find.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613946433562" />
-    <state x="3148" y="525" width="803" height="735" key="find.popup/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613948927707" />
->>>>>>> main
-    <state width="600" height="428" key="javadoc.popup" timestamp="1613784635657">
-      <screen x="0" y="25" width="1792" height="1095" />
-    </state>
-    <state width="600" height="428" key="javadoc.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613784635657" />
-    <state x="561" y="265" key="run.anything.popup" timestamp="1613868453215">
-      <screen x="0" y="25" width="1792" height="1095" />
-    </state>
-    <state x="561" y="265" key="run.anything.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613868453215" />
-<<<<<<< HEAD
-    <state x="3121" y="589" width="670" height="158" key="search.everywhere.popup" timestamp="1613926367826">
-      <screen x="2560" y="345" width="1792" height="1095" />
-    </state>
-    <state x="561" y="269" width="670" height="158" key="search.everywhere.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613793771168" />
-    <state x="3121" y="589" width="670" height="158" key="search.everywhere.popup/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613926367826" />
-=======
-    <state x="3121" y="589" width="670" height="158" key="search.everywhere.popup" timestamp="1613949735546">
-      <screen x="2560" y="345" width="1792" height="1095" />
-    </state>
-    <state x="561" y="269" width="670" height="158" key="search.everywhere.popup/0.25.1792.1095@0.25.1792.1095" timestamp="1613946410423" />
-    <state x="3121" y="589" width="670" height="158" key="search.everywhere.popup/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613949735546" />
->>>>>>> main
+    <state x="3193" y="686" key="#com.intellij.ide.util.TreeFileChooserDialog/0.25.2560.1415/2560.345.1792.1095@2560.345.1792.1095" timestamp="1613961527047" />
   </component>
 </project>

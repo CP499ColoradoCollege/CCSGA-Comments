@@ -24,8 +24,8 @@ class MessageCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: (this.isMyMessage
-                    ? Colors.grey.shade200
-                    : Colors.blue[200]),
+                    ? Colors.blue[200]
+                    : Colors.grey.shade200),
               ),
               padding: EdgeInsets.all(16),
               child: Column(

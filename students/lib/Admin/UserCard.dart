@@ -18,9 +18,6 @@ class _UserCardState extends State<UserCard> {
   @override
   Widget build(BuildContext context) {
     var username = widget.user.username ?? "Null_username";
-    if (widget.user != null) {
-      print("User card created for: " + widget.user.toString());
-    }
     return Center(
       child: Card(
         shape: RoundedRectangleBorder(

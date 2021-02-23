@@ -189,7 +189,6 @@ class DatabaseHandler {
     final url = '/api/admins/' + username;
     var response =
         await http.delete(url, headers: {"Content-Type": "application/json"});
-    print(response);
     var chewedResponse = ChewedResponse();
     chewedResponse.chewStatusCode(response.statusCode);
     return chewedResponse;
@@ -199,7 +198,6 @@ class DatabaseHandler {
     final url = '/api/ccsga_reps/' + username;
     var response =
         await http.delete(url, headers: {"Content-Type": "application/json"});
-    print(response);
     var chewedResponse = ChewedResponse();
     chewedResponse.chewStatusCode(response.statusCode);
     return chewedResponse;
@@ -209,7 +207,6 @@ class DatabaseHandler {
     final url = '/api/banned_users/' + username;
     var response =
         await http.delete(url, headers: {"Content-Type": "application/json"});
-    print(response);
     var chewedResponse = ChewedResponse();
     chewedResponse.chewStatusCode(response.statusCode);
     return chewedResponse;

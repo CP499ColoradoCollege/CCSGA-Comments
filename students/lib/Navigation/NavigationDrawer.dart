@@ -59,7 +59,6 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
             ),
             contentPadding: EdgeInsets.all(10),
             onTap: () {
-              print("Home Page Tapped");
               // Update the state of the app
               // ...
               // Then close the drawer
@@ -78,7 +77,6 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
             ),
             contentPadding: EdgeInsets.all(10),
             onTap: () {
-              print("Messages Page Tapped");
               // Update the state of the app
 
               // Then close the drawer
@@ -102,7 +100,6 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                     ),
                     contentPadding: EdgeInsets.all(10),
                     onTap: () {
-                      print("Admin controls tapped");
                       // Then close the drawer
                       if (widget.hasHeader) {
                         Navigator.pop(context);
@@ -124,7 +121,6 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
             ),
             contentPadding: EdgeInsets.all(10),
             onTap: () {
-              print("Log Out Tapped");
               logoutTapped();
               // Update the state of the app
               setState(() {});
@@ -151,10 +147,8 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
         await DatabaseHandler.instance.getAuthenticatedUser();
 
     if (userResponse.item2 != null) {
-      print("user response successful");
       return userResponse.item2;
     } else {
-      print("user response unsuccessful");
       return null;
     }
   }

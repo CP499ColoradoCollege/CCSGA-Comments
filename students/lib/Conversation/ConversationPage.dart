@@ -106,7 +106,6 @@ class _ConversationPageState extends BaseState<ConversationPage>
   Icon get rightButtonIcon => Icon(Icons.settings);
 
   Future<void> updateConversationStatus(String status) async {
-    print("Updating conversation status...");
     DatabaseHandler.instance.updateConversation(
         _conversation.id, ConversationUpdate(setStatus: status));
   }
@@ -122,26 +121,21 @@ class _ConversationPageState extends BaseState<ConversationPage>
         await DatabaseHandler.instance.getAuthenticatedUser();
 
     if (userResponse.item2 != null) {
-      print("user response successful");
       _currentUser = userResponse.item2;
     } else {
-      print("user response unsuccessful");
       return false;
     }
 
     // transaction successful, there was a conv obj sent in response, otherwise null
     if (responseTuple.item2 != null) {
-      print("responseTuple.item2.messages -> ${responseTuple.item2.messages}");
       // use setState to update the data in the UI with conv
       _conversation = responseTuple.item2;
       // FutureBuilder requires that we return something
-      print("conversation response successful");
       return true;
     } else {
       setState(() {
         // _errorMessage = responseTuple.item1.message;
       });
-      print("conversation response unsuccessful");
       return false;
     }
 

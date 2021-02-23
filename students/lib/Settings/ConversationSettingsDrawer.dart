@@ -153,10 +153,8 @@ class _ConversationSettingsDrawerState
         await DatabaseHandler.instance.getAuthenticatedUser();
 
     if (userResponse.item2 != null) {
-      print("user response successful");
       return userResponse.item2;
     } else {
-      print("user response unsuccessful");
       return null;
     }
   }

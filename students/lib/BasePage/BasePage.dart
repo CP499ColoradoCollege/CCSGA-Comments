@@ -134,7 +134,6 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
         await DatabaseHandler.instance.getAuthenticatedUser();
 
     if (userResponse.item2 != null) {
-      print("user response successful");
       return userResponse.item2;
     } else {
       throw Exception("Get current user failed");

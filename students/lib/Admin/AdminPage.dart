@@ -192,7 +192,6 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
       // then parse the JSON.
       return adminsResponse.item2.admins;
     } else {
-      print('Failed to load admins');
       return [];
     }
   }
@@ -206,7 +205,6 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
       // then parse the JSON.
       return repsRepsonse.item2.ccsgaReps;
     } else {
-      print('Failed to load representatives');
       return [];
     }
   }
@@ -220,7 +218,6 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
       // then parse the JSON.
       return bannedUsersResponse.item2.bannedUsers;
     } else {
-      print('Failed to load admins');
       return [];
     }
   }

@@ -43,149 +43,149 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
       ),
     );
 
-    return ListView(padding: EdgeInsets.fromLTRB(10, 10, 10, 0), children: [
-      FutureBuilder<User>(
-          future: currentUser,
-          builder: (context, snapshot) {
+    return FutureBuilder<User>(
+        future: currentUser,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
             if (snapshot.hasData) {
-              if (snapshot.hasData) {
-                if (snapshot.data.isAdmin) {
-                  return ListView(
-                    children: [
-                      Center(
-                        child: Text(
-                          "Admins",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 20),
-                        ),
+              if (snapshot.data.isAdmin) {
+                return ListView(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  children: [
+                    Center(
+                      child: Text(
+                        "Admins",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500, fontSize: 20),
                       ),
-                      FutureBuilder<List<User>>(
-                          future: admins,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              if (snapshot.data.length == 0) {
-                                return noUsersEmptyCard;
-                              } else {
-                                return ListView.builder(
-                                    padding: const EdgeInsets.all(8),
-                                    scrollDirection: Axis.vertical,
-                                    shrinkWrap: true,
-                                    itemCount: snapshot.data.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return UserCard(
-                                          snapshot.data[index], UserType.Admin);
-                                    });
-                              }
+                    ),
+                    FutureBuilder<List<User>>(
+                        future: admins,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data.length == 0) {
+                              return noUsersEmptyCard;
                             } else {
-                              return Flexible(
-                                child: Center(
-                                  child: SizedBox(
-                                    width: 50,
-                                    height: 50,
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                              );
+                              return ListView.builder(
+                                  padding: const EdgeInsets.all(8),
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  itemCount: snapshot.data.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return UserCard(
+                                        snapshot.data[index], UserType.Admin);
+                                  });
                             }
-                          }),
-                      Center(
-                        child: Text(
-                          "Representatives",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 20),
-                        ),
+                          } else {
+                            return Flexible(
+                              child: Center(
+                                child: SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                            );
+                          }
+                        }),
+                    Center(
+                      child: Text(
+                        "Representatives",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500, fontSize: 20),
                       ),
-                      FutureBuilder<List<User>>(
-                          future: representatives,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              if (snapshot.data.length == 0) {
-                                return noUsersEmptyCard;
-                              } else {
-                                return ListView.builder(
-                                    padding: const EdgeInsets.all(8),
-                                    scrollDirection: Axis.vertical,
-                                    shrinkWrap: true,
-                                    itemCount: snapshot.data.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return UserCard(snapshot.data[index],
-                                          UserType.Representative);
-                                    });
-                              }
+                    ),
+                    FutureBuilder<List<User>>(
+                        future: representatives,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data.length == 0) {
+                              return noUsersEmptyCard;
                             } else {
-                              return Flexible(
-                                child: Center(
-                                  child: SizedBox(
-                                    width: 50,
-                                    height: 50,
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                              );
+                              return ListView.builder(
+                                  padding: const EdgeInsets.all(8),
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  itemCount: snapshot.data.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return UserCard(snapshot.data[index],
+                                        UserType.Representative);
+                                  });
                             }
-                          }),
-                      Center(
-                        child: Text(
-                          "Banned users",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 20),
-                        ),
+                          } else {
+                            return Flexible(
+                              child: Center(
+                                child: SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                            );
+                          }
+                        }),
+                    Center(
+                      child: Text(
+                        "Banned users",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500, fontSize: 20),
                       ),
-                      FutureBuilder<List<User>>(
-                          future: bannedUsers,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              if (snapshot.data.length == 0) {
-                                return noUsersEmptyCard;
-                              } else {
-                                return ListView.builder(
-                                    padding: const EdgeInsets.all(8),
-                                    scrollDirection: Axis.vertical,
-                                    shrinkWrap: true,
-                                    itemCount: snapshot.data.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return UserCard(snapshot.data[index],
-                                          UserType.Student);
-                                    });
-                              }
+                    ),
+                    FutureBuilder<List<User>>(
+                        future: bannedUsers,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data.length == 0) {
+                              return noUsersEmptyCard;
                             } else {
-                              return Flexible(
-                                child: Center(
-                                  child: SizedBox(
-                                    width: 50,
-                                    height: 50,
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                              );
+                              return ListView.builder(
+                                  padding: const EdgeInsets.all(8),
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  itemCount: snapshot.data.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return UserCard(
+                                        snapshot.data[index], UserType.Student);
+                                  });
                             }
-                          }),
-                    ],
-                  );
-                } else {
-                  return Center(
-                    child: Text("Page forbidden..."),
-                  );
-                }
+                          } else {
+                            return Flexible(
+                              child: Center(
+                                child: SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                            );
+                          }
+                        }),
+                  ],
+                );
               } else {
-                return Text("Loading current user data...");
+                return Center(
+                  child: Text("Page forbidden..."),
+                );
               }
             } else {
-              return Flexible(
-                child: Center(
-                  child: SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-              );
+              return Text("Loading current user data...");
             }
-          })
-    ]);
+          } else {
+            return Flexible(
+              child: Center(
+                child: SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            );
+          }
+        });
   }
 
   Future<List<User>> fetchAdmins() async {

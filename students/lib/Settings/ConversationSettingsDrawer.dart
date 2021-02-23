@@ -143,4 +143,19 @@ class _ConversationSettingsDrawerState
       });
     }
   }
+
+  Future<bool> _getUserData() async {
+    Tuple2<ChewedResponse, User> userResponse =
+        await DatabaseHandler.instance.getAuthenticatedUser();
+
+    if (userResponse.item2 != null) {
+      print("user response successful");
+      print(userResponse.item2);
+      currentUser = userResponse.item2;
+      return true;
+    } else {
+      print("user response unsuccessful");
+      return false;
+    }
+  }
 }

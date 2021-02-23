@@ -3,6 +3,7 @@ import 'package:ccsga_comments/Conversation/MessageThread.dart';
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
+import 'package:ccsga_comments/Models/ConversationUpdate.dart';
 import 'package:ccsga_comments/Models/GlobalEnums.dart';
 import 'package:ccsga_comments/Models/Message.dart';
 import 'package:ccsga_comments/Models/User.dart';
@@ -27,6 +28,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
   Conversation _conversation = Conversation();
   Map _pathParams;
   int _conversationId;
+  User _currentUser;
 
   @override
   void initState() {
@@ -46,10 +48,10 @@ class _ConversationPageState extends BaseState<ConversationPage>
               return Column(
                 children: [
                   ConversationStatus(this.updateConversationStatus,
-                      _conversation.status, this.currentUser.isCcsga ?? false),
+                      _conversation.status, this._currentUser.isCcsga ?? false),
                   MessageThread(
                     conv: this._conversation,
-                    currentUser: currentUser,
+                    currentUser: _currentUser,
                   ),
                   TextFormField(
                     controller: _messageFieldController,
@@ -99,81 +101,9 @@ class _ConversationPageState extends BaseState<ConversationPage>
   @override
   Icon get rightButtonIcon => Icon(Icons.settings);
 
-  Future<void> updateConversationStatus() async {
-    ConversationStatusLabel currentDropdownStatus =
-        ConversationStatusLabel.Unread;
-
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) {
-        return StatefulBuilder(builder: (context, setState) {
-          return AlertDialog(
-            title: Text("Update Conversation Status"),
-            content: SizedBox(
-              height: 125,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: DropdownButton<ConversationStatusLabel>(
-                        value: currentDropdownStatus,
-                        icon: Icon(Icons.arrow_downward),
-                        iconSize: 24,
-                        elevation: 16,
-                        underline: Container(
-                          height: 2,
-                          color: Theme.of(context).accentColor,
-                        ),
-                        onChanged: (ConversationStatusLabel newValue) {
-                          setState(() {
-                            currentDropdownStatus = newValue;
-                          });
-                        },
-                        items: [
-                          DropdownMenuItem(
-                            child: Text("Unread"),
-                            value: ConversationStatusLabel.Unread,
-                          ),
-                          DropdownMenuItem(
-                            child: Text("In Progress"),
-                            value: ConversationStatusLabel.InProgress,
-                          ),
-                          DropdownMenuItem(
-                            child: Text("Complete"),
-                            value: ConversationStatusLabel.InProgress,
-                          ),
-                          DropdownMenuItem(
-                            child: Text("Denied"),
-                            value: ConversationStatusLabel.InProgress,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                child: Text("Cancel"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                child: Text("Confirm"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
-      },
-    );
+  Future<void> updateConversationStatus(String status) async {
+    DatabaseHandler.instance.updateConversation(
+        _conversation.id, ConversationUpdate(setStatus: status));
   }
 
   Future<bool> _getConversationData() async {
@@ -188,7 +118,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
 
     if (userResponse.item2 != null) {
       print("user response successful");
-      currentUser = userResponse.item2;
+      _currentUser = userResponse.item2;
     } else {
       print("user response unsuccessful");
       return false;

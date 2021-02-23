@@ -51,7 +51,8 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                     Center(
                       child: Text(
                         "Admins",
-                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500, fontSize: 20),
                       ),
                     ),
                     FutureBuilder<List<User>>(
@@ -66,8 +67,10 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                                   scrollDirection: Axis.vertical,
                                   shrinkWrap: true,
                                   itemCount: snapshot.data.length,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    return UserCard(snapshot.data[index], UserType.Admin);
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return UserCard(
+                                        snapshot.data[index], UserType.Admin);
                                   });
                             }
                           } else {
@@ -85,7 +88,8 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                     Center(
                       child: Text(
                         "Representatives",
-                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500, fontSize: 20),
                       ),
                     ),
                     FutureBuilder<List<User>>(
@@ -100,9 +104,10 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                                   scrollDirection: Axis.vertical,
                                   shrinkWrap: true,
                                   itemCount: snapshot.data.length,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    return UserCard(
-                                        snapshot.data[index], UserType.Representative);
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return UserCard(snapshot.data[index],
+                                        UserType.Representative);
                                   });
                             }
                           } else {
@@ -120,7 +125,8 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                     Center(
                       child: Text(
                         "Banned users",
-                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500, fontSize: 20),
                       ),
                     ),
                     FutureBuilder<List<User>>(
@@ -135,8 +141,10 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                                   scrollDirection: Axis.vertical,
                                   shrinkWrap: true,
                                   itemCount: snapshot.data.length,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    return UserCard(snapshot.data[index], UserType.Student);
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return UserCard(
+                                        snapshot.data[index], UserType.Student);
                                   });
                             }
                           } else {
@@ -154,7 +162,9 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                   ],
                 );
               } else {
-                return Center(child: Text("Page forbidden..."),);
+                return Center(
+                  child: Text("Page forbidden..."),
+                );
               }
             } else {
               return Text("Loading current user data...");
@@ -170,7 +180,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
               ),
             );
           }
-        }),
+        });
   }
 
   Future<List<User>> fetchAdmins() async {

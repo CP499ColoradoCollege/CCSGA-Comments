@@ -94,9 +94,11 @@ class TestMessagesRoutes(unittest.TestCase):
         req = requests.post(f"{BASE_API_URL}/conversations/create", verify=False, headers=POST_HEADERS, json={"revealIdentity": revealIdentity, "messageBody": messageBody, "labels": labels})
         self.assertEqual(201, req.status_code)
 
-        # Get new ids
+        # Get new ids and note them for tearDown
         new_conv_id = req.json()["conversationId"]
         new_message_id = req.json()["messageId"]
+        self.conv_ids_for_cleanup.append(new_conv_id)
+        self.message_ids_for_cleanup.append(new_message_id)
         
         # Check that conversation was added
         self.conn, self.cur = get_conn_and_cursor()
@@ -172,6 +174,7 @@ class TestMessagesRoutes(unittest.TestCase):
             self.cur.execute("DELETE FROM MessageSettings WHERE messageId = ?;", (message_id,))
             self.cur.execute("DELETE FROM Messages WHERE id = ?;", (message_id,))
         for conv_id in self.conv_ids_for_cleanup:
+            self.cur.execute("DELETE FROM AppliedLabels WHERE conversationId = ?;", (conv_id,))
             self.cur.execute("DELETE FROM ConversationSettings WHERE conversationId = ?;", (conv_id,))
             self.cur.execute("DELETE FROM Conversations WHERE id = ?;", (conv_id,))
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))

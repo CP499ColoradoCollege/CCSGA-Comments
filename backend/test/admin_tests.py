@@ -549,6 +549,7 @@ class TestAdminRoutes(unittest.TestCase):
             self.cur.execute("DELETE FROM MessageSettings WHERE messageId = ?;", (message_id,))
             self.cur.execute("DELETE FROM Messages WHERE id = ?;", (message_id,))
         for conv_id in self.conv_ids_for_cleanup:
+            self.cur.execute("DELETE FROM AppliedLabels WHERE conversationId = ?;", (conv_id,))
             self.cur.execute("DELETE FROM ConversationSettings WHERE conversationId = ?;", (conv_id,))
             self.cur.execute("DELETE FROM Conversations WHERE id = ?;", (conv_id,))
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))

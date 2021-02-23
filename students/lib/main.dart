@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:url_strategy/url_strategy.dart';
 
 void main() {
-  setPathUrlStrategy();
+  // setPathUrlStrategy();
   runApp(CCSGACommentsApp());
 }
 

@@ -108,6 +108,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
   Icon get rightButtonIcon => Icon(Icons.settings);
 
   Future<void> updateConversationStatus(String status) async {
+    print("Updating conversation status...");
     DatabaseHandler.instance.updateConversation(
         _conversation.id, ConversationUpdate(setStatus: status));
   }

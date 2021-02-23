@@ -98,7 +98,7 @@ class DatabaseHandler {
     final url = '/api/conversations/$conversationId';
     await http.patch(
       url,
-      body: conversationUpdate,
+      body: conversationUpdateToJson(conversationUpdate),
       headers: {"Content-Type": "application/json"},
     );
   }

@@ -40,15 +40,18 @@ class _ConversationPageState extends BaseState<ConversationPage>
       padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
       child: Column(
         children: [
-          ConversationStatus("Pending"),
-          MessageThread(),
           FutureBuilder<bool>(
               future: _getConversationData(),
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                 if (snapshot.hasData) {
-                  return MessageThread(
-                    conv: this._conversation,
-                    currentUser: currentUser,
+                  return Column(
+                    children: [
+                      ConversationStatus(_conversation.status),
+                      MessageThread(
+                        conv: this._conversation,
+                        currentUser: currentUser,
+                      ),
+                    ],
                   );
                 } else {
                   return CircularProgressIndicator();

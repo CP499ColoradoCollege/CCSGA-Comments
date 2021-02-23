@@ -29,7 +29,6 @@ class TestAdminRoutes(unittest.TestCase):
         self.conv_ids_for_cleanup = []
         self.message_ids_for_cleanup = []
 
-
     def test_override_anonymity(self):
         
         # Create new conversation
@@ -78,7 +77,6 @@ class TestAdminRoutes(unittest.TestCase):
         conv = nonadmin_deanonymize_req.json()
         self.assertEqual('anonymous', conv["messages"][str(new_message_id)]["sender"]["username"])
         self.assertEqual('Anonymous', conv["messages"][str(new_message_id)]["sender"]["displayName"])
-
 
     def test_add_admin(self):
         
@@ -404,10 +402,138 @@ class TestAdminRoutes(unittest.TestCase):
         self.cur.nextset()
         self.assertFalse(is_banned)
     
+    def test_get_admins(self):
 
+        # Ensure signed-in user is not currently an admin, to check unauthorized requests
+        self.conn, self.cur = get_conn_and_cursor()
+        confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
 
-    
+        # Make request to get admins but with NO authentication
+        req = requests.get(f"{BASE_API_URL}/admins", verify=False)
+        self.assertEqual(401, req.status_code)
+        self.assertEqual(1, len(req.json()))
+        self.assertNotIn("admins", req.json().keys())
 
+        # Make unauthorized request to get admins (i.e., signed in but not as an admin)
+        req = requests.get(f"{BASE_API_URL}/admins", verify=False, headers=GET_HEADERS)
+        self.assertEqual(403, req.status_code)
+        self.assertEqual(1, len(req.json()))
+        self.assertNotIn("admins", req.json().keys())
+
+        # Give superficial admin privilege (although not actual conversation access) to signed in user
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("UPDATE Users SET isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+        
+        # Set up an admin and a non-admin
+        admin_username, admin_display_name = "test_user_1", "Test User 1"
+        confirm_user_in_db(admin_username, admin_display_name)
+        self.cur.callproc("add_admin", (admin_username, SIGNED_IN_USERNAME))
+        self.cur.nextset()
+        self.cur.callproc("remove_ccsga", (admin_username, SIGNED_IN_USERNAME))
+        self.cur.nextset()
+        non_admin_username, non_admin_display_name = "test_user_2", "Test User 2"
+        confirm_user_in_db(non_admin_username, non_admin_display_name)
+        self.cur.callproc("remove_admin", (non_admin_username, SIGNED_IN_USERNAME))
+        self.cur.nextset()
+        self.conn.commit()
+
+        # Make authorized request to get admins
+        req = requests.get(f"{BASE_API_URL}/admins", verify=False, headers=GET_HEADERS)
+        self.assertEqual(200, req.status_code)
+        self.assertIn({"username": admin_username, "displayName": admin_display_name, "isBanned": False, "isCCSGA": False, "isAdmin": True}, req.json().get("admins"))
+        self.assertIn(admin_username, [admin["username"] for admin in req.json().get("admins")])
+        self.assertNotIn(non_admin_username, [admin["username"] for admin in req.json().get("admins")])
+
+    def test_get_ccsga(self):
+
+        # Ensure signed-in user is not currently an admin, to check unauthorized requests
+        self.conn, self.cur = get_conn_and_cursor()
+        confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+
+        # Make request to get CCSGA reps but with NO authentication
+        req = requests.get(f"{BASE_API_URL}/ccsga_reps", verify=False)
+        self.assertEqual(401, req.status_code)
+        self.assertEqual(1, len(req.json()))
+        self.assertNotIn("ccsgaReps", req.json().keys())
+
+        # Make unauthorized request to get CCSGA reps (i.e., signed in but not as an admin)
+        req = requests.get(f"{BASE_API_URL}/ccsga_reps", verify=False, headers=GET_HEADERS)
+        self.assertEqual(403, req.status_code)
+        self.assertEqual(1, len(req.json()))
+        self.assertNotIn("ccsgaReps", req.json().keys())
+
+        # Give superficial admin privilege (although not actual conversation access) to signed in user
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("UPDATE Users SET isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+        
+        # Set up a rep and a non-rep
+        rep_username, rep_display_name = "test_user_1", "Test User 1"
+        confirm_user_in_db(rep_username, rep_display_name)
+        self.cur.callproc("remove_admin", (rep_username, SIGNED_IN_USERNAME))
+        self.cur.nextset()
+        self.cur.callproc("add_ccsga", (rep_username, SIGNED_IN_USERNAME))
+        self.cur.nextset()
+        non_rep_username, non_rep_display_name = "test_user_2", "Test User 2"
+        confirm_user_in_db(non_rep_username, non_rep_display_name)
+        self.cur.callproc("remove_ccsga", (non_rep_username, SIGNED_IN_USERNAME))
+        self.cur.nextset()
+        self.conn.commit()
+
+        # Make authorized request to get CCSGA reps
+        req = requests.get(f"{BASE_API_URL}/ccsga_reps", verify=False, headers=GET_HEADERS)
+        self.assertEqual(200, req.status_code)
+        self.assertIn({"username": rep_username, "displayName": rep_display_name, "isBanned": False, "isCCSGA": True, "isAdmin": False}, req.json().get("ccsgaReps"))
+        self.assertIn(rep_username, [rep["username"] for rep in req.json().get("ccsgaReps")])
+        self.assertNotIn(non_rep_username, [rep["username"] for rep in req.json().get("ccsgaReps")])
+
+    def test_get_banned(self):
+
+        # Ensure signed-in user is not currently an admin, to check unauthorized requests
+        self.conn, self.cur = get_conn_and_cursor()
+        confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+
+        # Make request to get banned users but with NO authentication
+        req = requests.get(f"{BASE_API_URL}/banned_users", verify=False)
+        self.assertEqual(401, req.status_code)
+        self.assertEqual(1, len(req.json()))
+        self.assertNotIn("bannedUsers", req.json().keys())
+
+        # Make unauthorized request to get banned users (i.e., signed in but not as an admin)
+        req = requests.get(f"{BASE_API_URL}/banned_users", verify=False, headers=GET_HEADERS)
+        self.assertEqual(403, req.status_code)
+        self.assertEqual(1, len(req.json()))
+        self.assertNotIn("bannedUsers", req.json().keys())
+
+        # Give superficial admin privilege (although not actual conversation access) to signed in user
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("UPDATE Users SET isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.conn.commit()
+        
+        # Set up a banned user and a non-banned user
+        banned_username, banned_display_name = "test_user_1", "Test User 1"
+        confirm_user_in_db(banned_username, banned_display_name)
+        self.cur.callproc("add_ban", (banned_username, SIGNED_IN_USERNAME))
+        self.cur.nextset()
+        non_banned_username, non_banned_display_name = "test_user_2", "Test User 2"
+        confirm_user_in_db(non_banned_username, non_banned_display_name)
+        self.cur.callproc("remove_ban", (non_banned_username, SIGNED_IN_USERNAME))
+        self.cur.nextset()
+        self.conn.commit()
+
+        # Make authorized request to get banned users
+        req = requests.get(f"{BASE_API_URL}/banned_users", verify=False, headers=GET_HEADERS)
+        self.assertEqual(200, req.status_code)
+        self.assertIn({"username": banned_username, "displayName": banned_display_name, "isBanned": True, "isCCSGA": False, "isAdmin": False}, req.json().get("bannedUsers"))
+        self.assertIn(banned_username, [user["username"] for user in req.json().get("bannedUsers")])
+        self.assertNotIn(non_banned_username, [user["username"] for user in req.json().get("bannedUsers")])
 
     def tearDown(self):
 

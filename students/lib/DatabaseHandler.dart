@@ -7,9 +7,6 @@ import 'dart:convert';
 import 'Models/User.dart';
 
 class DatabaseHandler {
-  // The Database instance variable used for database calls
-  //final Database db = database();
-
   // Singleton setup. To get the single instance of this class, use the getter: `DatabaseHandler.instance`
   DatabaseHandler._privateConstructor(); // Makes the only constructor private
   static final DatabaseHandler _instance = DatabaseHandler
@@ -27,25 +24,12 @@ class DatabaseHandler {
     if (response.statusCode == 200) {
       //we need a conv list here somehow
       Map<String, dynamic> jsonConvsMap = jsonDecode(response.body);
-      // List<Conversation> conversationList = List.from(jsonConvsMap.values);
       List<Conversation> conversationList = [];
-      for (var conv in jsonConvsMap.values.toList()) {
+      jsonConvsMap.forEach((id, conv) {
+        Conversation conversation = Conversation.fromJson(conv);
+        conversation.id = int.parse(id);
         conversationList.add(Conversation.fromJson(conv));
-      }
-      print("in DBhandler, convList[0] -> ${conversationList[0]}");
-      print(
-          "in DBhandler, labels of first conv -> ${conversationList[0].labels}");
-      print(
-          "in DBhandler, isArchived of first conv -> ${conversationList[0].isArchived}");
-      print(
-          "in DBhandler, messages of first conv -> ${conversationList[0].messages}");
-      print(
-          "in DBhandler, isRead of first conv -> ${conversationList[0].isRead}");
-      print(
-          "in DBhandler, status of first conv -> ${conversationList[0].status}");
-      print(
-          "in DBhandler, studentAnonymity of first conv -> ${conversationList[0].studentIdentityRevealed}");
-
+      });
       return Tuple2<ChewedResponse, List<Conversation>>(
           chewedResponse, conversationList);
     } else {
@@ -106,7 +90,6 @@ class DatabaseHandler {
     final url = '/api/authenticate';
     var response =
         await http.get(url, headers: {"Content-Type": "application/json"});
-    print(response);
     var chewedResponse = ChewedResponse();
     chewedResponse.chewStatusCode(response.statusCode);
     // only if the transaction is successful, will there will be a conversation obj in the response
@@ -117,20 +100,4 @@ class DatabaseHandler {
       return Tuple2<ChewedResponse, User>(chewedResponse, null);
     }
   }
-
-// WE'LL PROB NOT HAVE THIS ON THE BACKEND
-//   // get details of a single message based on ID
-//   Future<Tuple2<ChewedResponse, Message>> getMessage(int messageId) async {
-//     final url = '/api/conversations/<conversationId>/messages/$messageId';
-//     var response =
-//         await http.get(url, headers: {"Content-Type": "application/json"});
-//     var chewedResponse = ChewedResponse();
-//     chewedResponse.chewStatusCode(response.statusCode);
-//     if (response.statusCode == 200) {
-//       Message msg = Message.fromJson(jsonDecode(response.body));
-//       return Tuple2<ChewedResponse, Message>(chewedResponse, msg);
-//     } else {
-//       return Tuple2<ChewedResponse, Message>(chewedResponse, null);
-//     }
-//   }
 }

@@ -26,7 +26,6 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
     return "Conversations";
   }
 
-  List<Conversation> _convList;
   List<ConversationListCard> _convCards = [];
 
   Widget body() {
@@ -64,37 +63,35 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
   Future<bool> _getConversationList() async {
     Tuple2<ChewedResponse, List<Conversation>> responseTuple =
         await DatabaseHandler.instance.getConversationList();
-    // print("responseTuple.item2.messages -> ${responseTuple.item2.messages}");
     // transaction successful, there was a conv obj sent in response, otherwise null
     if (responseTuple.item2 != null) {
       // use setState to update the data in the UI with conv
-      _convList = responseTuple.item2;
-
-      for (Conversation conv in _convList) {
-        String joinedLabels = '';
-        for (String label in conv.labels) {
-          // print("we're in the label joiner loop!");
-          joinedLabels += (" " + label);
-        }
-        List<String> messageKeys = conv.messages.keys.toList()
-          ..sort((a, b) => a.compareTo(b));
-        // print("we're after messageKeys!");
-        Message mostRecentMessage = conv.messages[messageKeys.last];
-
-        _convCards.add(ConversationListCard(
-          joinedLabels: joinedLabels,
-          mostRecentMessageBody: mostRecentMessage.body,
-          mostRecentMessageDateTime: mostRecentMessage.dateTime,
-        ));
-      }
+      buildConversationCards(responseTuple.item2);
       // FutureBuilder requires that we return something
       return true;
     } else {
       setState(() {
         throw new Error();
-        // _errorMessage = responseTuple.item1.message;
       });
       return false;
+    }
+  }
+
+  void buildConversationCards(convList) {
+    for (Conversation conv in convList) {
+      String joinedLabels = '';
+      for (String label in conv.labels) {
+        joinedLabels += (" " + label);
+      }
+      List<String> messageKeys = conv.messages.keys.toList()
+        ..sort((a, b) => a.compareTo(b));
+      Message mostRecentMessage = conv.messages[messageKeys.last];
+      _convCards.add(ConversationListCard(
+        convId: conv.id,
+        joinedLabels: joinedLabels,
+        mostRecentMessageBody: mostRecentMessage.body,
+        mostRecentMessageDateTime: mostRecentMessage.dateTime,
+      ));
     }
   }
 

@@ -187,6 +187,36 @@ class DatabaseHandler {
     }
   }
 
+  Future<ChewedResponse> deleteAdmin(String username) async {
+    final url = '/api/admins/' + username;
+    var response =
+        await http.delete(url, headers: {"Content-Type": "application/json"});
+    print(response);
+    var chewedResponse = ChewedResponse();
+    chewedResponse.chewStatusCode(response.statusCode);
+    return chewedResponse;
+  }
+
+  Future<ChewedResponse> deleteCCSGA(String username) async {
+    final url = '/api/ccsga_reps/' + username;
+    var response =
+        await http.delete(url, headers: {"Content-Type": "application/json"});
+    print(response);
+    var chewedResponse = ChewedResponse();
+    chewedResponse.chewStatusCode(response.statusCode);
+    return chewedResponse;
+  }
+
+  Future<ChewedResponse> deleteBannedUser(String username) async {
+    final url = '/api/banned_users/' + username;
+    var response =
+        await http.delete(url, headers: {"Content-Type": "application/json"});
+    print(response);
+    var chewedResponse = ChewedResponse();
+    chewedResponse.chewStatusCode(response.statusCode);
+    return chewedResponse;
+  }
+
 // WE'LL PROB NOT HAVE THIS ON THE BACKEND
 //   // get details of a single message based on ID
 //   Future<Tuple2<ChewedResponse, Message>> getMessage(int messageId) async {

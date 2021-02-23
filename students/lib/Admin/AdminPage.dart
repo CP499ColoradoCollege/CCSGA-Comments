@@ -35,127 +35,125 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
 
   @override
   Widget body() {
-    return Container(
+    return ListView(
+      shrinkWrap: true,
       padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-      child: ListView(
-        shrinkWrap: true,
-        children: [
-          Center(
-            child: Text(
-              "Admins",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-            ),
+      children: [
+        Center(
+          child: Text(
+            "Admins",
+            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
           ),
-          FutureBuilder<List<User>>(
-              future: admins,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.data.length == 0) {
-                    return Center(
-                      child: Card(
-                        child: Text("No users of this type..."),
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                        padding: const EdgeInsets.all(8),
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return UserCard(snapshot.data[index]);
-                        });
-                  }
-                } else {
-                  return Flexible(
-                    child: Center(
-                      child: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: CircularProgressIndicator(),
-                      ),
+        ),
+        FutureBuilder<List<User>>(
+            future: admins,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data.length == 0) {
+                  return Center(
+                    child: Card(
+                      child: Text("No users of this type..."),
                     ),
                   );
-                }
-              }),
-          Center(
-            child: Text(
-              "Representatives",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-            ),
-          ),
-          FutureBuilder<List<User>>(
-              future: representatives,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.data.length == 0) {
-                    return Center(
-                      child: Card(
-                        child: Text("No users of this type..."),
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                        padding: const EdgeInsets.all(8),
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return UserCard(snapshot.data[index]);
-                        });
-                  }
                 } else {
-                  return Flexible(
-                    child: Center(
-                      child: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: CircularProgressIndicator(),
-                      ),
+                  return ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return UserCard(snapshot.data[index]);
+                      });
+                }
+              } else {
+                return Flexible(
+                  child: Center(
+                    child: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                );
+              }
+            }),
+        Center(
+          child: Text(
+            "Representatives",
+            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+          ),
+        ),
+        FutureBuilder<List<User>>(
+            future: representatives,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data.length == 0) {
+                  return Center(
+                    child: Card(
+                      child: Text("No users of this type..."),
                     ),
                   );
-                }
-              }),
-          Center(
-            child: Text(
-              "Banned users",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-            ),
-          ),
-          FutureBuilder<List<User>>(
-              future: bannedUsers,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.data.length == 0) {
-                    return Center(
-                      child: Card(
-                        child: Text("No users of this type..."),
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                        padding: const EdgeInsets.all(8),
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return UserCard(snapshot.data[index]);
-                        });
-                  }
                 } else {
-                  return Flexible(
-                    child: Center(
-                      child: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: CircularProgressIndicator(),
-                      ),
+                  return ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return UserCard(snapshot.data[index]);
+                      });
+                }
+              } else {
+                return Flexible(
+                  child: Center(
+                    child: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                );
+              }
+            }),
+        Center(
+          child: Text(
+            "Banned users",
+            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+          ),
+        ),
+        FutureBuilder<List<User>>(
+            future: bannedUsers,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data.length == 0) {
+                  return Center(
+                    child: Card(
+                      child: Text("No users of this type..."),
                     ),
                   );
+                } else {
+                  return ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return UserCard(snapshot.data[index]);
+                      });
                 }
-              }),
-        ],
-      ),
+              } else {
+                return Flexible(
+                  child: Center(
+                    child: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                );
+              }
+            }),
+      ],
     );
   }
 

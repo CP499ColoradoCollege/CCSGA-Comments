@@ -1,3 +1,4 @@
+import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 
@@ -43,7 +44,16 @@ class _UserCardState extends State<UserCard> {
   }
 
   void removeUser() {
-    print("Remove " + widget.user.username);
+    if (widget.user.username != null) {
+      User user = widget.user;
+      if (user.isAdmin) {
+        DatabaseHandler.instance.deleteAdmin(widget.user.username);
+      } else if (user.isCcsga) {
+        DatabaseHandler.instance.deleteCCSGA(widget.user.username);
+      } else if (user.isBanned) {
+        DatabaseHandler.instance.deleteBannedUser(widget.user.username);
+      }
+    }
   }
 
   void _showMyDialog() async {

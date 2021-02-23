@@ -88,17 +88,17 @@ class TestMessagesRoutes(unittest.TestCase):
         self.cur.nextset()
         self.conn.commit()
 
-        # Make authorized request to create conversation
-        revealIdentity = False
+        # Make authorized request to create anonymous conversation
         messageBody = "Test message"
-        req = requests.post(f"{BASE_API_URL}/conversations/create", verify=False, headers=POST_HEADERS, json={"revealIdentity": revealIdentity, "messageBody": messageBody, "labels": labels})
-        self.assertEqual(201, req.status_code)
+        req = requests.post(f"{BASE_API_URL}/conversations/create", verify=False, headers=POST_HEADERS, json={"revealIdentity": False, "messageBody": messageBody, "labels": labels})
 
         # Get new ids and note them for tearDown
         new_conv_id = req.json()["conversationId"]
         new_message_id = req.json()["messageId"]
         self.conv_ids_for_cleanup.append(new_conv_id)
         self.message_ids_for_cleanup.append(new_message_id)
+        
+        self.assertEqual(201, req.status_code)
         
         # Check that conversation was added
         self.conn, self.cur = get_conn_and_cursor()
@@ -125,7 +125,7 @@ class TestMessagesRoutes(unittest.TestCase):
         self.cur.execute("SELECT isArchived, identityRevealed, isInitiator, isAccessible FROM ConversationSettings WHERE username = ? AND conversationId = ?;", (SIGNED_IN_USERNAME, new_conv_id))
         query_result = self.cur.fetchall()
         self.cur.nextset()
-        self.assertEqual([(0, 1 if revealIdentity else 0, 1, 1)], query_result)
+        self.assertEqual([(0, 0, 1, 1)], query_result)
         self.cur.execute("SELECT isArchived, identityRevealed, isInitiator, isAccessible FROM ConversationSettings WHERE username <> ? AND conversationId = ?;", (SIGNED_IN_USERNAME, new_conv_id))
         query_result = self.cur.fetchall()
         self.cur.nextset()
@@ -158,6 +158,26 @@ class TestMessagesRoutes(unittest.TestCase):
         for row in query_result:
             self.assertIn(row[0], labels)
         self.assertEqual(len(query_result), len(labels))
+
+        # Make authorized request to create non-anonymous conversation
+        messageBody = "Test message 2"
+        non_anon_req = requests.post(f"{BASE_API_URL}/conversations/create", verify=False, headers=POST_HEADERS, json={"revealIdentity": True, "messageBody": messageBody, "labels": labels})
+
+        # Get new ids and note them for tearDown
+        second_new_conv_id = non_anon_req.json()["conversationId"]
+        second_new_message_id = non_anon_req.json()["messageId"]
+        self.conv_ids_for_cleanup.append(second_new_conv_id)
+        self.message_ids_for_cleanup.append(second_new_message_id)
+        
+        self.assertEqual(201, non_anon_req.status_code)
+        # Check that non-anonymous initiator conversation setting was added correctly
+        self.conn.close() # for some reason the test fails without this line
+        self.conn, self.cur = get_conn_and_cursor()
+        self.cur.execute("SELECT isArchived, identityRevealed, isInitiator, isAccessible FROM ConversationSettings WHERE username = ? AND conversationId = ?;", (SIGNED_IN_USERNAME, second_new_conv_id))
+        non_anon_query_result = self.cur.fetchall()
+        self.cur.nextset()
+        self.assertEqual([(0, 1, 1, 1)], non_anon_query_result)
+
 
 
     def tearDown(self):

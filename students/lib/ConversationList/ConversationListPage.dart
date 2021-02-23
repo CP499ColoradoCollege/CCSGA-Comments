@@ -78,6 +78,7 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
   }
 
   void buildConversationCards(convList) {
+    _convCards.clear();
     for (Conversation conv in convList) {
       String joinedLabels = '';
       for (String label in conv.labels) {

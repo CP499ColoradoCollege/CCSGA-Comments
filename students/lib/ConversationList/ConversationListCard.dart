@@ -26,10 +26,10 @@ class ConversationListCard extends StatelessWidget {
       ),
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
-        onTap: () {
-          context.beamTo(ConversationLocation(
-              pathParameters: {'conversationId': '${this.convId}'}));
-        },
+        onTap: () => Beamer.of(context).updateCurrentLocation(
+          pathBlueprint: 'conversation/:conversationId',
+          pathParameters: {'conversationID': convId.toString()},
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,

@@ -62,9 +62,8 @@ class ConversationListLocation extends BeamLocation {
 }
 
 class ConversationLocation extends BeamLocation {
-  ConversationLocation({
-    @required Map<String, String> pathParameters,
-  }) : super(
+  ConversationLocation({@required Map<String, String> pathParameters})
+      : super(
           pathBlueprint: _conversationPath.last,
           pathParameters: pathParameters,
         );

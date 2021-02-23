@@ -2,6 +2,7 @@ import 'package:beamer/beamer.dart';
 import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:flutter/material.dart';
 import 'package:beamer/beamer.dart';
+import 'package:intl/intl.dart';
 
 typedef ConverastionCallback = void Function(int id);
 
@@ -50,7 +51,10 @@ class ConversationListCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Text(
-                    mostRecentMessageDateTime,
+                    DateFormat("MMM d -")
+                        .add_jm()
+                        .format(DateTime.parse(mostRecentMessageDateTime))
+                        .toString(),
                     textAlign: TextAlign.center,
                   )
                 ],

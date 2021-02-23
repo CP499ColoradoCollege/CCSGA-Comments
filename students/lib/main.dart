@@ -26,6 +26,7 @@ class CCSGACommentsApp extends StatelessWidget {
           NewMessageLocation(),
           ConversationLocation(),
           AdminLocation(),
+          LogoutLocation(),
         ],
       ),
       title: 'CCSGA Comments',

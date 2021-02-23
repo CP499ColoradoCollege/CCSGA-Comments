@@ -139,6 +139,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
     const url = "https://dev-cp499.coloradocollege.edu:8003/logout";
     if (await canLaunch(url)) {
       await launch(url);
+      context.beamTo(LogoutLocation());
     }
   }
 

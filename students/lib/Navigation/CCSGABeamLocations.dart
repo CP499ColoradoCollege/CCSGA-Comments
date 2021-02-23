@@ -62,11 +62,12 @@ class ConversationListLocation extends BeamLocation {
 }
 
 class ConversationLocation extends BeamLocation {
-  ConversationLocation({@required Map<String, String> pathParameters})
+  ConversationLocation(
+      {Map<String, String> pathParameters, Map<String, dynamic> data})
       : super(
-          pathBlueprint: _conversationPath.last,
-          pathParameters: pathParameters,
-        );
+            pathBlueprint: _conversationPath.last,
+            pathParameters: pathParameters,
+            data: data);
 
   @override
   List<String> get pathBlueprints => _conversationPath;
@@ -74,12 +75,18 @@ class ConversationLocation extends BeamLocation {
   @override
   List<BeamPage> get pages => [
         ...ConversationListLocation().pages,
-        BeamPage(
-          key: ValueKey(
-              'conversation-${pathParameters['conversationId'] ?? ''}'),
-          child: ConversationPage(
-              conversationId: int.parse(pathParameters['conversationId'] ?? 0)),
-        )
+        if (pathParameters.containsKey('conversationId'))
+          BeamPage(
+            key: ValueKey(
+                'conversation-${pathParameters['conversationId'] ?? ''}'),
+            child: ConversationPage(
+                conversationId:
+                    int.parse(pathParameters['conversationId'] ?? 0)),
+          ),
+        if (data.containsKey('convId'))
+          BeamPage(
+              key: ValueKey('conversation-${data['convId'] ?? ''}'),
+              child: ConversationPage(conversationId: data['convId'] ?? 0)),
       ];
 }
 

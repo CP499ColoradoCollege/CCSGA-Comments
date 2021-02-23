@@ -28,7 +28,7 @@ class ConversationListCard extends StatelessWidget {
         splashColor: Colors.blue.withAlpha(30),
         onTap: () => Beamer.of(context).updateCurrentLocation(
           pathBlueprint: 'conversation/:conversationId',
-          pathParameters: {'conversationID': convId.toString()},
+          data: {'convId': convId},
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

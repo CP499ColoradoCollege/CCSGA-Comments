@@ -28,7 +28,8 @@ class ConversationListCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
         onTap: () {
-          Beamer.of(context).beamTo(ConversationLocation(
+          print("Conversation id: " + this.convId.toString());
+          context.beamTo(ConversationLocation(
               pathParameters: {"conversationId": this.convId.toString()}));
         },
         child: Column(

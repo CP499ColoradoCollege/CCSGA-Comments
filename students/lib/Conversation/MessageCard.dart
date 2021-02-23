@@ -34,13 +34,14 @@ class MessageCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Flexible(
-                      child: Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Text(
-                      this.message.body.toString(),
-                      textAlign: TextAlign.left,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Text(
+                        this.message.body.toString(),
+                        textAlign: TextAlign.left,
+                      ),
                     ),
-                  )),
+                  ),
                   Row(
                     children: [
                       Expanded(
@@ -49,9 +50,9 @@ class MessageCard extends StatelessWidget {
                         textAlign: TextAlign.left,
                       )),
                       Text(
-                        DateFormat("MMM d -")
-                            .add_jm()
-                            .format(DateTime.parse(this.message.dateTime))
+                        DateFormat("HH:mm a - MM-dd-yyyy")
+                            .parse(this.message.dateTime, true)
+                            .toLocal()
                             .toString(),
                         textAlign: TextAlign.right,
                       )

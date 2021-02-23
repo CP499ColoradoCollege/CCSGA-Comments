@@ -535,7 +535,6 @@ class TestAdminRoutes(unittest.TestCase):
         self.assertIn(banned_username, [user["username"] for user in req.json().get("bannedUsers")])
         self.assertNotIn(non_banned_username, [user["username"] for user in req.json().get("bannedUsers")])
 
-
     def tearDown(self):
 
         try:

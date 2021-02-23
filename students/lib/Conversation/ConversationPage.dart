@@ -82,7 +82,13 @@ class _ConversationPageState extends BaseState<ConversationPage>
                 ],
               );
             } else {
-              return CircularProgressIndicator();
+              return Center(
+                child: SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: CircularProgressIndicator(),
+                ),
+              );
             }
           }),
     );

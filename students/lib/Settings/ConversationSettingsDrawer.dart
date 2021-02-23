@@ -24,19 +24,25 @@ class ConversationSettingsDrawer extends StatefulWidget {
 class _ConversationSettingsDrawerState
     extends State<ConversationSettingsDrawer> {
   bool anonymousIsSwitched = true;
-  User currentUser;
+  Future<User> currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    currentUser = _getUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (currentUser.isCcsga) {
-      anonymousIsSwitched = !widget.conversation.studentIdentityRevealed;
-    }
-
     return Drawer(
-      child: FutureBuilder<bool>(
-          future: _getUserData(),
-          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+      child: FutureBuilder<User>(
+          future: currentUser,
+          builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
             if (snapshot.hasData) {
+              if (snapshot.data.isCcsga) {
+                anonymousIsSwitched =
+                    !widget.conversation.studentIdentityRevealed;
+              }
               return ListView(
                 padding: EdgeInsets.zero,
                 children: <Widget>[
@@ -62,7 +68,7 @@ class _ConversationSettingsDrawerState
                         ? Colors.grey.withAlpha(0x80)
                         : Colors.grey[300],
                     onChanged: (bool value) {
-                      if (currentUser.isCcsga == false) {
+                      if (snapshot.data.isCcsga == false) {
                         if (anonymousIsSwitched) {
                           _showMyDialog();
                         } else {
@@ -144,18 +150,16 @@ class _ConversationSettingsDrawerState
     }
   }
 
-  Future<bool> _getUserData() async {
+  Future<User> _getUserData() async {
     Tuple2<ChewedResponse, User> userResponse =
         await DatabaseHandler.instance.getAuthenticatedUser();
 
     if (userResponse.item2 != null) {
       print("user response successful");
-      print(userResponse.item2);
-      currentUser = userResponse.item2;
-      return true;
+      return userResponse.item2;
     } else {
       print("user response unsuccessful");
-      return false;
+      return null;
     }
   }
 }

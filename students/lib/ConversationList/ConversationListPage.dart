@@ -52,7 +52,13 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
                           padding: const EdgeInsets.all(8),
                           children: _convCards);
                     } else {
-                      return CircularProgressIndicator();
+                      return Center(
+                        child: SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
                     }
                   })),
         ],

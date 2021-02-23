@@ -24,13 +24,14 @@ class ConversationSettingsDrawer extends StatefulWidget {
 class _ConversationSettingsDrawerState
     extends State<ConversationSettingsDrawer> {
   bool anonymousIsSwitched = true;
-  User currentUser = User(isCcsga: false);
+  User currentUser;
 
   @override
   Widget build(BuildContext context) {
     if (currentUser.isCcsga) {
       anonymousIsSwitched = !widget.conversation.studentIdentityRevealed;
     }
+
     return Drawer(
       child: FutureBuilder<bool>(
           future: _getUserData(),
@@ -40,14 +41,15 @@ class _ConversationSettingsDrawerState
                 padding: EdgeInsets.zero,
                 children: <Widget>[
                   Center(
-                      child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      "Conversation Settings",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        "Conversation Settings",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  )),
+                  ),
                   SwitchListTile(
                     title: Text(
                       'Anonymous',

@@ -35,6 +35,8 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
 
   @override
   Widget body() {
+    Widget noUsersEmptyCard = Center(child: Text("No users of this type..."));
+
     return ListView(
       shrinkWrap: true,
       padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
@@ -50,11 +52,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data.length == 0) {
-                  return Center(
-                    child: Card(
-                      child: Text("No users of this type..."),
-                    ),
-                  );
+                  return noUsersEmptyCard;
                 } else {
                   return ListView.builder(
                       padding: const EdgeInsets.all(8),
@@ -88,11 +86,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data.length == 0) {
-                  return Center(
-                    child: Card(
-                      child: Text("No users of this type..."),
-                    ),
-                  );
+                  return noUsersEmptyCard;
                 } else {
                   return ListView.builder(
                       padding: const EdgeInsets.all(8),
@@ -126,11 +120,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data.length == 0) {
-                  return Center(
-                    child: Card(
-                      child: Text("No users of this type..."),
-                    ),
-                  );
+                  return noUsersEmptyCard;
                 } else {
                   return ListView.builder(
                       padding: const EdgeInsets.all(8),

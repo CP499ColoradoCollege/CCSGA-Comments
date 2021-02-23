@@ -22,7 +22,7 @@ class ConversationListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateTime formattedDateTime = DateFormat("HH:mm a - MM-dd-yyyy")
+    DateTime formattedDateTime = DateFormat("yyyy-MM-dd HH:mm:ss")
         .parse(mostRecentMessageDateTime, true);
 
     return Card(

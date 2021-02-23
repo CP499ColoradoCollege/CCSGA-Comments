@@ -50,7 +50,7 @@ class MessageCard extends StatelessWidget {
                         textAlign: TextAlign.left,
                       )),
                       Text(
-                        DateFormat("HH:mm a - MM-dd-yyyy")
+                        DateFormat("yyyy-MM-dd HH:mm:ss")
                             .parse(this.message.dateTime, true)
                             .toLocal()
                             .toString(),

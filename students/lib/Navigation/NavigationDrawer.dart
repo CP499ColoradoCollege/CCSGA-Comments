@@ -1,6 +1,7 @@
 import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:flutter/material.dart';
 import 'package:beamer/beamer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NavigationDrawer extends StatefulWidget {
   bool hasHeader = true;

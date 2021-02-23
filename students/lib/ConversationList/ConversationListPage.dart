@@ -3,7 +3,6 @@ import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:ccsga_comments/Settings/ConversationListSettingsDrawer.dart';
 import 'package:flutter/material.dart';
 import 'ConversationListCard.dart';
-import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:beamer/beamer.dart';
 import 'package:ccsga_comments/Models/GlobalEnums.dart';
 
@@ -61,19 +60,15 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
     );
   }
 
-  @override
-  Widget settingsDrawer() {
-    return ConversationListSettingsDrawer(
-      filterCallback: filterConversations,
-    );
-  }
+  // @override
+  // Widget settingsDrawer() {
+  //   return ConversationListSettingsDrawer(
+  //     filterCallback: filterConversations,
+  //   );
+  // }
 
-  @override
-  Icon get rightButtonIcon => Icon(Icons.filter_alt_outlined);
-
-  void _filterDrawerButtonPressed() {
-    print("open end drawer");
-  }
+  // @override
+  // Icon get rightButtonIcon => Icon(Icons.filter_alt_outlined);
 
   void _newMessage() {
     context.beamTo(NewMessageLocation());

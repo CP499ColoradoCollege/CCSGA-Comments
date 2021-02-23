@@ -43,16 +43,14 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
       ),
     );
 
-    return FutureBuilder<User>(
-        future: currentUser,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
+    return ListView(padding: EdgeInsets.fromLTRB(10, 10, 10, 0), children: [
+      FutureBuilder<User>(
+          future: currentUser,
+          builder: (context, snapshot) {
             if (snapshot.hasData) {
-              if (snapshot.data.isAdmin) {
-                return Expanded(
-                  child: ListView(
-                    shrinkWrap: true,
-                    padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+              if (snapshot.hasData) {
+                if (snapshot.data.isAdmin) {
+                  return ListView(
                     children: [
                       Center(
                         child: Text(
@@ -166,28 +164,28 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                             }
                           }),
                     ],
-                  ),
-                );
+                  );
+                } else {
+                  return Center(
+                    child: Text("Page forbidden..."),
+                  );
+                }
               } else {
-                return Center(
-                  child: Text("Page forbidden..."),
-                );
+                return Text("Loading current user data...");
               }
             } else {
-              return Text("Loading current user data...");
-            }
-          } else {
-            return Flexible(
-              child: Center(
-                child: SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: CircularProgressIndicator(),
+              return Flexible(
+                child: Center(
+                  child: SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
-              ),
-            );
-          }
-        });
+              );
+            }
+          })
+    ]);
   }
 
   Future<List<User>> fetchAdmins() async {

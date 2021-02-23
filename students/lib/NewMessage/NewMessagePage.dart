@@ -1,18 +1,8 @@
-import 'dart:html';
 import 'package:ccsga_comments/BasePage/BasePage.dart';
+import 'package:ccsga_comments/DatabaseHandler.dart';
+import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
-import 'package:ccsga_comments/Conversation/MessageThread.dart';
-
-class Committee {
-  final int id;
-  final String name;
-
-  Committee({
-    this.id,
-    this.name,
-  });
-}
 
 class NewMessagePage extends BasePage {
   NewMessagePage({Key key, this.title}) : super(key: key);
@@ -25,9 +15,9 @@ class NewMessagePage extends BasePage {
 
 class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
   static List<Committee> _committees = [
-    Committee(id: 0, name: 'Internal Affairs'),
-    Committee(id: 1, name: 'Outreach'),
-    Committee(id: 2, name: 'Diversity and Inclusion')
+    new Committee(id: 0, name: 'Internal Affairs'),
+    new Committee(id: 1, name: 'Outreach'),
+    new Committee(id: 2, name: 'Diversity and Inclusion')
   ];
   List<Committee> _selectedCommittees = [];
 
@@ -35,9 +25,20 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
 
   final _formKey = GlobalKey<FormState>();
 
+  final textFieldController = TextEditingController();
+
+  String _errorMessage = "";
+  String _successMessage = "";
+
+  @override
+  void dispose() {
+    textFieldController.dispose();
+    super.dispose();
+  }
+
   @override
   String screenName() {
-    return "Messages";
+    return "New Conversation";
   }
 
   @override
@@ -57,6 +58,18 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
+                              if (_successMessage != "" && _errorMessage == "")
+                                Text(
+                                  _successMessage,
+                                  style:
+                                      TextStyle(backgroundColor: Colors.green),
+                                ),
+                              if (_errorMessage != "" && _successMessage == "")
+                                Text(
+                                  _errorMessage,
+                                  style: TextStyle(backgroundColor: Colors.red),
+                                ),
+                              SizedBox(height: 24),
                               CheckboxListTile(
                                 title: Text("Send my message anonymously"),
                                 contentPadding:
@@ -74,7 +87,7 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
                                     .map((e) => MultiSelectItem(e, e.name))
                                     .toList(),
                                 listType: MultiSelectListType.CHIP,
-                                onConfirm: (values) {
+                                onConfirm: (List<Committee> values) {
                                   _selectedCommittees = values;
                                 },
                               ),
@@ -94,12 +107,13 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
                                   suffixIcon: IconButton(
                                     onPressed: () {
                                       if (_formKey.currentState.validate()) {
-                                        _sendMessage();
+                                        _sendMessageInNewConversation();
                                       }
                                     },
                                     icon: Icon(Icons.send_rounded),
                                   ),
                                 ),
+                                controller: textFieldController,
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please enter some text';
@@ -110,7 +124,34 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
                             ]))))));
   }
 
-  void _sendMessage() {
-    print("Send message");
+  void _sendMessageInNewConversation() async {
+    List<String> selectedCommitteesStrList = [];
+    _selectedCommittees.forEach((e) => selectedCommitteesStrList.add(e.name));
+    ChewedResponse chewedResponse = await DatabaseHandler.instance
+        .initiateNewConversation(
+            _isChecked, textFieldController.text, selectedCommitteesStrList);
+    if (chewedResponse.isSuccessful) {
+      _formKey.currentState.reset();
+      _selectedCommittees.clear();
+      textFieldController.clear();
+      setState(() {
+        _isChecked = false;
+        _successMessage = chewedResponse.message;
+      });
+    } else {
+      setState(() {
+        _errorMessage = chewedResponse.message;
+      });
+    }
   }
+}
+
+class Committee {
+  final int id;
+  final String name;
+
+  Committee({
+    this.id,
+    this.name,
+  });
 }

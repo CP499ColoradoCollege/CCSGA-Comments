@@ -1,31 +1,31 @@
+import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ccsga_comments/Models/MessageModel.dart';
+import 'package:ccsga_comments/Models/Message.dart';
 
 class MessageCard extends StatelessWidget {
-  final MessageModel message;
+  final Message message;
+  final bool isMyMessage;
 
-  MessageCard(this.message);
+  MessageCard({this.message, this.isMyMessage});
 
   @override
   Widget build(BuildContext context) {
     return Container(
         padding: EdgeInsets.symmetric(vertical: 5),
         child: FractionallySizedBox(
-          alignment: this.message.isSender
-              ? Alignment.centerLeft
-              : Alignment.centerRight,
+          alignment:
+              this.isMyMessage ? Alignment.centerRight : Alignment.centerLeft,
           widthFactor: 0.66,
           child: Align(
-            alignment: (this.message.isSender
-                ? Alignment.topLeft
-                : Alignment.topRight),
+            alignment:
+                (this.isMyMessage ? Alignment.topRight : Alignment.topLeft),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: (this.message.isSender
-                    ? Colors.grey.shade200
-                    : Colors.blue[200]),
+                color: (this.isMyMessage
+                    ? Colors.blue[200]
+                    : Colors.grey.shade200),
               ),
               padding: EdgeInsets.all(16),
               child: Column(
@@ -45,13 +45,13 @@ class MessageCard extends StatelessWidget {
                     children: [
                       Expanded(
                           child: Text(
-                        this.message.senderName,
+                        this.message.sender.displayName,
                         textAlign: TextAlign.left,
                       )),
                       Text(
                         DateFormat("MMM d -")
                             .add_jm()
-                            .format(this.message.time)
+                            .format(DateTime.parse(this.message.dateTime))
                             .toString(),
                         textAlign: TextAlign.right,
                       )

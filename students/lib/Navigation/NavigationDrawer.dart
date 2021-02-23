@@ -2,7 +2,7 @@ import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:flutter/material.dart';
 import 'package:beamer/beamer.dart';
 
-class NavigationDrawer extends StatelessWidget {
+class NavigationDrawer extends StatefulWidget {
   bool hasHeader = true;
 
   @required
@@ -11,12 +11,17 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   @override
+  _NavigationDrawerState createState() => _NavigationDrawerState();
+}
+
+class _NavigationDrawerState extends State<NavigationDrawer> {
+  @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          hasHeader
+          widget.hasHeader
               ? Container(
                   height: 56.0,
                   child: Padding(
@@ -42,7 +47,7 @@ class NavigationDrawer extends StatelessWidget {
               // Update the state of the app
               // ...
               // Then close the drawer
-              if (this.hasHeader) {
+              if (widget.hasHeader) {
                 Navigator.pop(context);
               }
               context.beamTo(HomeLocation());
@@ -61,7 +66,7 @@ class NavigationDrawer extends StatelessWidget {
               // Update the state of the app
 
               // Then close the drawer
-              if (this.hasHeader) {
+              if (widget.hasHeader) {
                 Navigator.pop(context);
               }
 
@@ -71,17 +76,17 @@ class NavigationDrawer extends StatelessWidget {
           ListTile(
             title: Center(
               child: Text(
-                'Settings',
+                'Log Out',
                 style: TextStyle(fontSize: 20),
               ),
             ),
             contentPadding: EdgeInsets.all(10),
             onTap: () {
-              print("Settings Page Tapped");
+              print("Log Out Tapped");
               // Update the state of the app
-              // ...
+              setState(() {});
               // Then close the drawer
-              if (this.hasHeader) {
+              if (widget.hasHeader) {
                 Navigator.pop(context);
               }
             },

@@ -34,6 +34,7 @@ class DatabaseHandler {
       List<Conversation> conversationList = [];
       jsonConvsMap.forEach((id, conv) {
         Conversation conversation = Conversation.fromJson(conv);
+        print(int.parse(id));
         conversation.id = int.parse(id);
         conversationList.add(Conversation.fromJson(conv));
       });

@@ -1,24 +1,22 @@
 import 'package:beamer/beamer.dart';
-import 'package:ccsga_comments/Models/Conversation.dart';
-import 'package:ccsga_comments/Models/Message.dart';
 import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:flutter/material.dart';
+import 'package:beamer/beamer.dart';
 
 class ConversationListCard extends StatelessWidget {
-  final Conversation conversation;
+  final int convId;
+  final String joinedLabels;
+  final String mostRecentMessageBody;
+  final String mostRecentMessageDateTime;
 
-  ConversationListCard(this.conversation);
+  ConversationListCard(
+      {this.convId,
+      this.joinedLabels,
+      this.mostRecentMessageBody,
+      this.mostRecentMessageDateTime});
 
   @override
   Widget build(BuildContext context) {
-    String joinedLabels = "";
-    for (String label in conversation.labels) {
-      joinedLabels += (" " + label);
-    }
-    List<String> messageKeys = conversation.messages.keys.toList()
-      ..sort((a, b) => a.compareTo(b));
-    Message mostRecentMessage = conversation.messages[messageKeys.last];
-
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -31,7 +29,7 @@ class ConversationListCard extends StatelessWidget {
         splashColor: Colors.blue.withAlpha(30),
         onTap: () {
           Beamer.of(context).beamTo(ConversationLocation(
-              pathParameters: {"conversationId": conversation.id.toString()}));
+              pathParameters: {"conversationId": this.convId.toString()}));
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -40,7 +38,7 @@ class ConversationListCard extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.message_outlined),
               title: Text("CCSGA " + joinedLabels),
-              subtitle: Text(mostRecentMessage.body),
+              subtitle: Text(mostRecentMessageBody),
               isThreeLine: true,
             ),
             Padding(
@@ -49,7 +47,7 @@ class ConversationListCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Text(
-                    mostRecentMessage.dateTime,
+                    mostRecentMessageDateTime,
                     textAlign: TextAlign.center,
                   )
                 ],

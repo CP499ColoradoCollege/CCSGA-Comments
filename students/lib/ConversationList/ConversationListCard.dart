@@ -1,5 +1,7 @@
+import 'package:beamer/beamer.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
 import 'package:ccsga_comments/Models/Message.dart';
+import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:flutter/material.dart';
 
 class ConversationListCard extends StatelessWidget {
@@ -28,7 +30,8 @@ class ConversationListCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
         onTap: () {
-          cardTapped();
+          Beamer.of(context).beamTo(ConversationLocation(
+              pathParameters: {"conversationId": conversation.id.toString()}));
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -56,9 +59,5 @@ class ConversationListCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void cardTapped() {
-    print('Card tapped.');
   }
 }

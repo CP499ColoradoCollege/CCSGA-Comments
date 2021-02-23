@@ -72,7 +72,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                 Navigator.pop(context);
               }
 
-              context.beamTo(ConversationLocation());
+              context.beamTo(ConversationListLocation());
             },
           ),
           isLoggedIn

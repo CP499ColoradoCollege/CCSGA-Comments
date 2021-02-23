@@ -42,7 +42,7 @@ class DatabaseHandler {
       bool isAnonymous, String messageBody, List<String> labels) async {
     final url = '/api/conversations/create';
     var newMessageAttributes = {
-      'revealIdentity': isAnonymous,
+      'revealIdentity': !isAnonymous,
       'messageBody': messageBody,
       'labels': labels
     };

@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:flutter/material.dart';
 import 'package:beamer/beamer.dart';
@@ -84,6 +86,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
             contentPadding: EdgeInsets.all(10),
             onTap: () {
               print("Log Out Tapped");
+              logoutTapped();
               // Update the state of the app
               setState(() {});
               // Then close the drawer
@@ -95,5 +98,12 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
         ],
       ),
     );
+  }
+
+  void logoutTapped() async {
+    const url = "https://dev-cp499.coloradocollege.edu:8003/logout";
+    if (await canLaunch(url)) {
+      await launch(url);
+    }
   }
 }

@@ -11,3 +11,5 @@ enum FilterByLabel {
 }
 
 enum ConversationStatusLabel { Unread, InProgress, Done, Denied }
+
+enum UserType { Admin, Representative, Student }

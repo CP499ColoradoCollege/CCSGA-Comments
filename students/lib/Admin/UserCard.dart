@@ -1,12 +1,14 @@
 import 'package:ccsga_comments/DatabaseHandler.dart';
+import 'package:ccsga_comments/Models/GlobalEnums.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 
 class UserCard extends StatefulWidget {
+  UserType userType;
   User user;
 
   @required
-  UserCard(this.user);
+  UserCard(this.user, this.userType);
 
   @override
   _UserCardState createState() => _UserCardState();
@@ -45,13 +47,16 @@ class _UserCardState extends State<UserCard> {
 
   void removeUser() {
     if (widget.user.username != null) {
-      User user = widget.user;
-      if (user.isAdmin) {
-        DatabaseHandler.instance.deleteAdmin(widget.user.username);
-      } else if (user.isCcsga) {
-        DatabaseHandler.instance.deleteCCSGA(widget.user.username);
-      } else if (user.isBanned) {
-        DatabaseHandler.instance.deleteBannedUser(widget.user.username);
+      switch (widget.userType) {
+        case UserType.Admin:
+          DatabaseHandler.instance.deleteAdmin(widget.user.username);
+          break;
+        case UserType.Representative:
+          DatabaseHandler.instance.deleteCCSGA(widget.user.username);
+          break;
+        case UserType.Student:
+          DatabaseHandler.instance.deleteBannedUser(widget.user.username);
+          break;
       }
     }
   }
@@ -68,7 +73,7 @@ class _UserCardState extends State<UserCard> {
         return AlertDialog(
           title: Text("Remove User"),
           content: Text("Are you sure you would you like to remove the" +
-              (user.isAdmin ? " admin: " : " representative ") +
+              (user.isAdmin ? " admin: " : " representative: ") +
               user.username +
               "?"),
           actions: [

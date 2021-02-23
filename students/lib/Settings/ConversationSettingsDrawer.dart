@@ -82,15 +82,15 @@ class _ConversationSettingsDrawerState
                     },
                     // secondary: const Icon(Icons.account_circle_outlined),
                   ),
-                  Padding(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Respond to button press
-                      },
-                      child: Text('Mark conversation as unread'),
-                    ),
-                    padding: EdgeInsets.all(10),
-                  ),
+                  // Padding(
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       // Respond to button press
+                  //     },
+                  //     child: Text('Mark conversation as unread'),
+                  //   ),
+                  //   padding: EdgeInsets.all(10),
+                  // ),
                 ],
               );
             } else {

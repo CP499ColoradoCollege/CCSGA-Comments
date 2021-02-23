@@ -6,6 +6,7 @@ import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:ccsga_comments/Settings/ConversationListSettingsDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
+import '../DatabaseHandler.dart';
 import 'ConversationListCard.dart';
 import 'package:beamer/beamer.dart';
 import 'package:ccsga_comments/Models/GlobalEnums.dart';

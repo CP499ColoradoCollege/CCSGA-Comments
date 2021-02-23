@@ -38,7 +38,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
   Widget body() {
     Widget noUsersEmptyCard = Center(child: Text("No users of this type..."));
 
-    FutureBuilder<User>(
+    return FutureBuilder<User>(
         future: currentUser,
         builder: (context, snapshot) {
           if (snapshot.hasData) {

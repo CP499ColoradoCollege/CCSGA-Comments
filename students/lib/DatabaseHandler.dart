@@ -34,9 +34,8 @@ class DatabaseHandler {
       List<Conversation> conversationList = [];
       jsonConvsMap.forEach((id, conv) {
         Conversation conversation = Conversation.fromJson(conv);
-        print(int.parse(id));
         conversation.id = int.parse(id);
-        conversationList.add(Conversation.fromJson(conv));
+        conversationList.add(conversation);
       });
       return Tuple2<ChewedResponse, List<Conversation>>(
           chewedResponse, conversationList);

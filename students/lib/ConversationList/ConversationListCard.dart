@@ -3,7 +3,10 @@ import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:flutter/material.dart';
 import 'package:beamer/beamer.dart';
 
+typedef ConverastionCallback = void Function(int id);
+
 class ConversationListCard extends StatelessWidget {
+  final ConverastionCallback conversationCallback;
   final int convId;
   final String joinedLabels;
   final String mostRecentMessageBody;
@@ -13,7 +16,8 @@ class ConversationListCard extends StatelessWidget {
       {this.convId,
       this.joinedLabels,
       this.mostRecentMessageBody,
-      this.mostRecentMessageDateTime});
+      this.mostRecentMessageDateTime,
+      this.conversationCallback});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +32,7 @@ class ConversationListCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
         onTap: () {
-          print("Conversation id: " + this.convId.toString());
-          context.beamTo(ConversationLocation(
-              pathParameters: {"conversationId": this.convId.toString()}));
+          conversationCallback(convId);
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

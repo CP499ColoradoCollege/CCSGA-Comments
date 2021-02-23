@@ -91,8 +91,14 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
         joinedLabels: joinedLabels,
         mostRecentMessageBody: mostRecentMessage.body,
         mostRecentMessageDateTime: mostRecentMessage.dateTime,
+        conversationCallback: beamToConversation,
       ));
     }
+  }
+
+  void beamToConversation(int id) {
+    context.beamTo(ConversationLocation(
+        pathParameters: {"conversationId": id.toString()}));
   }
 
   @override

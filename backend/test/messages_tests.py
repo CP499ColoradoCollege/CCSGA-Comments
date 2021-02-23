@@ -41,6 +41,7 @@ class TestMessagesRoutes(unittest.TestCase):
         self.conn, self.cur = get_conn_and_cursor()
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
         self.cur.callproc("add_ban", (SIGNED_IN_USERNAME, FAKE_ADMIN_USERNAME))
+        self.cur.nextset()
         self.conn.commit()
 
         # Get info about current data in database
@@ -84,6 +85,7 @@ class TestMessagesRoutes(unittest.TestCase):
 
         # Nominally unban user
         self.cur.callproc("remove_ban", (SIGNED_IN_USERNAME, FAKE_ADMIN_USERNAME))
+        self.cur.nextset()
         self.conn.commit()
 
         # Make authorized request to create conversation
@@ -137,7 +139,7 @@ class TestMessagesRoutes(unittest.TestCase):
         query_result = self.cur.fetchall()
         self.cur.nextset()
         self.assertEqual([(1,)], query_result)
-        self.cur.execute("SELECT isRead FROM MessageSettings WHERE username <> ? AND conversationId = ?;", (SIGNED_IN_USERNAME, new_conv_id))
+        self.cur.execute("SELECT isRead FROM MessageSettings WHERE username <> ? AND messageId = ?;", (SIGNED_IN_USERNAME, new_message_id))
         query_result = self.cur.fetchall()
         self.cur.nextset()
         for row in query_result:
@@ -153,7 +155,7 @@ class TestMessagesRoutes(unittest.TestCase):
         self.cur.nextset()
         for row in query_result:
             self.assertIn(row[0], labels)
-        self.assertEqual(len(row), len(labels))
+        self.assertEqual(len(query_result), len(labels))
 
 
     def tearDown(self):
@@ -173,7 +175,9 @@ class TestMessagesRoutes(unittest.TestCase):
             self.cur.execute("DELETE FROM ConversationSettings WHERE conversationId = ?;", (conv_id,))
             self.cur.execute("DELETE FROM Conversations WHERE id = ?;", (conv_id,))
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        self.cur.execute("SET foreign_key_checks = 0;")
         self.cur.execute("DELETE FROM Users WHERE username = ?;", (FAKE_ADMIN_USERNAME,))
+        self.cur.execute("SET foreign_key_checks = 1;")
         self.conn.commit()
         self.message_ids_for_cleanup.clear()
         self.conv_ids_for_cleanup.clear()

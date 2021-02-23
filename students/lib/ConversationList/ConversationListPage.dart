@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'ConversationListCard.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:beamer/beamer.dart';
-import 'package:ccsga_comments/Models/FilterEnums.dart';
+import 'package:ccsga_comments/Models/GlobalEnums.dart';
 
 class ConversationListPage extends BasePage {
   ConversationListPage({Key key, this.title}) : super(key: key);

@@ -3,6 +3,7 @@ import 'package:ccsga_comments/Conversation/MessageThread.dart';
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
+import 'package:ccsga_comments/Models/GlobalEnums.dart';
 import 'package:ccsga_comments/Models/Message.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:ccsga_comments/Settings/ConversationSettingsDrawer.dart';
@@ -38,53 +39,50 @@ class _ConversationPageState extends BaseState<ConversationPage>
   Widget body() {
     return Container(
       padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
-      child: Column(
-        children: [
-          FutureBuilder<bool>(
-              future: _getConversationData(),
-              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                if (snapshot.hasData) {
-                  return Column(
-                    children: [
-                      ConversationStatus(_conversation.status),
-                      MessageThread(
-                        conv: this._conversation,
-                        currentUser: currentUser,
+      child: FutureBuilder<bool>(
+          future: _getConversationData(),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if (snapshot.hasData) {
+              return Column(
+                children: [
+                  ConversationStatus(this.updateConversationStatus,
+                      _conversation.status, this.currentUser.isCcsga ?? false),
+                  MessageThread(
+                    conv: this._conversation,
+                    currentUser: currentUser,
+                  ),
+                  TextFormField(
+                    controller: _messageFieldController,
+                    minLines: 2,
+                    maxLines: 6,
+                    cursorColor: Colors.black,
+                    decoration: InputDecoration(
+                      labelText: 'Write a message',
+                      labelStyle: TextStyle(color: Colors.black),
+                      border: const OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.black),
                       ),
-                    ],
-                  );
-                } else {
-                  return CircularProgressIndicator();
-                }
-              }),
-          TextFormField(
-            controller: _messageFieldController,
-            minLines: 2,
-            maxLines: 6,
-            cursorColor: Colors.black,
-            decoration: InputDecoration(
-              labelText: 'Write a message',
-              labelStyle: TextStyle(color: Colors.black),
-              border: const OutlineInputBorder(),
-              focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.black),
-              ),
-              suffixIcon: IconButton(
-                onPressed: () {
-                  _sendMessage();
-                },
-                icon: Icon(Icons.send_rounded),
-              ),
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
-          )
-        ],
-      ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          _sendMessage();
+                        },
+                        icon: Icon(Icons.send_rounded),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                  )
+                ],
+              );
+            } else {
+              return CircularProgressIndicator();
+            }
+          }),
     );
   }
 
@@ -100,6 +98,83 @@ class _ConversationPageState extends BaseState<ConversationPage>
 
   @override
   Icon get rightButtonIcon => Icon(Icons.settings);
+
+  Future<void> updateConversationStatus() async {
+    ConversationStatusLabel currentDropdownStatus =
+        ConversationStatusLabel.Unread;
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text("Update Conversation Status"),
+            content: SizedBox(
+              height: 125,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: DropdownButton<ConversationStatusLabel>(
+                        value: currentDropdownStatus,
+                        icon: Icon(Icons.arrow_downward),
+                        iconSize: 24,
+                        elevation: 16,
+                        underline: Container(
+                          height: 2,
+                          color: Theme.of(context).accentColor,
+                        ),
+                        onChanged: (ConversationStatusLabel newValue) {
+                          setState(() {
+                            currentDropdownStatus = newValue;
+                          });
+                        },
+                        items: [
+                          DropdownMenuItem(
+                            child: Text("Unread"),
+                            value: ConversationStatusLabel.Unread,
+                          ),
+                          DropdownMenuItem(
+                            child: Text("In Progress"),
+                            value: ConversationStatusLabel.InProgress,
+                          ),
+                          DropdownMenuItem(
+                            child: Text("Complete"),
+                            value: ConversationStatusLabel.InProgress,
+                          ),
+                          DropdownMenuItem(
+                            child: Text("Denied"),
+                            value: ConversationStatusLabel.InProgress,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: Text("Cancel"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: Text("Confirm"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
 
   Future<bool> _getConversationData() async {
     _pathParams = getPathParameters();

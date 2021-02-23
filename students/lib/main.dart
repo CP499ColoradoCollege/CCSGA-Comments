@@ -21,7 +21,7 @@ class CCSGACommentsApp extends StatelessWidget {
       routeInformationParser: BeamerRouteInformationParser(
         beamLocations: [
           HomeLocation(),
-          ConversationListLocation(),
+          // ConversationListLocation(),
           NewMessageLocation(),
           ConversationLocation(),
           AdminLocation(),

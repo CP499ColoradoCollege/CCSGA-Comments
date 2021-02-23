@@ -147,9 +147,9 @@ class _ConversationListSettingsDrawerState
   }
 
   Future<bool> _getUserData() async {
-    Tuple2<ChewedResponse, User> userResponse =
-        await DatabaseHandler.instance.getAuthenticatedUser();
-
+    Tuple2<ChewedResponse, User> userResponse = await DatabaseHandler.instance
+        .getAuthenticatedUser()
+        .catchError(handleError);
     if (userResponse.item2 != null) {
       print("user response successful");
       currentUser = userResponse.item2;
@@ -158,5 +158,9 @@ class _ConversationListSettingsDrawerState
       print("user response unsuccessful");
       return false;
     }
+  }
+
+  handleError(e) {
+    print(e.toString());
   }
 }

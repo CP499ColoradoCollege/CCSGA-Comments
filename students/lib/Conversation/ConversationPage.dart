@@ -25,6 +25,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
   Conversation _conversation = Conversation();
   Map _pathParams;
   int _conversationId;
+  String _errorMessage = "";
 
   @override
   void initState() {
@@ -49,6 +50,8 @@ class _ConversationPageState extends BaseState<ConversationPage>
                   return CircularProgressIndicator();
                 }
               }),
+          if (_errorMessage != "")
+            Text(_errorMessage, style: TextStyle(backgroundColor: Colors.red)),
           TextFormField(
             controller: _messageFieldController,
             minLines: 2,
@@ -98,10 +101,13 @@ class _ConversationPageState extends BaseState<ConversationPage>
     //if a convId is passed in when creating the page, use that.
     // if not, check the url for the id (pathParams)
     _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);
-    Tuple2<ChewedResponse, Conversation> responseTuple =
-        await DatabaseHandler.instance.getConversation(_conversationId);
-    Tuple2<ChewedResponse, User> userResponse =
-        await DatabaseHandler.instance.getAuthenticatedUser();
+    Tuple2<ChewedResponse, Conversation> responseTuple = await DatabaseHandler
+        .instance
+        .getConversation(_conversationId)
+        .catchError(handleError);
+    Tuple2<ChewedResponse, User> userResponse = await DatabaseHandler.instance
+        .getAuthenticatedUser()
+        .catchError(handleError);
 
     if (userResponse.item2 != null) {
       print("user response successful");
@@ -117,16 +123,14 @@ class _ConversationPageState extends BaseState<ConversationPage>
       // use setState to update the data in the UI with conv
       _conversation = responseTuple.item2;
       // FutureBuilder requires that we return something
-      print("conversation response successful");
       return true;
     } else {
       setState(() {
-        // _errorMessage = responseTuple.item1.message;
+        _errorMessage = responseTuple.item1.message;
       });
-      print("conversation response unsuccessful");
       return false;
     }
-
+    // dummy message and conversation for frontend-only testing/debugging
     //   Message msg = Message(
     //       body: "test body",
     //       dateTime: "2021-02-21 13:00:00",
@@ -145,15 +149,15 @@ class _ConversationPageState extends BaseState<ConversationPage>
       if (chewedResponse.isSuccessful) {
         _messageFieldController.clear();
         await _getConversationData();
-        setState(() {
-          // _successMessage = chewedResponse.message;
-        });
       } else {
         setState(() {
-          throw new Error();
-          // _errorMessage = chewedResponse.message;
+          _errorMessage = chewedResponse.message;
         });
       }
     }
+  }
+
+  handleError(e) {
+    print('Error: ${e.toString()}');
   }
 }

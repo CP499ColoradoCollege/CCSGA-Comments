@@ -44,48 +44,51 @@ class _ConversationStatusState extends State<ConversationStatus> {
                 width: 5,
               ),
               widget.isCcsga
-                  ? DropdownButton<String>(
-                      value: currentDropdownStatus,
-                      icon: Icon(Icons.arrow_downward),
-                      iconSize: 24,
-                      elevation: 16,
-                      underline: Container(
-                        height: 2,
-                        color: Theme.of(context).accentColor,
-                      ),
-                      onChanged: (String newValue) {
-                        setState(() {
-                          currentDropdownStatus = newValue;
-                          if (currentDropdownStatus == unread) {
-                            widget.updateStatusCallback(unread);
-                          } else if (currentDropdownStatus == denied) {
-                            widget.updateStatusCallback(denied);
-                          } else if (currentDropdownStatus == done) {
-                            widget.updateStatusCallback(done);
-                          } else {
-                            widget.updateStatusCallback(inProgress);
-                          }
-                        });
-                      },
-                      items: [
-                        DropdownMenuItem(
-                          child: Text("Unread"),
-                          value: unread,
+                  ? StatefulBuilder(
+                      builder: (BuildContext context, StateSetter setState) {
+                      return DropdownButton<String>(
+                        value: currentDropdownStatus,
+                        icon: Icon(Icons.arrow_downward),
+                        iconSize: 24,
+                        elevation: 16,
+                        underline: Container(
+                          height: 2,
+                          color: Theme.of(context).accentColor,
                         ),
-                        DropdownMenuItem(
-                          child: Text("In Progress"),
-                          value: inProgress,
-                        ),
-                        DropdownMenuItem(
-                          child: Text("Done"),
-                          value: done,
-                        ),
-                        DropdownMenuItem(
-                          child: Text("Denied"),
-                          value: denied,
-                        ),
-                      ],
-                    )
+                        onChanged: (String newValue) {
+                          setState(() {
+                            currentDropdownStatus = newValue;
+                            if (currentDropdownStatus == unread) {
+                              widget.updateStatusCallback(unread);
+                            } else if (currentDropdownStatus == denied) {
+                              widget.updateStatusCallback(denied);
+                            } else if (currentDropdownStatus == done) {
+                              widget.updateStatusCallback(done);
+                            } else {
+                              widget.updateStatusCallback(inProgress);
+                            }
+                          });
+                        },
+                        items: [
+                          DropdownMenuItem(
+                            child: Text("Unread"),
+                            value: unread,
+                          ),
+                          DropdownMenuItem(
+                            child: Text("In Progress"),
+                            value: inProgress,
+                          ),
+                          DropdownMenuItem(
+                            child: Text("Done"),
+                            value: done,
+                          ),
+                          DropdownMenuItem(
+                            child: Text("Denied"),
+                            value: denied,
+                          ),
+                        ],
+                      );
+                    })
                   : Text(widget.status),
               Spacer(),
             ]),

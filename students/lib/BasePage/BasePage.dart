@@ -8,17 +8,17 @@ import 'package:tuple/tuple.dart';
 
 import '../DatabaseHandler.dart';
 
-//Based on this article: https://medium.com/flutter-community/mixins-and-base-classes-a-recipe-for-success-in-flutter-bc3fbb5da670
-
-//See /BasePage/README.md to learn more about how to implement this abstract class
-
-//Base page is an abstract parent to all of our pages/screens
-//In a nutshell, it passes to the build function: Widget build(BuildContext context) {
-//A scaffold object. In this scaffold object we add a body, floating action buttons,
-//And navigation drawers as overridable objects. This allows for pages that inherit
-//This class to be able to have their own custom bodys, navigation drawers, and floating
-//Action buttons. It also by default gets the currentUser's data. This is a commonly
-//Needed feature on most pages.
+///Based on this article: https://medium.com/flutter-community/mixins-and-base-classes-a-recipe-for-success-in-flutter-bc3fbb5da670
+///
+///See /BasePage/README.md to learn more about how to implement this abstract class
+///
+///Base page is an abstract parent to all of our pages/screens
+///In a nutshell, it passes to the build function: Widget build(BuildContext context) {
+///A scaffold object. In this scaffold object we add a body, floating action buttons,
+///And navigation drawers as overridable objects. This allows for pages that inherit
+///This class to be able to have their own custom bodys, navigation drawers, and floating
+///Action buttons. It also by default gets the currentUser's data. This is a commonly
+///Needed feature on most pages.
 abstract class BasePage extends StatefulWidget {
   BasePage({Key key}) : super(key: key);
 }

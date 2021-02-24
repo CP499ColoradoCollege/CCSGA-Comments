@@ -11,6 +11,9 @@ import 'ConversationListCard.dart';
 import 'package:beamer/beamer.dart';
 import 'package:ccsga_comments/Models/GlobalEnums.dart';
 
+/// Class for the page showing the list of conversations that -
+/// if Student: I have initiated
+/// if CCSGA or Admin: students have sent to CCSGA (all)
 class ConversationListPage extends BasePage {
   ConversationListPage({Key key, this.title}) : super(key: key);
 
@@ -26,6 +29,7 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
     return "Conversations";
   }
 
+  /// list of conversation cards that will be displayed on the page
   List<ConversationListCard> _convCards = [];
 
   Widget body() {
@@ -66,6 +70,12 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
     );
   }
 
+  /// Gets the list of conversations that I should see
+  /// based on my username and user type
+  ///
+  /// Throws error if unsuccessful.
+  /// Is called within the body() so gets run onInit()
+  /// and when seteState() is called
   Future<bool> _getConversationList() async {
     Tuple2<ChewedResponse, List<Conversation>> responseTuple =
         await DatabaseHandler.instance.getConversationList();
@@ -83,6 +93,9 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
     }
   }
 
+  /// ConversationCards need to digest some of the
+  /// data that a conversation holds, this method
+  /// does just that
   void buildConversationCards(convList) {
     _convCards.clear();
     for (Conversation conv in convList) {
@@ -90,6 +103,7 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
       for (String label in conv.labels) {
         joinedLabels += (" " + label);
       }
+      //these are the message IDs
       List<String> messageKeys = conv.messages.keys.toList()
         ..sort((a, b) => a.compareTo(b));
       Message mostRecentMessage = conv.messages[messageKeys.last];
@@ -103,11 +117,17 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
     }
   }
 
+  /// Used as callback so we can open
+  /// the conversation page when a
+  /// conversation card is clicked
   void beamToConversation(int id) {
     context.beamTo(ConversationLocation(
         pathParameters: {"conversationId": id.toString()}));
   }
 
+  /// The New Message button
+  ///
+  /// Takes user to the new_message page
   @override
   Widget fab() {
     return FloatingActionButton.extended(
@@ -120,6 +140,7 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
     );
   }
 
+  // Future functionality, for filter, sort, search
   // @override
   // Widget settingsDrawer() {
   //   return ConversationListSettingsDrawer(

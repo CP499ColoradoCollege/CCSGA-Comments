@@ -1,11 +1,14 @@
+import 'package:ccsga_comments/DatabaseHandler.dart';
+import 'package:ccsga_comments/Models/GlobalEnums.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 
 class UserCard extends StatefulWidget {
+  UserType userType;
   User user;
 
   @required
-  UserCard(this.user);
+  UserCard(this.user, this.userType);
 
   @override
   _UserCardState createState() => _UserCardState();
@@ -14,6 +17,7 @@ class UserCard extends StatefulWidget {
 class _UserCardState extends State<UserCard> {
   @override
   Widget build(BuildContext context) {
+    var username = widget.user.username ?? "Null_username";
     return Center(
       child: Card(
         shape: RoundedRectangleBorder(
@@ -26,7 +30,7 @@ class _UserCardState extends State<UserCard> {
         child: ListTile(
           contentPadding: EdgeInsets.all(7.5),
           leading: Icon(Icons.person_outline),
-          title: Text(widget.user.displayName),
+          title: Text(username),
           trailing: IconButton(
             icon: Icon(Icons.remove_circle_outline),
             color: Colors.red,
@@ -39,12 +43,26 @@ class _UserCardState extends State<UserCard> {
   }
 
   void removeUser() {
-    print("Remove " + widget.user.username);
+    if (widget.user.username != null) {
+      switch (widget.userType) {
+        case UserType.Admin:
+          DatabaseHandler.instance.deleteAdmin(widget.user.username);
+          break;
+        case UserType.Representative:
+          DatabaseHandler.instance.deleteCCSGA(widget.user.username);
+          break;
+        case UserType.Student:
+          DatabaseHandler.instance.deleteBannedUser(widget.user.username);
+          break;
+      }
+    }
   }
 
   void _showMyDialog() async {
     User user = widget.user;
-
+    if (user == null) {
+      return;
+    }
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -52,8 +70,8 @@ class _UserCardState extends State<UserCard> {
         return AlertDialog(
           title: Text("Remove User"),
           content: Text("Are you sure you would you like to remove the" +
-              (user.isAdmin ? " admin: " : " representative ") +
-              user.displayName +
+              (user.isAdmin ? " admin: " : " representative: ") +
+              user.username +
               "?"),
           actions: [
             TextButton(

@@ -2,7 +2,7 @@ import 'package:ccsga_comments/ConversationList/ConversationListPage.dart';
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
-import 'package:ccsga_comments/Models/FilterEnums.dart';
+import 'package:ccsga_comments/Models/GlobalEnums.dart';
 import 'package:tuple/tuple.dart';
 
 import '../DatabaseHandler.dart';
@@ -147,16 +147,18 @@ class _ConversationListSettingsDrawerState
   }
 
   Future<bool> _getUserData() async {
-    Tuple2<ChewedResponse, User> userResponse =
-        await DatabaseHandler.instance.getAuthenticatedUser();
-
+    Tuple2<ChewedResponse, User> userResponse = await DatabaseHandler.instance
+        .getAuthenticatedUser()
+        .catchError(handleError);
     if (userResponse.item2 != null) {
-      print("user response successful");
       currentUser = userResponse.item2;
       return true;
     } else {
-      print("user response unsuccessful");
       return false;
     }
+  }
+
+  handleError(e) {
+    print(e.toString());
   }
 }

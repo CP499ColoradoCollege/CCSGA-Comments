@@ -21,6 +21,13 @@ abstract class BaseState<Page extends BasePage> extends State<Page> {
 mixin BasicPage<Page extends BasePage> on BaseState<Page> {
   @override
   final GlobalKey<BaseState> scaffoldKey = GlobalKey<BaseState>();
+  Future<User> currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    currentUser = _getUserData();
+  }
 
   Widget build(BuildContext context) {
     List<Widget> bodyChildren = [Expanded(child: body())];
@@ -63,12 +70,12 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
         ),
       ),
       floatingActionButton: fab(),
-      drawer: NavigationDrawer(true),
+      drawer: navigationDrawer(),
       endDrawer: settingsDrawer(),
     );
   }
 
-  User currentUser;
+  Widget navigationDrawer() => NavigationDrawer(true);
 
   //Override to add the navigation drawer to the side, will be hidden when screen size too small
   Widget staticDrawer() => Container(
@@ -122,5 +129,16 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
 
   void openEndDrawer() {
     Scaffold.of(scaffoldKey.currentState.context).openEndDrawer();
+  }
+
+  Future<User> _getUserData() async {
+    Tuple2<ChewedResponse, User> userResponse =
+        await DatabaseHandler.instance.getAuthenticatedUser();
+
+    if (userResponse.item2 != null) {
+      return userResponse.item2;
+    } else {
+      throw Exception("Get current user failed");
+    }
   }
 }

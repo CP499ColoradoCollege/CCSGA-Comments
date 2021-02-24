@@ -1,14 +1,17 @@
 import 'package:ccsga_comments/BasePage/BasePage.dart';
 import 'package:ccsga_comments/Conversation/MessageThread.dart';
-import 'package:ccsga_comments/Settings/ConversationListSettingsDrawer.dart';
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
+import 'package:ccsga_comments/Models/ConversationUpdate.dart';
+import 'package:ccsga_comments/Models/GlobalEnums.dart';
 import 'package:ccsga_comments/Models/Message.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:ccsga_comments/Settings/ConversationSettingsDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
+
+import 'ConversationStatus.dart';
 
 class ConversationPage extends BasePage {
   final int conversationId;
@@ -25,6 +28,8 @@ class _ConversationPageState extends BaseState<ConversationPage>
   Conversation _conversation = Conversation();
   Map _pathParams;
   int _conversationId;
+  String _errorMessage = "";
+  User _currentUser;
 
   @override
   void initState() {
@@ -35,48 +40,56 @@ class _ConversationPageState extends BaseState<ConversationPage>
   Widget body() {
     return Container(
       padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
-      child: Column(
-        children: [
-          FutureBuilder<bool>(
-              future: _getConversationData(),
-              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                if (snapshot.hasData) {
-                  return MessageThread(
+      child: FutureBuilder<bool>(
+          future: _getConversationData(),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if (snapshot.hasData) {
+              return Column(
+                children: [
+                  ConversationStatus(this.updateConversationStatus,
+                      _conversation.status, this._currentUser.isCcsga ?? false),
+                  MessageThread(
                     conv: this._conversation,
-                    currentUser: currentUser,
-                  );
-                } else {
-                  return CircularProgressIndicator();
-                }
-              }),
-          TextFormField(
-            controller: _messageFieldController,
-            minLines: 2,
-            maxLines: 6,
-            cursorColor: Colors.black,
-            decoration: InputDecoration(
-              labelText: 'Write a message',
-              labelStyle: TextStyle(color: Colors.black),
-              border: const OutlineInputBorder(),
-              focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.black),
-              ),
-              suffixIcon: IconButton(
-                onPressed: () {
-                  _sendMessage();
-                },
-                icon: Icon(Icons.send_rounded),
-              ),
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
-          )
-        ],
-      ),
+                    currentUser: _currentUser,
+                  ),
+                  TextFormField(
+                    controller: _messageFieldController,
+                    minLines: 2,
+                    maxLines: 6,
+                    cursorColor: Colors.black,
+                    decoration: InputDecoration(
+                      labelText: 'Write a message',
+                      labelStyle: TextStyle(color: Colors.black),
+                      border: const OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.black),
+                      ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          _sendMessage();
+                        },
+                        icon: Icon(Icons.send_rounded),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                  )
+                ],
+              );
+            } else {
+              return Center(
+                child: SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+          }),
     );
   }
 
@@ -87,54 +100,51 @@ class _ConversationPageState extends BaseState<ConversationPage>
 
   @override
   Widget settingsDrawer() {
-    return ConversationSettingsDrawer(false);
+    return ConversationSettingsDrawer(false, _conversation);
   }
 
   @override
   Icon get rightButtonIcon => Icon(Icons.settings);
 
+  Future<void> updateConversationStatus(String status) async {
+    DatabaseHandler.instance.updateConversation(
+        _conversation.id, ConversationUpdate(setStatus: status));
+  }
+
   Future<bool> _getConversationData() async {
     _pathParams = getPathParameters();
-    //if a convId is passed in when creating the page, use that.
+    // if a convId is passed in when creating the page, use that.
     // if not, check the url for the id (pathParams)
     _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);
-    Tuple2<ChewedResponse, Conversation> responseTuple =
-        await DatabaseHandler.instance.getConversation(_conversationId);
-    Tuple2<ChewedResponse, User> userResponse =
-        await DatabaseHandler.instance.getAuthenticatedUser();
+    Tuple2<ChewedResponse, Conversation> conversationResponse =
+        await DatabaseHandler.instance
+            .getConversation(_conversationId)
+            .catchError(handleError);
 
+    Tuple2<ChewedResponse, User> userResponse = await DatabaseHandler.instance
+        .getAuthenticatedUser()
+        .catchError(handleError);
+    // transaction successful, there was a conv obj sent in response, otherwise null
     if (userResponse.item2 != null) {
-      print("user response successful");
-      currentUser = userResponse.item2;
+      // use setState to update the data in the UI with conv
+      _currentUser = userResponse.item2;
     } else {
-      print("user response unsuccessful");
+      setState(() {
+        _errorMessage = conversationResponse.item1.message;
+      });
       return false;
     }
 
-    // transaction successful, there was a conv obj sent in response, otherwise null
-    if (responseTuple.item2 != null) {
-      print("responseTuple.item2.messages -> ${responseTuple.item2.messages}");
-      // use setState to update the data in the UI with conv
-      _conversation = responseTuple.item2;
+    if (conversationResponse.item2 != null) {
+      _conversation = conversationResponse.item2;
       // FutureBuilder requires that we return something
-      print("conversation response successful");
       return true;
     } else {
       setState(() {
-        // _errorMessage = responseTuple.item1.message;
+        _errorMessage = conversationResponse.item1.message;
       });
-      print("conversation response unsuccessful");
       return false;
     }
-
-    //   Message msg = Message(
-    //       body: "test body",
-    //       dateTime: "2021-02-21 13:00:00",
-    //       isRead: false,
-    //       sender: Sender(displayName: "testDispName", username: "testUserName"));
-    //   Conversation conv = Conversation(id: 99, messages: {"99": msg});
-    //   _conversation = conv;
-    //   return true;
   }
 
   void _sendMessage() async {
@@ -145,15 +155,15 @@ class _ConversationPageState extends BaseState<ConversationPage>
       if (chewedResponse.isSuccessful) {
         _messageFieldController.clear();
         await _getConversationData();
-        setState(() {
-          // _successMessage = chewedResponse.message;
-        });
       } else {
         setState(() {
-          throw new Error();
-          // _errorMessage = chewedResponse.message;
+          _errorMessage = chewedResponse.message;
         });
       }
     }
+  }
+
+  handleError(e) {
+    print('Error: ${e.toString()}');
   }
 }

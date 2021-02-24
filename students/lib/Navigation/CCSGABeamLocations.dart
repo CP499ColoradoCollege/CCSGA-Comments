@@ -1,6 +1,7 @@
 import 'package:beamer/beamer.dart';
 import 'package:ccsga_comments/Admin/AdminPage.dart';
 import 'package:ccsga_comments/Home/HomePage.dart';
+import 'package:ccsga_comments/Logout/LogoutPage.dart';
 import 'package:flutter/material.dart';
 import 'package:ccsga_comments/ConversationList/ConversationListPage.dart';
 import 'package:ccsga_comments/NewMessage/NewMessagePage.dart';
@@ -11,7 +12,7 @@ const List<String> _conversationListPath = ['conversation_list'];
 const List<String> _conversationPath = ['conversation/:conversationId'];
 const List<String> _newMessagePath = ['new_message'];
 const List<String> _adminPath = ['admin_controls'];
-const List<String> _loginPath = ['login'];
+const List<String> _logoutPath = ['logout'];
 
 class HomeLocation extends BeamLocation {
   HomeLocation() {
@@ -25,6 +26,22 @@ class HomeLocation extends BeamLocation {
         BeamPage(
           key: ValueKey('home'),
           child: HomePage(),
+        ),
+      ];
+}
+
+class LogoutLocation extends BeamLocation {
+  LogoutLocation() {
+    pathSegments = _logoutPath;
+  }
+  @override
+  List<String> get pathBlueprints => _logoutPath;
+
+  @override
+  List<BeamPage> get pages => [
+        BeamPage(
+          key: ValueKey('logout'),
+          child: LogoutPage(),
         ),
       ];
 }
@@ -63,9 +80,8 @@ class ConversationListLocation extends BeamLocation {
 
 class ConversationLocation extends BeamLocation {
   ConversationLocation({
-    @required Map<String, String> pathParameters,
+    Map<String, String> pathParameters,
   }) : super(
-          pathBlueprint: _conversationPath.last,
           pathParameters: pathParameters,
         );
 
@@ -74,10 +90,10 @@ class ConversationLocation extends BeamLocation {
 
   @override
   List<BeamPage> get pages => [
-        ...ConversationListLocation().pages,
+        ...ConversationLocation().pages,
         BeamPage(
           key: ValueKey(
-              'conversation-${pathParameters['conversationId'] ?? ''}'),
+              'conversation/${pathParameters['conversationId'] ?? ''}'),
           child: ConversationPage(
               conversationId: int.parse(pathParameters['conversationId'] ?? 0)),
         )

@@ -9,3 +9,7 @@ enum FilterByLabel {
   Outreach,
   DiversityAndInclusion,
 }
+
+enum ConversationStatusLabel { Unread, InProgress, Done, Denied }
+
+enum UserType { Admin, Representative, Student }

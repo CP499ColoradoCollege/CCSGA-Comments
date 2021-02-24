@@ -91,16 +91,11 @@ class _ConversationSettingsDrawerState
               ),
             );
           } else {
-            print("No data in conversation settings drawer");
-            return Drawer(
-              child: Flexible(
-                child: Center(
-                  child: SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+            return Center(
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: CircularProgressIndicator(),
               ),
             );
           }

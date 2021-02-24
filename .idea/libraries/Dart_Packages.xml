@@ -86,6 +86,13 @@
             </list>
           </value>
         </entry>
+        <entry key="enum_to_string">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../../FlutterSDK/.pub-cache/hosted/pub.dartlang.org/enum_to_string-1.0.14/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="fake_async">
           <value>
             <list>
@@ -423,6 +430,7 @@
       <root url="file://$PROJECT_DIR$/../../FlutterSDK/.pub-cache/hosted/pub.dartlang.org/convert-2.1.1/lib" />
       <root url="file://$PROJECT_DIR$/../../FlutterSDK/.pub-cache/hosted/pub.dartlang.org/crypto-2.1.5/lib" />
       <root url="file://$PROJECT_DIR$/../../FlutterSDK/.pub-cache/hosted/pub.dartlang.org/cupertino_icons-1.0.2/lib" />
+      <root url="file://$PROJECT_DIR$/../../FlutterSDK/.pub-cache/hosted/pub.dartlang.org/enum_to_string-1.0.14/lib" />
       <root url="file://$PROJECT_DIR$/../../FlutterSDK/.pub-cache/hosted/pub.dartlang.org/fake_async-1.2.0/lib" />
       <root url="file://$PROJECT_DIR$/../../FlutterSDK/.pub-cache/hosted/pub.dartlang.org/file-6.0.0/lib" />
       <root url="file://$PROJECT_DIR$/../../FlutterSDK/.pub-cache/hosted/pub.dartlang.org/firebase-8.0.0/lib" />

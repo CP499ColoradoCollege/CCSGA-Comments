@@ -63,9 +63,8 @@ class ConversationListLocation extends BeamLocation {
 
 class ConversationLocation extends BeamLocation {
   ConversationLocation({
-    @required Map<String, String> pathParameters,
+    Map<String, String> pathParameters,
   }) : super(
-          pathBlueprint: _conversationPath.last,
           pathParameters: pathParameters,
         );
 
@@ -74,7 +73,7 @@ class ConversationLocation extends BeamLocation {
 
   @override
   List<BeamPage> get pages => [
-        ...ConversationListLocation().pages,
+        // ...ConversationLocation().pages,
         BeamPage(
           key: ValueKey(
               'conversation-${pathParameters['conversationId'] ?? ''}'),

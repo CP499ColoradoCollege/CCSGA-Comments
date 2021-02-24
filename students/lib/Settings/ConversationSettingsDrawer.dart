@@ -1,11 +1,20 @@
+import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
+import 'package:ccsga_comments/Models/Conversation.dart';
+import 'package:ccsga_comments/Models/ConversationUpdate.dart';
+import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
+import 'package:tuple/tuple.dart';
+
+import '../DatabaseHandler.dart';
 
 class ConversationSettingsDrawer extends StatefulWidget {
   var isMobileLayout = false;
+  Conversation conversation;
 
   @required
-  ConversationSettingsDrawer(bool isMobileLayout) {
+  ConversationSettingsDrawer(bool isMobileLayout, Conversation conversation) {
     this.isMobileLayout = isMobileLayout;
+    this.conversation = conversation;
   }
 
   _ConversationSettingsDrawerState createState() =>
@@ -15,55 +24,85 @@ class ConversationSettingsDrawer extends StatefulWidget {
 class _ConversationSettingsDrawerState
     extends State<ConversationSettingsDrawer> {
   bool anonymousIsSwitched = true;
+  Future<User> currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    currentUser = _getUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          Center(
-              child: Padding(
-            padding: EdgeInsets.all(10),
-            child: Text(
-              "Conversation Settings",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          )),
-          SwitchListTile(
-            title: Text(
-              'Anonymous',
-            ),
-            value: anonymousIsSwitched,
-            inactiveThumbColor:
-                anonymousIsSwitched ? Colors.white : Colors.grey.shade400,
-            inactiveTrackColor: anonymousIsSwitched
-                ? Colors.grey.withAlpha(0x80)
-                : Colors.grey[300],
-            onChanged: (bool value) {
-              if (anonymousIsSwitched) {
-                _showMyDialog();
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                      "You cannot anonymize yourself after revealing your identity..."),
-                  duration: Duration(seconds: 2),
-                ));
-              }
-            },
-            // secondary: const Icon(Icons.account_circle_outlined),
-          ),
-          Padding(
-            child: ElevatedButton(
-              onPressed: () {
-                // Respond to button press
-              },
-              child: Text('Mark conversation as unread'),
-            ),
-            padding: EdgeInsets.all(10),
-          ),
-        ],
-      ),
+      child: FutureBuilder<User>(
+          future: currentUser,
+          builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+            if (snapshot.hasData) {
+              anonymousIsSwitched =
+                  !widget.conversation.studentIdentityRevealed;
+              return ListView(
+                padding: EdgeInsets.zero,
+                children: <Widget>[
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        "Conversation Settings",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  SwitchListTile(
+                    title: Text(
+                      'Anonymous',
+                    ),
+                    value: anonymousIsSwitched,
+                    inactiveThumbColor: anonymousIsSwitched
+                        ? Colors.white
+                        : Colors.grey.shade400,
+                    inactiveTrackColor: anonymousIsSwitched
+                        ? Colors.grey.withAlpha(0x80)
+                        : Colors.grey[300],
+                    onChanged: (bool value) {
+                      if (snapshot.data.isCcsga == false) {
+                        if (anonymousIsSwitched) {
+                          _showMyDialog();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                                "You cannot anonymize yourself after revealing your identity..."),
+                            duration: Duration(seconds: 2),
+                          ));
+                        }
+                      }
+                    },
+                    // secondary: const Icon(Icons.account_circle_outlined),
+                  ),
+                  // Padding(
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       // Respond to button press
+                  //     },
+                  //     child: Text('Mark conversation as unread'),
+                  //   ),
+                  //   padding: EdgeInsets.all(10),
+                  // ),
+                ],
+              );
+            } else {
+              return Flexible(
+                child: Center(
+                  child: SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              );
+            }
+          }),
     );
   }
 
@@ -95,9 +134,28 @@ class _ConversationSettingsDrawerState
     );
 
     if (isConfirmed && anonymousIsSwitched) {
+      DatabaseHandler.instance.updateConversation(
+          widget.conversation.id,
+          ConversationUpdate(
+              revealIdentity: true,
+              setArchived: null,
+              setLabels: null,
+              setRead: null,
+              setStatus: null));
       setState(() {
         anonymousIsSwitched = false;
       });
+    }
+  }
+
+  Future<User> _getUserData() async {
+    Tuple2<ChewedResponse, User> userResponse =
+        await DatabaseHandler.instance.getAuthenticatedUser();
+
+    if (userResponse.item2 != null) {
+      return userResponse.item2;
+    } else {
+      return null;
     }
   }
 }

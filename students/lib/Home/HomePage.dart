@@ -26,9 +26,9 @@ class _HomePageState extends BaseState<HomePage> with BasicPage {
               shrinkWrap: true,
               children: <Widget>[
                 HomeCard(
-                    'CC Academic Calendar',
+                    'CC Academic Calendar 2021-2022',
                     'See the academic calendar here...',
-                    'https://www.coloradocollege.edu/academics/curriculum/calendar/calendar-2020-21.html/'),
+                    'https://www.coloradocollege.edu/academics/curriculum/calendar/calendar-2021-22.html'),
                 HomeCard(
                     'COVID-19 Guidelines',
                     'Learn more about the community guidelines here...',

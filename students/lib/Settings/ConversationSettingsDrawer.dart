@@ -28,8 +28,8 @@ class _ConversationSettingsDrawerState
 
   @override
   void initState() {
-    super.initState();
     currentUser = _getUserData();
+    super.initState();
   }
 
   @override
@@ -159,7 +159,6 @@ class _ConversationSettingsDrawerState
   Future<User> _getUserData() async {
     Tuple2<ChewedResponse, User> userResponse =
         await DatabaseHandler.instance.getAuthenticatedUser();
-
     if (userResponse.item2 != null) {
       return userResponse.item2;
     } else {

@@ -73,7 +73,7 @@ class ConversationLocation extends BeamLocation {
 
   @override
   List<BeamPage> get pages => [
-        // ...ConversationLocation().pages,
+        ...ConversationListLocation().pages,
         BeamPage(
           key: ValueKey(
               'conversation-${pathParameters['conversationId'] ?? ''}'),

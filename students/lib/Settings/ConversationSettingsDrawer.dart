@@ -24,19 +24,12 @@ class ConversationSettingsDrawer extends StatefulWidget {
 class _ConversationSettingsDrawerState
     extends State<ConversationSettingsDrawer> {
   bool anonymousIsSwitched = true;
-  Future<User> currentUser;
-
-  @override
-  void initState() {
-    super.initState();
-    currentUser = _getUserData();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: FutureBuilder<User>(
-          future: currentUser,
+          future: _getUserData(),
           builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
             if (snapshot.hasData) {
               anonymousIsSwitched = widget.conversation.studentIdentityRevealed;

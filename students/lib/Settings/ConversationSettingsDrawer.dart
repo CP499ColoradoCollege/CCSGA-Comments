@@ -27,17 +27,19 @@ class _ConversationSettingsDrawerState
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: FutureBuilder<Tuple2<User, Conversation>>(
-          future: _getUserData(),
-          builder: (BuildContext context,
-              AsyncSnapshot<Tuple2<User, Conversation>> snapshot) {
-            if (snapshot.hasData) {
-              print("User object: " + snapshot.data.item1.toString());
-              print("Conversation object: " + snapshot.data.item2.toString());
-              anonymousIsSwitched =
-                  !snapshot.data.item2.studentIdentityRevealed;
-              return ListView(
+    return FutureBuilder<Tuple2<User, Conversation>>(
+        future: _getUserData(),
+        builder: (BuildContext context,
+            AsyncSnapshot<Tuple2<User, Conversation>> snapshot) {
+          if (snapshot.hasData &&
+              snapshot.data.item1.isCcsga != null &&
+              snapshot.data.item2.studentIdentityRevealed != null) {
+            print("User object: " + snapshot.data.item1.toJson().toString());
+            print("Conversation object: " +
+                snapshot.data.item2.toJson().toString());
+            anonymousIsSwitched = !snapshot.data.item2.studentIdentityRevealed;
+            return Drawer(
+              child: ListView(
                 padding: EdgeInsets.zero,
                 children: <Widget>[
                   Center(
@@ -86,9 +88,11 @@ class _ConversationSettingsDrawerState
                   //   padding: EdgeInsets.all(10),
                   // ),
                 ],
-              );
-            } else {
-              return Flexible(
+              ),
+            );
+          } else {
+            return Drawer(
+              child: Flexible(
                 child: Center(
                   child: SizedBox(
                     width: 50,
@@ -96,10 +100,10 @@ class _ConversationSettingsDrawerState
                     child: CircularProgressIndicator(),
                   ),
                 ),
-              );
-            }
-          }),
-    );
+              ),
+            );
+          }
+        });
   }
 
   Future<void> _showMyDialog() async {

@@ -27,17 +27,19 @@ class _ConversationSettingsDrawerState
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Tuple2<User, Conversation>>(
-        future: _getUserData(),
-        builder: (BuildContext context,
-            AsyncSnapshot<Tuple2<User, Conversation>> snapshot) {
-          if (snapshot.hasData &&
-              snapshot.data.item1.isCcsga != null &&
-              snapshot.data.item2.studentIdentityRevealed != null) {
-            print("User object: " + snapshot.data.item1.toJson().toString());
-            print("Conversation object: " +
-                snapshot.data.item2.toJson().toString());
-            anonymousIsSwitched = !snapshot.data.item2.studentIdentityRevealed;
+    Future<User> currentUser;
+
+    @override
+    void initState() {
+      super.initState();
+      currentUser = _getUserData();
+    }
+
+    return FutureBuilder<Conversation>(
+        future: _getConversationData(),
+        builder: (BuildContext context, AsyncSnapshot<Conversation> snapshot) {
+          if (snapshot.hasData) {
+            anonymousIsSwitched = !snapshot.data.studentIdentityRevealed;
             return Drawer(
               child: ListView(
                 padding: EdgeInsets.zero,
@@ -64,17 +66,28 @@ class _ConversationSettingsDrawerState
                         ? Colors.grey.withAlpha(0x80)
                         : Colors.grey[300],
                     onChanged: (bool value) {
-                      if (snapshot.data.item1.isCcsga == false) {
-                        if (anonymousIsSwitched) {
-                          _showMyDialog();
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(
-                                "You cannot anonymize yourself after revealing your identity..."),
-                            duration: Duration(seconds: 2),
-                          ));
-                        }
-                      }
+                      FutureBuilder<User>(
+                          future: currentUser,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<User> snapshot) {
+                            if (snapshot.hasData &&
+                                snapshot.data.isCcsga != null) {
+                              if (snapshot.data.isCcsga == false) {
+                                if (anonymousIsSwitched) {
+                                  _showMyDialog();
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          "You cannot anonymize yourself after revealing your identity..."),
+                                      duration: Duration(seconds: 3),
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                            return;
+                          });
                     },
                     // secondary: const Icon(Icons.account_circle_outlined),
                   ),
@@ -149,15 +162,23 @@ class _ConversationSettingsDrawerState
     }
   }
 
-  Future<Tuple2<User, Conversation>> _getUserData() async {
+  Future<User> _getUserData() async {
     Tuple2<ChewedResponse, User> userResponse =
         await DatabaseHandler.instance.getAuthenticatedUser();
 
+    if (userResponse.item2 != null) {
+      return userResponse.item2;
+    } else {
+      return null;
+    }
+  }
+
+  Future<Conversation> _getConversationData() async {
     Tuple2<ChewedResponse, Conversation> conversationResponse =
         await DatabaseHandler.instance.getConversation(widget.conversation.id);
 
-    if (userResponse.item2 != null && conversationResponse.item2 != null) {
-      return Tuple2(userResponse.item2, conversationResponse.item2);
+    if (conversationResponse.item2 != null) {
+      return conversationResponse.item2;
     } else {
       return null;
     }

@@ -224,7 +224,7 @@ Once the system is set up and running successfully, use the following informatio
 
 #### System Architecture and File Structure
 
-![System Architecture](documentation/System_Architecture.png)
+![System Architecture](documentation/High_Level_Architecture.png)
 
 The frontend and the middleware of the system use the Flutter framework and are written in Dart. The Dart files stored within the repository at `students/lib/` are transpiled into a JavaScript web build placed at `students/build/web`, which a Flask backend serves to the browser whenever the browser requests any routes not beginning with `/api`. Within the `lib` directory, each page in the user interface has its own sub-directory. `lib` also contains a `BasePage`, the parent of all other page classes, as well as `Models`, which holds blueprints for frequently used objects such as Conversations and Messages. There is also a `Navigation` directory within `lib`, which holds the logic for the side navigation and URL routing. Lastly, the `lib` directory also holds `main.dart`, which is the main class, and `DatabaseHandler.dart`, which constitutes our middleware. `DatabaseHandler` holds functions responsible for sending requests to the Database and digesting the response before sending it back to the caller in a suitable format. `ChewedResponse` is a class that `DatabaseHandler` uses to determine success and potential error description based on the status code that the API returns. When the frontend needs to make an API request, it formats any required data as JSON, sends a request through the Dart http library, and awaits a JSON response from the server. 
 

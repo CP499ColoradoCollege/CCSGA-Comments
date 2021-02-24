@@ -7,9 +7,9 @@ typedef FutureVoidCallback = Future<void> Function(String status);
 class ConversationStatus extends StatefulWidget {
   final FutureVoidCallback updateStatusCallback;
   final String status;
-  final bool isCcsga;
+  final bool canEdit;
 
-  ConversationStatus(this.updateStatusCallback, this.status, this.isCcsga);
+  ConversationStatus(this.updateStatusCallback, this.status, this.canEdit);
 
   @override
   _ConversationStatusState createState() => _ConversationStatusState();
@@ -43,7 +43,7 @@ class _ConversationStatusState extends State<ConversationStatus> {
               SizedBox(
                 width: 5,
               ),
-              widget.isCcsga
+              widget.canEdit
                   ? StatefulBuilder(
                       builder: (BuildContext context, StateSetter setState) {
                       return DropdownButton<String>(

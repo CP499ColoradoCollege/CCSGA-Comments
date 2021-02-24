@@ -46,8 +46,12 @@ class _ConversationPageState extends BaseState<ConversationPage>
             if (snapshot.hasData) {
               return Column(
                 children: [
-                  ConversationStatus(this.updateConversationStatus,
-                      _conversation.status, this._currentUser.isCcsga ?? false),
+                  ConversationStatus(
+                      this.updateConversationStatus,
+                      _conversation.status,
+                      (this._currentUser.isCcsga ||
+                              this._currentUser.isAdmin) ??
+                          false),
                   MessageThread(
                     conv: this._conversation,
                     currentUser: _currentUser,

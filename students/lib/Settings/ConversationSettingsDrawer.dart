@@ -28,11 +28,12 @@ class _ConversationSettingsDrawerState
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: FutureBuilder<User>(
+      child: FutureBuilder<Tuple2<User, Conversation>>(
           future: _getUserData(),
-          builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+          builder: (BuildContext context,
+              AsyncSnapshot<Tuple2<User, Conversation>> snapshot) {
             if (snapshot.hasData) {
-              anonymousIsSwitched = widget.conversation.studentIdentityRevealed;
+              anonymousIsSwitched = snapshot.data.item2.studentIdentityRevealed;
               return ListView(
                 padding: EdgeInsets.zero,
                 children: <Widget>[
@@ -58,7 +59,7 @@ class _ConversationSettingsDrawerState
                         ? Colors.grey.withAlpha(0x80)
                         : Colors.grey[300],
                     onChanged: (bool value) {
-                      if (snapshot.data.isCcsga == false) {
+                      if (snapshot.data.item1.isCcsga == false) {
                         if (anonymousIsSwitched) {
                           _showMyDialog();
                         } else {
@@ -141,12 +142,15 @@ class _ConversationSettingsDrawerState
     }
   }
 
-  Future<User> _getUserData() async {
+  Future<Tuple2<User, Conversation>> _getUserData() async {
     Tuple2<ChewedResponse, User> userResponse =
         await DatabaseHandler.instance.getAuthenticatedUser();
 
-    if (userResponse.item2 != null) {
-      return userResponse.item2;
+    Tuple2<ChewedResponse, Conversation> conversationResponse =
+        await DatabaseHandler.instance.getConversation(widget.conversation.id);
+
+    if (userResponse.item2 != null && conversationResponse.item2 != null) {
+      return Tuple2(userResponse.item2, conversationResponse.item2);
     } else {
       return null;
     }

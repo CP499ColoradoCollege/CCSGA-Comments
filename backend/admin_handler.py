@@ -1,4 +1,5 @@
 import flask
+import mariadb
 from flask import make_response, jsonify, request
 from backend import app
 from backend.database_handler import get_conn_and_cursor
@@ -27,20 +28,28 @@ def add_admin():
     # Get the new admin's username
     new_admin = request_dict['newAdmin']
 
-    # Call the stored procedure for adding an admin
+    # Get database connection and cursor
     conn, cur = get_conn_and_cursor()
-    cur.callproc('add_admin', (new_admin, flask.session.get('CAS_USERNAME')))
-    proc_result = cur.fetchone()[0]
-    cur.nextset()
-
-    # Respond appropriately if the stored procedure determined that the requester was not authorized
-    if proc_result == -403:
-        conn.close()
-        return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     
-    # Commit database changes
-    conn.commit()
-    conn.close()
+    try:
+        
+        # Call the stored procedure for adding an admin
+        cur.callproc('add_admin', (new_admin, flask.session.get('CAS_USERNAME')))
+        proc_result = cur.fetchone()[0]
+        cur.nextset()
+
+        # Respond appropriately if the stored procedure determined that the requester was not authorized
+        if proc_result == -403:
+            conn.close()
+            return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
+        
+        # Commit database changes
+        conn.commit()
+    except mariadb.Error as e:
+        print(f"Error when adding admin: {e}")
+    finally:
+        # Close the database connection
+        conn.close()
     
     # Respond appropriately if the stored procedure determined that the new admin was already an admin
     if proc_result == -200:
@@ -73,20 +82,28 @@ def add_ccsga_rep():
     # Get the new rep's username
     new_ccsga = request_dict['newCCSGA']
 
-    # Call the stored procedure for adding a rep
+    # Get database connection and cursor
     conn, cur = get_conn_and_cursor()
-    cur.callproc('add_ccsga', (new_ccsga, flask.session.get('CAS_USERNAME')))
-    proc_result = cur.fetchone()[0]
-    cur.nextset()
-
-    # Respond appropriately if the stored procedure determined that the requester was not authorized
-    if proc_result == -403:
-        conn.close()
-        return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     
-    # Commit database changes
-    conn.commit()
-    conn.close()
+    try:
+
+        # Call the stored procedure for adding a rep
+        cur.callproc('add_ccsga', (new_ccsga, flask.session.get('CAS_USERNAME')))
+        proc_result = cur.fetchone()[0]
+        cur.nextset()
+
+        # Respond appropriately if the stored procedure determined that the requester was not authorized
+        if proc_result == -403:
+            conn.close()
+            return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
+        
+        # Commit database changes
+        conn.commit()
+    except mariadb.Error as e:
+        print(f"Error when adding rep: {e}")
+    finally:
+        # Close the database connection
+        conn.close()
     
     # Respond appropriately if the stored procedure determined that the new rep was already a rep
     if proc_result == -200:
@@ -119,20 +136,28 @@ def create_banned_user():
     # Get the newly banned user's username
     user_to_ban = request_dict['userToBan']
 
-    # Call the stored procedure for banning a user
+    # Get database connection and cursor
     conn, cur = get_conn_and_cursor()
-    cur.callproc('add_ban', (user_to_ban, flask.session.get('CAS_USERNAME')))
-    proc_result = cur.fetchone()[0]
-    cur.nextset()
 
-    # Respond appropriately if the stored procedure determined that the requester was not authorized
-    if proc_result == -403:
+    try:
+
+        # Call the stored procedure for banning a user
+        cur.callproc('add_ban', (user_to_ban, flask.session.get('CAS_USERNAME')))
+        proc_result = cur.fetchone()[0]
+        cur.nextset()
+
+        # Respond appropriately if the stored procedure determined that the requester was not authorized
+        if proc_result == -403:
+            conn.close()
+            return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
+        
+        # Commit database changes
+        conn.commit()
+    except mariadb.Error as e:
+        print(f"Error when banning user: {e}")
+    finally:
+        # Close the database connection
         conn.close()
-        return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
-    
-    # Commit database changes
-    conn.commit()
-    conn.close()
     
     # Respond appropriately if the stored procedure determined that the user was already banned
     if proc_result == -200:
@@ -144,25 +169,31 @@ def create_banned_user():
 @app.route("/api/admins")
 def get_admins():
     '''Get the list of admins.'''
-    
+
     # prevent non-signed in users from accessing
     if flask.session.get('CAS_USERNAME') == None:
         resp = make_response(jsonify({"message": "User not authenticated"}), 401)
         resp.headers.set('WWW-Authenticate', 'CAS')
         return resp
 
-    # Call the stored procedure for getting the admins
+    # Get database connection and cursor
     conn, cur = get_conn_and_cursor()
-    cur.callproc('get_admins', (flask.session.get('CAS_USERNAME'),))
-    proc_result = cur.fetchall()
 
-    # Respond appropriately if the stored procedure determined that the requester was not authorized
-    if proc_result == [(-403,)]:
+    try:
+
+        # Call the stored procedure for getting the admins
+        cur.callproc('get_admins', (flask.session.get('CAS_USERNAME'),))
+        proc_result = cur.fetchall()
+
+        # Respond appropriately if the stored procedure determined that the requester was not authorized
+        if proc_result == [(-403,)]:
+            conn.close()
+            return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
+    except mariadb.Error as e:
+        print(f"Error when getting admins: {e}")
+    finally:
+        # Close the database connection (no changes to commit)
         conn.close()
-        return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
-    
-    # Close the database connection (no changes to commit)
-    conn.close()
     
     # proc_result == -200, so respond appropriately with list of admins
     # Map the query result to a list that uses booleans instead of 0/1
@@ -176,25 +207,31 @@ def get_admins():
 @app.route("/api/ccsga_reps")
 def get_ccsga_reps():
     '''Get the list of CCSGA representatives.'''
-    
+
     # prevent non-signed in users from accessing
     if flask.session.get('CAS_USERNAME') == None:
         resp = make_response(jsonify({"message": "User not authenticated"}), 401)
         resp.headers.set('WWW-Authenticate', 'CAS')
         return resp
 
-    # Call the stored procedure for getting the reps
+    # Get database connection and cursor
     conn, cur = get_conn_and_cursor()
-    cur.callproc('get_ccsga_reps', (flask.session.get('CAS_USERNAME'),))
-    proc_result = cur.fetchall()
-
-    # Respond appropriately if the stored procedure determined that the requester was not authorized
-    if proc_result == [(-403,)]:
-        conn.close()
-        return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     
-    # Close the database connection (no changes to commit)
-    conn.close()
+    try:
+
+        # Call the stored procedure for getting the reps
+        cur.callproc('get_ccsga_reps', (flask.session.get('CAS_USERNAME'),))
+        proc_result = cur.fetchall()
+
+        # Respond appropriately if the stored procedure determined that the requester was not authorized
+        if proc_result == [(-403,)]:
+            conn.close()
+            return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
+    except mariadb.Error as e:
+        print(f"Error when getting reps: {e}")
+    finally:
+        # Close the database connection (no changes to commit)
+        conn.close()
     
     # proc_result == -200, so respond appropriately with list of reps
     # Map the query result to a list that uses booleans instead of 0/1
@@ -208,25 +245,31 @@ def get_ccsga_reps():
 @app.route("/api/banned_users")
 def get_banned_users():
     '''Get the list of banned users.'''
-    
+
     # prevent non-signed in users from accessing
     if flask.session.get('CAS_USERNAME') == None:
         resp = make_response(jsonify({"message": "User not authenticated"}), 401)
         resp.headers.set('WWW-Authenticate', 'CAS')
         return resp
 
-    # Call the stored procedure for getting the banned users
+    # Get database connection and cursor
     conn, cur = get_conn_and_cursor()
-    cur.callproc('get_banned_users', (flask.session.get('CAS_USERNAME'),))
-    proc_result = cur.fetchall()
-
-    # Respond appropriately if the stored procedure determined that the requester was not authorized
-    if proc_result == [(-403,)]:
-        conn.close()
-        return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     
-    # Close the database connection (no changes to commit)
-    conn.close()
+    try:
+
+        # Call the stored procedure for getting the banned users
+        cur.callproc('get_banned_users', (flask.session.get('CAS_USERNAME'),))
+        proc_result = cur.fetchall()
+
+        # Respond appropriately if the stored procedure determined that the requester was not authorized
+        if proc_result == [(-403,)]:
+            conn.close()
+            return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
+    except mariadb.Error as e:
+        print(f"Error when getting banned users: {e}")
+    finally:
+        # Close the database connection (no changes to commit)
+        conn.close()
     
     # proc_result == -200, so respond appropriately with list of banned users
     # Map the query result to a list that uses booleans instead of 0/1
@@ -247,30 +290,38 @@ def remove_admin(admin_to_remove):
         resp.headers.set('WWW-Authenticate', 'CAS')
         return resp
 
-    # Call the stored procedure for removing an admin
+    # Get database connection and cursor
     conn, cur = get_conn_and_cursor()
-    cur.callproc('remove_admin', (admin_to_remove, flask.session.get('CAS_USERNAME')))
-    proc_result = cur.fetchone()[0]
-    cur.nextset()
+    
+    try:
 
-    # Respond appropriately if the stored procedure determined that the requester was not authorized
-    if proc_result == -403:
+        # Call the stored procedure for removing an admin
+        cur.callproc('remove_admin', (admin_to_remove, flask.session.get('CAS_USERNAME')))
+        proc_result = cur.fetchone()[0]
+        cur.nextset()
+
+        # Respond appropriately if the stored procedure determined that the requester was not authorized
+        if proc_result == -403:
+            conn.close()
+            return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
+        
+        # Respond appropriately if the stored procedure determined that the specified user was the site's only admin (don't want to allow the site to be without admins)
+        if proc_result == -400:
+            conn.close()
+            return make_response(jsonify({"message": f"{admin_to_remove} is currently the only admin. Please add another before removing this one."}), 400)
+        
+        # Respond appropriately if the stored procedure determined that the specified user was already not an admin
+        if proc_result == -404:
+            conn.close()
+            return make_response(jsonify({"message": f"'{admin_to_remove}' is already not an admin."}), 404)
+        
+        # Commit database changes
+        conn.commit()
+    except mariadb.Error as e:
+        print(f"Error when removing admin: {e}")
+    finally:
+        # Close the database connection
         conn.close()
-        return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
-    
-    # Respond appropriately if the stored procedure determined that the specified user was the site's only admin (don't want to allow the site to be without admins)
-    if proc_result == -400:
-        conn.close()
-        return make_response(jsonify({"message": f"{admin_to_remove} is currently the only admin. Please add another before removing this one."}), 400)
-    
-    # Respond appropriately if the stored procedure determined that the specified user was already not an admin
-    if proc_result == -404:
-        conn.close()
-        return make_response(jsonify({"message": f"'{admin_to_remove}' is already not an admin."}), 404)
-    
-    # Commit database changes
-    conn.commit()
-    conn.close()
     
     # proc_result == -200, so respond appropriately for successful admin removal
     return make_response(jsonify({"message": f"Success: '{admin_to_remove}' is no longer an admin."}), 200)
@@ -285,25 +336,33 @@ def remove_ccsga_rep(rep_to_remove):
         resp.headers.set('WWW-Authenticate', 'CAS')
         return resp
 
-    # Call the stored procedure for removing a rep
+    # Get database connection and cursor
     conn, cur = get_conn_and_cursor()
-    cur.callproc('remove_ccsga', (rep_to_remove, flask.session.get('CAS_USERNAME')))
-    proc_result = cur.fetchone()[0]
-    cur.nextset()
 
-    # Respond appropriately if the stored procedure determined that the requester was not authorized
-    if proc_result == -403:
+    try:
+        
+        # Call the stored procedure for removing a rep
+        cur.callproc('remove_ccsga', (rep_to_remove, flask.session.get('CAS_USERNAME')))
+        proc_result = cur.fetchone()[0]
+        cur.nextset()
+
+        # Respond appropriately if the stored procedure determined that the requester was not authorized
+        if proc_result == -403:
+            conn.close()
+            return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
+        
+        # Respond appropriately if the stored procedure determined that the specified user was already not a rep
+        if proc_result == -404:
+            conn.close()
+            return make_response(jsonify({"message": f"'{rep_to_remove}' is already not a CCSGA rep."}), 404)
+        
+        # Commit database changes
+        conn.commit()
+    except mariadb.Error as e:
+        print(f"Error when removing rep: {e}")
+    finally:
+        # Close the database connection
         conn.close()
-        return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
-    
-    # Respond appropriately if the stored procedure determined that the specified user was already not a rep
-    if proc_result == -404:
-        conn.close()
-        return make_response(jsonify({"message": f"'{rep_to_remove}' is already not a CCSGA rep."}), 404)
-    
-    # Commit database changes
-    conn.commit()
-    conn.close()
     
     # proc_result == -200, so respond appropriately for successful rep removal
     return make_response(jsonify({"message": f"Success: '{rep_to_remove}' is no longer a CCSGA rep."}), 200)
@@ -319,25 +378,33 @@ def unban_user(user_to_unban):
         resp.headers.set('WWW-Authenticate', 'CAS')
         return resp
 
-    # Call the stored procedure for unbanning a user
+    # Get database connection and cursor
     conn, cur = get_conn_and_cursor()
-    cur.callproc('remove_ban', (user_to_unban, flask.session.get('CAS_USERNAME')))
-    proc_result = cur.fetchone()[0]
-    cur.nextset()
 
-    # Respond appropriately if the stored procedure determined that the requester was not authorized
-    if proc_result == -403:
-        conn.close()
-        return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
+    try:
     
-    # Respond appropriately if the stored procedure determined that the specified user was already unbanned
-    if proc_result == -404:
-        conn.close()
-        return make_response(jsonify({"message": f"'{user_to_unban}' is already not banned."}), 404)
+        # Call the stored procedure for unbanning a user
+        cur.callproc('remove_ban', (user_to_unban, flask.session.get('CAS_USERNAME')))
+        proc_result = cur.fetchone()[0]
+        cur.nextset()
 
-    # Commit database changes
-    conn.commit()
-    conn.close()
+        # Respond appropriately if the stored procedure determined that the requester was not authorized
+        if proc_result == -403:
+            conn.close()
+            return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
+        
+        # Respond appropriately if the stored procedure determined that the specified user was already unbanned
+        if proc_result == -404:
+            conn.close()
+            return make_response(jsonify({"message": f"'{user_to_unban}' is already not banned."}), 404)
+
+        # Commit database changes
+        conn.commit()
+    except mariadb.Error as e:
+        print(f"Error when removing ban: {e}")
+    finally:
+        # Close the database connection
+        conn.close()
 
     # proc_result == -200, so respond appropriately for successful unbanning
     return make_response(jsonify({"message": f"Suuccess: '{user_to_unban}' is now unbanned."}), 200)

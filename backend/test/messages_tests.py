@@ -38,8 +38,8 @@ class TestMessagesRoutes(unittest.TestCase):
     def test_create_conversation(self):
         
         # Make signed-in user nominally banned, to check the unauthorized check
-        self.conn, self.cur = get_conn_and_cursor()
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.conn, self.cur = get_conn_and_cursor()
         self.cur.callproc("add_ban", (SIGNED_IN_USERNAME, FAKE_ADMIN_USERNAME))
         self.cur.nextset()
         self.conn.commit()

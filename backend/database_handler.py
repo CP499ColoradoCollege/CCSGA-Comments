@@ -8,7 +8,7 @@ load_dotenv()
 
 def get_new_db_connection():
     '''Connect to the database using the values specified in the environment. 
-    Implemented as a function so that it can be called easily in other places when it's discovered that the connection was lost/ended.
+    Implemented as a function so that it can be called easily in other places that need a fresh connection to the database.
     However, outside of this file, it is preferrable to call get_conn_and_cursor() instead.'''
     
     try:
@@ -22,36 +22,35 @@ def get_new_db_connection():
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB Platform: {e}")
 
-# Create a connection, so that the global variable exists before the following function declaration
-conn = get_new_db_connection()
-
 def get_conn_and_cursor():
-    '''Get the current MariaDB connection and a cursor from it, automatically re-establishing the connection if needed to do so.
+    '''Get a fresh MariaDB connection and a cursor from it.
     This is the function that should generally be imported and called in other files.'''
     
-    global conn
     try:
-        cur = conn.cursor()
-    except mariadb.ProgrammingError: # i.e., conn is not open
         conn = get_new_db_connection()
-        print(f"Reconnected to database at {datetime.utcnow()} UTC")
         cur = conn.cursor()
-    return conn, cur
+        return conn, cur
+    except mariadb.Error as e:
+        print(f"Error when getting new connection and cursor: {e}")
 
 def create_tables():
     '''Create all the tables for the database that don't already exist, but don't update their structures if the details below have changed.'''
 
     conn, cur = get_conn_and_cursor()
-    cur.execute("CREATE TABLE IF NOT EXISTS Users (username VARCHAR(40), displayName VARCHAR(100), isBanned BOOL, isCCSGA BOOL, isAdmin BOOL, rolesLastUpdated DATETIME, updatedBy VARCHAR(40), PRIMARY KEY (username), FOREIGN KEY (updatedBy) REFERENCES Users(username));")
-    cur.execute("CREATE TABLE IF NOT EXISTS Conversations (id INT AUTO_INCREMENT, status VARCHAR(40), PRIMARY KEY (id));")
-    cur.execute("CREATE TABLE IF NOT EXISTS Messages (id INT AUTO_INCREMENT, conversationId INT, sender VARCHAR(40), body TEXT, dateandtime DATETIME, PRIMARY KEY (id), FOREIGN KEY (conversationId) REFERENCES Conversations(id), FOREIGN KEY (sender) REFERENCES Users(username));")
-    cur.execute("CREATE TABLE IF NOT EXISTS Labels (id INT AUTO_INCREMENT, body VARCHAR(40), PRIMARY KEY (id), UNIQUE (body));")
-    cur.execute("CREATE TABLE IF NOT EXISTS ConversationSettings (id INT AUTO_INCREMENT, conversationId INT, username VARCHAR(40), isArchived BOOL, identityRevealed BOOL, isInitiator BOOL, isAccessible BOOL DEFAULT 1, PRIMARY KEY (id), FOREIGN KEY (conversationId) REFERENCES Conversations(id), FOREIGN KEY (username) REFERENCES Users(username), UNIQUE KEY convIdAndUsername (conversationId, username));")
-    cur.execute("CREATE TABLE IF NOT EXISTS MessageSettings (id INT AUTO_INCREMENT, messageId INT, username VARCHAR(40), isRead BOOL, PRIMARY KEY (id), FOREIGN KEY (messageId) REFERENCES Messages(id), FOREIGN KEY (username) REFERENCES Users(username), UNIQUE KEY messageIdAndUsername (messageId, username));")
-    cur.execute("CREATE TABLE IF NOT EXISTS AppliedLabels (id INT AUTO_INCREMENT, conversationId INT, labelId INT, PRIMARY KEY (id), FOREIGN KEY (conversationId) REFERENCES Conversations(id), FOREIGN KEY (labelId) REFERENCES Labels(id));")
-    cur.execute("CREATE TABLE IF NOT EXISTS Links (id INT AUTO_INCREMENT, icon TEXT, body TEXT, url TEXT, dateandtime DATETIME, PRIMARY KEY (id));")
-    cur.execute("CREATE TABLE IF NOT EXISTS Announcements (id INT AUTO_INCREMENT, icon TEXT, body TEXT, dateandtime DATETIME, PRIMARY KEY (id));")
-    conn.close()
+    try:
+        cur.execute("CREATE TABLE IF NOT EXISTS Users (username VARCHAR(40), displayName VARCHAR(100), isBanned BOOL, isCCSGA BOOL, isAdmin BOOL, rolesLastUpdated DATETIME, updatedBy VARCHAR(40), PRIMARY KEY (username), FOREIGN KEY (updatedBy) REFERENCES Users(username));")
+        cur.execute("CREATE TABLE IF NOT EXISTS Conversations (id INT AUTO_INCREMENT, status VARCHAR(40), PRIMARY KEY (id));")
+        cur.execute("CREATE TABLE IF NOT EXISTS Messages (id INT AUTO_INCREMENT, conversationId INT, sender VARCHAR(40), body TEXT, dateandtime DATETIME, PRIMARY KEY (id), FOREIGN KEY (conversationId) REFERENCES Conversations(id), FOREIGN KEY (sender) REFERENCES Users(username));")
+        cur.execute("CREATE TABLE IF NOT EXISTS Labels (id INT AUTO_INCREMENT, body VARCHAR(40), PRIMARY KEY (id), UNIQUE (body));")
+        cur.execute("CREATE TABLE IF NOT EXISTS ConversationSettings (id INT AUTO_INCREMENT, conversationId INT, username VARCHAR(40), isArchived BOOL, identityRevealed BOOL, isInitiator BOOL, isAccessible BOOL DEFAULT 1, PRIMARY KEY (id), FOREIGN KEY (conversationId) REFERENCES Conversations(id), FOREIGN KEY (username) REFERENCES Users(username), UNIQUE KEY convIdAndUsername (conversationId, username));")
+        cur.execute("CREATE TABLE IF NOT EXISTS MessageSettings (id INT AUTO_INCREMENT, messageId INT, username VARCHAR(40), isRead BOOL, PRIMARY KEY (id), FOREIGN KEY (messageId) REFERENCES Messages(id), FOREIGN KEY (username) REFERENCES Users(username), UNIQUE KEY messageIdAndUsername (messageId, username));")
+        cur.execute("CREATE TABLE IF NOT EXISTS AppliedLabels (id INT AUTO_INCREMENT, conversationId INT, labelId INT, PRIMARY KEY (id), FOREIGN KEY (conversationId) REFERENCES Conversations(id), FOREIGN KEY (labelId) REFERENCES Labels(id));")
+        cur.execute("CREATE TABLE IF NOT EXISTS Links (id INT AUTO_INCREMENT, icon TEXT, body TEXT, url TEXT, dateandtime DATETIME, PRIMARY KEY (id));")
+        cur.execute("CREATE TABLE IF NOT EXISTS Announcements (id INT AUTO_INCREMENT, icon TEXT, body TEXT, dateandtime DATETIME, PRIMARY KEY (id));")
+    except mariadb.Error as e: 
+        print(f"Error when creating database tables: {e}")
+    finally:
+        conn.close()
 
 def create_stored_procedures():
     '''Create all the stored procedures for the database, but don't modify those that currently exist.'''
@@ -167,7 +166,7 @@ def create_stored_procedures():
                 ELSEIF NOT EXISTS (SELECT id FROM ConversationSettings WHERE username=requester AND conversationId=conversationIdToUpdate AND isAccessible) THEN
                     SELECT -403;
                 ELSE
-                    UPDATE ConversationSettings SET identityRevealed = 1 WHERE username=requester AND id = conversationIdToUpdate;
+                    UPDATE ConversationSettings SET identityRevealed = 1 WHERE username=requester AND conversationId = conversationIdToUpdate;
                     SELECT -200;
                 END IF;
             END ;
@@ -316,11 +315,10 @@ def create_stored_procedures():
         for command in command_list:
             try:
                 cur.execute(command)
-            except mariadb.OperationalError as e: # Procedure already exists, hopefully
+            except mariadb.Error as e: # Procedure already exists, hopefully
                 # Still raise the execption if it wasn't due to the procedure already existing
                 if re.match(r"PROCEDURE \S+ already exists", str(e)) == None:
-                    conn.close()
-                    raise
+                    print(f"Error when creating database stored procedures: {e}")
     
     # Close the connection
     conn.close()
@@ -334,43 +332,78 @@ def confirm_user_in_db(username, display_name):
     # Get connection and cursor
     conn, cur = get_conn_and_cursor()
 
-    # Make sure user is in database
-    cur.execute("INSERT IGNORE INTO Users (username, isBanned, isCCSGA, isAdmin, displayName, rolesLastUpdated) VALUES (?, 0, 0, 0, ?, UTC_TIMESTAMP());", (username, display_name))
-    
-    # Update display name
-    cur.execute("UPDATE Users SET displayName = ? WHERE username = ?;", (display_name, username))
-    
-    # Commit database changes
-    conn.commit()
-    # Don't close connection, because the calling function may have already asked for the connection and won't realize that it's since been closed here
+    try:
+
+        # Make sure user is in database
+        cur.execute("INSERT IGNORE INTO Users (username, isBanned, isCCSGA, isAdmin, displayName, rolesLastUpdated) VALUES (?, 0, 0, 0, ?, UTC_TIMESTAMP());", (username, display_name))
+        
+        # Update display name
+        cur.execute("UPDATE Users SET displayName = ? WHERE username = ?;", (display_name, username))
+        
+        # Commit database changes
+        conn.commit()
+    except mariadb.Error as e:
+        print(f"Error when confirming user in DB: {e}")
+    finally:
+        conn.close()
 
 # Helper functions for checking user role (other files can import these)
 
 def is_student(username):
     '''Return True iff specified user is student (i.e., neither CCSGA rep nor admin).'''
+    
     if not username: return False # Non-signed in user is not considered a student
+    
+    # Get database connection and cursor
     conn, cur = get_conn_and_cursor()
-    cur.execute("SELECT isCCSGA, isAdmin FROM Users WHERE username = ?", (username,))
-    isCCSGA, isAdmin = cur.fetchone()
-    conn.close()
+
+    try:
+        cur.execute("SELECT isCCSGA, isAdmin FROM Users WHERE username = ?", (username,))
+        isCCSGA, isAdmin = cur.fetchone()
+    except mariadb.Error as e:
+        print(f"Error when assessing if signed-in user is a student: {e}")
+    finally:
+        # Close the database connection
+        conn.close()
+    
     return not (isCCSGA or isAdmin) # User is a student iff they are neither a CCSGA rep nor an admin
 
 def is_ccsga(username):
     '''Return True iff specified user is a CCSGA representative.'''
+
     if not username: return False # Non-signed in user is not considered a representative
+
+    # Get database connection and cursor
     conn, cur = get_conn_and_cursor()
-    cur.execute("SELECT isCCSGA FROM Users WHERE username = ?", (username,))
-    isCCSGA = cur.fetchone()[0]
-    conn.close()
+
+    try:
+        cur.execute("SELECT isCCSGA FROM Users WHERE username = ?", (username,))
+        isCCSGA = cur.fetchone()[0]
+    except mariadb.Error as e:
+        print(f"Error when assessing if signed-in user is a rep: {e}")
+    finally:
+        # Close the database connection
+        conn.close()
+
     return bool(isCCSGA)
 
 def is_admin(username):
     '''Return True iff specified user is an admin.'''
+
     if not username: return False # Non-signed in user is not considered an admin
+
+    # Get database connection and cursor
     conn, cur = get_conn_and_cursor()
-    cur.execute("SELECT isAdmin FROM Users WHERE username = ?", (username,))
-    isAdmin = cur.fetchone()[0]
-    conn.close()
+
+    try:
+        cur.execute("SELECT isAdmin FROM Users WHERE username = ?", (username,))
+        isAdmin = cur.fetchone()[0]
+    except mariadb.Error as e:
+        print(f"Error when assessing if signed-in user is an admin: {e}")
+    finally:
+        # Close the database connection
+        conn.close()
+
     return bool(isAdmin) 
 
 

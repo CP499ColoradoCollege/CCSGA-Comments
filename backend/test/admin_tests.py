@@ -81,8 +81,8 @@ class TestAdminRoutes(unittest.TestCase):
     def test_add_admin(self):
         
         # Ensure signed-in user is not currently an admin, to check the unauthorized check
-        self.conn, self.cur = get_conn_and_cursor()
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -135,8 +135,8 @@ class TestAdminRoutes(unittest.TestCase):
     def test_remove_admin(self):
         
         # Ensure signed-in user is not currently an admin, to check the unauthorized check
-        self.conn, self.cur = get_conn_and_cursor()
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -189,8 +189,8 @@ class TestAdminRoutes(unittest.TestCase):
     def test_add_ccsga(self):
         
         # Ensure signed-in user is not currently an admin, to check the unauthorized check
-        self.conn, self.cur = get_conn_and_cursor()
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -243,8 +243,8 @@ class TestAdminRoutes(unittest.TestCase):
     def test_remove_ccsga(self):
         
         # Ensure signed-in user is not currently an admin, to check the unauthorized check
-        self.conn, self.cur = get_conn_and_cursor()
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -297,8 +297,8 @@ class TestAdminRoutes(unittest.TestCase):
     def test_add_banned(self):
         
         # Ensure signed-in user is not currently an admin, to check the unauthorized check
-        self.conn, self.cur = get_conn_and_cursor()
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -351,8 +351,8 @@ class TestAdminRoutes(unittest.TestCase):
     def test_remove_banned(self):
         
         # Ensure signed-in user is not currently an admin, to check the unauthorized check
-        self.conn, self.cur = get_conn_and_cursor()
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -405,8 +405,8 @@ class TestAdminRoutes(unittest.TestCase):
     def test_get_admins(self):
 
         # Ensure signed-in user is not currently an admin, to check unauthorized requests
-        self.conn, self.cur = get_conn_and_cursor()
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -450,8 +450,8 @@ class TestAdminRoutes(unittest.TestCase):
     def test_get_ccsga(self):
 
         # Ensure signed-in user is not currently an admin, to check unauthorized requests
-        self.conn, self.cur = get_conn_and_cursor()
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -495,8 +495,8 @@ class TestAdminRoutes(unittest.TestCase):
     def test_get_banned(self):
 
         # Ensure signed-in user is not currently an admin, to check unauthorized requests
-        self.conn, self.cur = get_conn_and_cursor()
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
+        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 

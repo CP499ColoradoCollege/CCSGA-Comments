@@ -1,12 +1,17 @@
 import 'dart:convert';
 import 'User.dart';
 
+/// The functions that it called in the DatabaseHandler on the server response payload
 Representatives representativesFromJson(String str) =>
     Representatives.fromJson(json.decode(str));
 
 String representativesToJson(Representatives data) =>
     json.encode(data.toJson());
 
+/// Code generated with https://app.quicktype.io/
+/// This class exists to turn database return JSON objects
+/// into instances of this class
+/// We can then use this data in the frontend
 class Representatives {
   Representatives({
     this.ccsgaReps,

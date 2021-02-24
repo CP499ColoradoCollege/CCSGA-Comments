@@ -1,11 +1,16 @@
 import 'dart:convert';
 
+/// The functions that it called in the DatabaseHandler on the server response payload
 Map<String, Message> messageFromJson(String str) => Map.from(json.decode(str))
     .map((k, v) => MapEntry<String, Message>(k, Message.fromJson(v)));
 
 String messageToJson(Map<String, Message> data) => json.encode(
     Map.from(data).map((k, v) => MapEntry<String, dynamic>(k, v.toJson())));
 
+/// Code generated with https://app.quicktype.io/
+/// This class exists to turn database return JSON objects
+/// into instances of this class
+/// We can then use this data in the frontend
 class Message {
   Message({
     this.body,

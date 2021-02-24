@@ -29,6 +29,7 @@ class ConversationListCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
         onTap: () {
+          print("Conversation ID:" + convId.toString());
           context.beamTo(ConversationLocation(
               pathParameters: {"conversationId": convId.toString()}));
         },

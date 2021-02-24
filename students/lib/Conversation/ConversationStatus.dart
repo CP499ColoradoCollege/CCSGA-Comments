@@ -16,7 +16,9 @@ class ConversationStatus extends StatefulWidget {
 }
 
 class _ConversationStatusState extends State<ConversationStatus> {
-  String unread = EnumToString.convertToString(ConversationStatusLabel.Unread,
+  //Labels for the drop down button (reps/admins only)
+  String unread = EnumToString.convertToString(
+      ConversationStatusLabel.Delivered,
       camelCase: true);
   String inProgress = EnumToString.convertToString(
       ConversationStatusLabel.InProgress,
@@ -43,6 +45,9 @@ class _ConversationStatusState extends State<ConversationStatus> {
               SizedBox(
                 width: 5,
               ),
+
+              //Depending if the user can edit (ccsga or admin), then allow the reps/admins to change the status using the drop down
+              //Otherwise, display text of status
               widget.canEdit
                   ? StatefulBuilder(
                       builder: (BuildContext context, StateSetter setState) {
@@ -71,7 +76,7 @@ class _ConversationStatusState extends State<ConversationStatus> {
                         },
                         items: [
                           DropdownMenuItem(
-                            child: Text("Unread"),
+                            child: Text("Delivered"),
                             value: unread,
                           ),
                           DropdownMenuItem(

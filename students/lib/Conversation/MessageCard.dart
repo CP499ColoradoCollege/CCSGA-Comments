@@ -14,6 +14,7 @@ class MessageCard extends StatelessWidget {
     return Container(
         padding: EdgeInsets.symmetric(vertical: 5),
         child: FractionallySizedBox(
+          //Align the text based on if the active user sent the message or not
           alignment:
               this.isMyMessage ? Alignment.centerRight : Alignment.centerLeft,
           widthFactor: 0.66,
@@ -23,6 +24,7 @@ class MessageCard extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
+                //Update the color based on the sender
                 color: (this.isMyMessage
                     ? Colors.blue[200]
                     : Colors.grey.shade200),
@@ -49,9 +51,11 @@ class MessageCard extends StatelessWidget {
                         textAlign: TextAlign.left,
                       )),
                       Text(
+                        //Update the date to not be in UTC
                         DateFormat("MMM d -")
                             .add_jm()
-                            .format(DateTime.parse(this.message.dateTime).subtract(new Duration(hours: 7)))
+                            .format(DateTime.parse(this.message.dateTime)
+                                .subtract(new Duration(hours: 7)))
                             .toString(),
                         textAlign: TextAlign.right,
                       )

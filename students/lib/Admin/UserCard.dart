@@ -3,9 +3,11 @@ import 'package:ccsga_comments/Models/GlobalEnums.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 
+//User card is widget that displays a user icon, the username of a user, as well as a remove button
+//The remove button will remove them from their current role
 class UserCard extends StatefulWidget {
-  UserType userType;
-  User user;
+  final UserType userType;
+  final User user;
 
   @required
   UserCard(this.user, this.userType);
@@ -42,6 +44,8 @@ class _UserCardState extends State<UserCard> {
     );
   }
 
+  //When remove user is called on the user card, this will make the appropriate http
+  //DELETE based on what user type it is
   void removeUser() {
     if (widget.user.username != null) {
       switch (widget.userType) {
@@ -58,6 +62,7 @@ class _UserCardState extends State<UserCard> {
     }
   }
 
+  //This shows a dialogue that confirms if the admin wants to remove said user
   void _showMyDialog() async {
     User user = widget.user;
     if (user == null) {

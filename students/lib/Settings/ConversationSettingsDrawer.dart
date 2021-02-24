@@ -66,28 +66,23 @@ class _ConversationSettingsDrawerState
                         ? Colors.grey.withAlpha(0x80)
                         : Colors.grey[300],
                     onChanged: (bool value) {
-                      FutureBuilder<User>(
-                          future: currentUser,
-                          builder: (BuildContext context,
-                              AsyncSnapshot<User> snapshot) {
-                            if (snapshot.hasData &&
-                                snapshot.data.isCcsga != null) {
-                              if (snapshot.data.isCcsga == false) {
-                                if (anonymousIsSwitched) {
-                                  _showMyDialog();
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          "You cannot anonymize yourself after revealing your identity..."),
-                                      duration: Duration(seconds: 3),
-                                    ),
-                                  );
-                                }
-                              }
+                      currentUser.then((value) {
+                        if (value.isCcsga != null) {
+                          if (value.isCcsga == false) {
+                            if (anonymousIsSwitched) {
+                              _showMyDialog();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      "You cannot anonymize yourself after revealing your identity..."),
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
                             }
-                            return;
-                          });
+                          }
+                        }
+                      });
                     },
                     // secondary: const Icon(Icons.account_circle_outlined),
                   ),

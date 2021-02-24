@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:beamer/beamer.dart';
 import 'package:intl/intl.dart';
 
+typedef ConverastionCallback = void Function(int id);
+
 class ConversationListCard extends StatelessWidget {
+  final ConverastionCallback conversationCallback;
   final int convId;
   final String joinedLabels;
   final String mostRecentMessageBody;
@@ -14,7 +17,8 @@ class ConversationListCard extends StatelessWidget {
       {this.convId,
       this.joinedLabels,
       this.mostRecentMessageBody,
-      this.mostRecentMessageDateTime});
+      this.mostRecentMessageDateTime,
+      this.conversationCallback});
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +33,7 @@ class ConversationListCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
         onTap: () {
-          print("Conversation ID:" + convId.toString());
-          context.beamTo(ConversationLocation(
-              pathParameters: {"conversationId": convId.toString()}));
+          conversationCallback(convId);
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

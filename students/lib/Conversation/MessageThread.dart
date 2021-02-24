@@ -4,6 +4,11 @@ import 'package:ccsga_comments/Models/Conversation.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
 
+/// Containier for Messae Cards
+///
+/// The messages are retrieved  from the Conversation Page
+/// containing this widget, then this creates the Message
+/// cards and displays them
 class MessageThread extends StatefulWidget {
   final Conversation conv;
   final User currentUser;

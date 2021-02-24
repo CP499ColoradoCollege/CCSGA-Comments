@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ccsga_comments/Models/Message.dart';
 
+/// A single message card widget
 class MessageCard extends StatelessWidget {
   final Message message;
   final bool isMyMessage;

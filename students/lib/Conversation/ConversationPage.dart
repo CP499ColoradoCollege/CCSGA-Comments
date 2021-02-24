@@ -13,6 +13,10 @@ import 'package:tuple/tuple.dart';
 
 import 'ConversationStatus.dart';
 
+/// This is the page for an individual conversation with messages
+///
+/// It can be accessed either from the ConversationListPage or
+/// by typing in the url of the conversation e.g. '/conversation/123'
 class ConversationPage extends BasePage {
   final int conversationId;
 
@@ -102,23 +106,32 @@ class _ConversationPageState extends BaseState<ConversationPage>
     return "Conversation Thread";
   }
 
-  //Custom conversation settings drawer
+  /// Custom conversation settings drawer
   @override
   Widget settingsDrawer() {
     return ConversationSettingsDrawer(false, _conversation);
   }
 
-  //Override right icon button for said settings drawer
+  /// Override right icon button for said settings drawer
   @override
   Icon get rightButtonIcon => Icon(Icons.settings);
 
-  //This method updates the conversation object
+  /// This method updates the conversation object
   Future<void> updateConversationStatus(String status) async {
     DatabaseHandler.instance.updateConversation(
         _conversation.id, ConversationUpdate(setStatus: status));
   }
 
-  //This gets the conversation data
+  /// This gets the conversation data and the user data
+  ///
+  /// 2 separate DatabaseHandler methods are called, responses
+  /// handled separately
+  /// The return bool is out of necessity, the FutureBuilder widget
+  /// requires a return value. This function sets attributes so it needs not
+  /// return anything
+  /// Because the function is called within the tree, setState() in this function
+  /// will cause an infinite loop
+  /// A better implementation is possible
   Future<bool> _getConversationData() async {
     _pathParams = getPathParameters();
     // if a convId is passed in when creating the page, use that.
@@ -155,7 +168,12 @@ class _ConversationPageState extends BaseState<ConversationPage>
     }
   }
 
-  //This message makes an update call to send a message
+  /// This message makes a call to append a new message
+  /// to this existing conversation
+  ///
+  /// Error is printed to the console if any
+  /// setState() after _getConversationData() allows
+  /// for the new message to appear without reload
   void _sendMessage() async {
     if (_messageFieldController.text != "") {
       ChewedResponse chewedResponse = await DatabaseHandler.instance

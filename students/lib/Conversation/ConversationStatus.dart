@@ -4,6 +4,7 @@ import 'package:enum_to_string/enum_to_string.dart';
 
 typedef FutureVoidCallback = Future<void> Function(String status);
 
+/// The status widget on the top part of each ConversationPage
 class ConversationStatus extends StatefulWidget {
   final FutureVoidCallback updateStatusCallback;
   final String status;
@@ -74,6 +75,7 @@ class _ConversationStatusState extends State<ConversationStatus> {
                             }
                           });
                         },
+                        // may expand options based on CCSGA input
                         items: [
                           DropdownMenuItem(
                             child: Text("Delivered"),

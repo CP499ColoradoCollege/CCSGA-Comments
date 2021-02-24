@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 import '../DatabaseHandler.dart';
 
+/// A very simple page for when a user has logged out...
 class LogoutPage extends BasePage {
   LogoutPage({Key key}) : super(key: key);
 

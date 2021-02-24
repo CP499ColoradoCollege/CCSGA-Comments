@@ -5,7 +5,7 @@ A system for secure, informal, comfortable communication between students and th
 
 #### Development/Production Environment Setup
 
-The following are instructions from setting up a development/production environment on a CentOS 8.3.2011 machine on which the developer has super-user privileges:
+The following are instructions from setting up a development or production environment on a CentOS 8.3.2011 machine on which the developer has super-user privileges:
 1. Install programs: `sudo dnf install git vim gcc openssl-devel bzip2-devel libffi-devel zlib-devel make screen mariadb-server mariadb_config mariadb-devel snapd mod_ssl`
    1. For the production environment: skip `git` if you will be using another means of transferring files, and skip `snapd` if you will be producing the Flutter build elsewhere and transferring the resulting files to the production device.
    2. Note that while these are the programs installed in this development process, they are not a definitive list. For example, developers may choose to install any text editor instead of vim specifically, and screen is a convenience if desired for assisting in development. In short, developers should feel free to use common sense when installing the above programs.
@@ -24,13 +24,13 @@ sudo firewall-cmd --zone=public --add-port=8001/tcp --permanent
 sudo firewall-cmd --reload
 ```
 
-5. Create a self-signed certificate/key pair. For development, place them in the `backend` folder within the project. Make sure not to commit these files to version control! If cloning our project repository, they should already be git-ignored. Note that this is only relevant if this instance of the application will use SSL (e.g., integration with CAS requires SSL, but the instance on the personal computer of one of the developers uses simple http since local integration with CAS there is impossible).
+5. Create a self-signed certificate/key pair. For development, place them in the `backend` folder within the project; for production, place them in your account's home folder for now. Make sure not to commit these files to version control! If you're cloning our project repository, they should already be git-ignored. Note that this is only relevant if this instance of the application will use SSL (e.g., integration with CAS requires SSL, but the instance on the personal computer of one of the developers uses simple http since local integration with CAS there is impossible).
 
 ```bash
 openssl req -x509 -nodes -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
 ```
 
-6. For development: add the following commands to `~/.bash_profile` (note that the first one will cause an error if the developer logs in again before setting up the python virtual environment as specified below):
+6. For development: add the following commands to `~/.bash_profile` (note that the first one will cause a complaint if the developer logs in again before setting up the python virtual environment as specified below):
 
 ```bash
 source ~/ccsga_comments/backend/venv/bin/activate
@@ -42,13 +42,18 @@ export FLASK_APP=backend
 
 #### Extra Production Setup: The Nginx/Gunicorn Stack
 
-For simplicity, the following steps assume you have a copy of the codebase called `ccsga_comments` located in your home folder on the server, including an already-produced build of the Flutter project at `ccsga_comments/students/build/web`. Feel free to adapt these instructions, for example, to use `scp` and a different copy of the codebase instead.
+For simplicity, the following steps assume: 
+1. You have a copy of the codebase, named `ccsga_comments`, located in your home folder on the server.
+2. It includes an already-produced build of the Flutter project at `ccsga_comments/students/build/web`.
+3. It also includes a `venv` folder containing a virtual environment in which you have already installed the backend dependencies as specified in "Product Compilation and Installation." 
+
+Feel free to adapt these instructions, for example, to use `scp` and a different copy of the codebase (that still fulfills assumptions 2 and 3) instead.
 
 [This DigitalOcean guide](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-centos-7) is helpful as another resource to have on hand for this process.
 
-1. Install nginx and gunicorn
+1. Install Nginx and Gunicorn
    1. `sudo dnf install nginx`
-   2. (In the virtual environment:) `pip install gunicorn`
+   2. Gunicorn is a pip-installed package, so it should already be installed by the assumptions above!
 2. Set up subdirectories within /opt
 
    ```bash
@@ -67,7 +72,7 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
 ```
 
 5. Set up Gunicorn
-   1. Create a systemd unit file for Gunicorn at /etc/systemd/system/ccsga-comments.service with these contents:
+   1. Create a systemd unit file for Gunicorn at `/etc/systemd/system/ccsga-comments.service` with these contents:
 
    ```
    [Unit]
@@ -93,11 +98,12 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
    WantedBy = multi-user.target
    ```
 
-   2. Create a file at /etc/systemd/system/ccsga-comments.service.d/override.conf with this single line: `After=mariadb`
+   2. Create a file at `/etc/systemd/system/ccsga-comments.service.d/override.conf` with this single line: `After=mariadb`
    3. Run the following commands:
-      1. `sudo systemctl start ccsga-comments` to start the ccsga-comments Gunicorn service
-      2. `sudo systemctl enable ccsga-comments` so it starts automatically upon boot
-      3. `sudo systemctl status ccsga-comments` to make sure it’s working. If not, `sudo journalctl --since “5 minutes ago”` (substitute whatever timeframe) is helpful
+      1. `sudo systemctl daemon-reload` since you just modified the ccsga-comments unit file
+      2. `sudo systemctl start ccsga-comments` to start the ccsga-comments Gunicorn service
+      3. `sudo systemctl enable ccsga-comments` so it starts automatically upon boot
+      4. `sudo systemctl status ccsga-comments` to make sure it’s working. If not, `sudo journalctl --since “5 minutes ago”` (substitute whatever timeframe) is helpful
 6. Set up Nginx
    1. Execute the following commands to create copies of the key and certificate:
    
@@ -110,7 +116,7 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
    sudo chmod 644 /etc/pki/nginx/cert.pem
    ```
 
-   2. Edit the file at /etc/nginx/nginx.conf to use SSL and to proxy requests to the Gunicorn service, by following these instructions:
+   2. Edit the file at `/etc/nginx/nginx.conf` to use SSL and to proxy requests to the Gunicorn service, by following these instructions:
       1. Comment out (using #’s) the entire server block that begins with `listen 80 default_server;`
       2. Uncomment the server block preceded by the comment, “Settings for a TLS enabled server,” and change it to look like this (using a different port instead of 8443 if needed):
       
@@ -161,12 +167,13 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
       2. `sudo systemctl start nginx`
       3. `sudo systemctl enable nginx` so it starts automatically upon boot
       4. `sudo systemctl status nginx` to make sure it’s working
+7. Once you've completed the setup steps under "Product Compilation and Installation," the website should be accessible at the server's IP address/domain name on whatever port you specified on the `listen` lines of the Nginx configuration file (albeit with a self-signed certificate, so you'll have to click through an SSL warning in your browser)!
 
 #### Product Compilation and Installation
 
 1. Frontend setup (only necessary for development, or wherever you will actually be producing the Flutter build from the Dart code):
-   1. Create a symlink from /var/lib/snapd/snap to /snap
-   2. Add /var/lib/snapd/snap/bin to the PATH environment variable (most likely by editing and then re-running `source ~/.bashrc`)
+   1. Create a symlink from `/var/lib/snapd/snap` to `/snap`
+   2. Add `/var/lib/snapd/snap/bin` to the PATH environment variable (most likely by editing and then re-running `source ~/.bashrc`)
    3. Install flutter. The flutter website has [comprehensive directions](https://flutter.dev/docs/get-started/install/linux) for doing so, although not all of the output from `flutter doctor` needs to be fixed, since development for this project does not include running an application on an iOS or Android simulator.
    4. Switch to the flutter beta channel and enable the web feature: 
    
@@ -177,9 +184,9 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
    ```
 
    5. With the ccsga_comments/students directory as the present working directory, run `flutter pub get`
-      1. Run this command every time ccsga_comments/students/pubspec.yaml changes for any reason.
+      1. Run this command every time `ccsga_comments/students/pubspec.yaml` changes for any reason.
    6. In ccsga_comments/students, run `flutter build web`
-      1. Run this command every time the frontend is edited (i.e., every time files in ccsga_comments/students/lib are modified) 
+      1. Run this command every time the frontend is edited (i.e., every time files in `ccsga_comments/students/lib` are modified) 
 2. Set up the python virtual environment for the backend (likely only necessary for development, although we have not confirmed this):
    1. Install virtualenv: `pip3.9 install virtualenv`
    2. With ccsga_comments/backend as the present working directory, run `virtualenv venv` to create a subdirectory, called “venv,” to house the virtual environment.
@@ -209,7 +216,7 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
    ```sql
    INSERT INTO Users (username, displayName, isBanned, isCCSGA, isAdmin, rolesLastUpdated, updatedBy) VALUES (‘new_admin_username’, ‘New Admin Display Name’, 0, 0, 1, UTC_TIMESTAMP(), NULL);
    ```
-6. For development: if you want to run the Flask development server and have not yet logged in again since editing `~/.bash_profile`, execute that file: `source ~/.bash_profile`
+6. For development: if you want to run the Flask development server (according to the commands under "Component Commands and Configuration Info") and have not yet logged in again since editing `~/.bash_profile`, execute that file: `source ~/.bash_profile`
 
 ## Developer Documentation
 
@@ -219,15 +226,15 @@ Once the system is set up and running successfully, use the following informatio
 
 ![System Architecture](documentation/System_Architecture.png)
 
-The frontend and the middleware of the system are created through the Flutter framework, written in Dart. The dart files stored within the repository at `students/lib/` are transpiled into a JavaScript web build placed at `students/build/web`, which a Flask backend serves to the browser whenever browser requests any routes not beginning with `/api`. Within the `lib` directory, each page in the user interface has its own sub-directory. `lib` also contains a `BasePage`, the parent of all other page classes, as well as `Models`, which hold blueprints for frequently used objects such as Conversations and Messages. There is also a `Navigation` directory within `lib`, which holds the logic for the side navigation and URL routing. Lastly, the `lib` directory also holds `main.dart`, which is the main class, and `DatabaseHandler.dart`, which constitutes our middleware. `DatabaseHandler` holds functions responsible for sending requests to the Database and digesting the Response before sending it back to the caller in a suitable format. `ChewedResponse` is a class that `DatabaseHandler` uses to determine success and potential error description based on the status code returned by the API. When the frontend needs to make an API request, it formats any required data as JSON, sends a request through the Dart http library, and awaits a JSON response from the server. 
+The frontend and the middleware of the system use the Flutter framework and are written in Dart. The Dart files stored within the repository at `students/lib/` are transpiled into a JavaScript web build placed at `students/build/web`, which a Flask backend serves to the browser whenever the browser requests any routes not beginning with `/api`. Within the `lib` directory, each page in the user interface has its own sub-directory. `lib` also contains a `BasePage`, the parent of all other page classes, as well as `Models`, which holds blueprints for frequently used objects such as Conversations and Messages. There is also a `Navigation` directory within `lib`, which holds the logic for the side navigation and URL routing. Lastly, the `lib` directory also holds `main.dart`, which is the main class, and `DatabaseHandler.dart`, which constitutes our middleware. `DatabaseHandler` holds functions responsible for sending requests to the Database and digesting the response before sending it back to the caller in a suitable format. `ChewedResponse` is a class that `DatabaseHandler` uses to determine success and potential error description based on the status code that the API returns. When the frontend needs to make an API request, it formats any required data as JSON, sends a request through the Dart http library, and awaits a JSON response from the server. 
 
-The backend is written in Python and uses the Flask framework, connected to a MariaDB (MySQL) database. Nginx, acting as a reverse proxy running on port 8443 on the virtual server, fields all requests directy and forwards them to the Gunicorn service running strictly locally on port 8000 on the virtual server. Gunicorn runs a Flask application encompassed within the files located at `/opt/ccsga_comments/backend` on the server. Most of the files at this location (or at least in the `backend` folder within the repository) are flask files. These include `__init__.py` (the main application entry point), `route_wrappers.py` (which provides useful wrapper functions for access-restricted routes), `database_handler.py` (which provides the interface for communicating with the database), `view_handler.py` (which enumerates routes for use by the Flutter application), and other files of the form `*_handler.py` (which constitute the API). Other files in `backend` include `config.py` and `.env`, which store certain sensitive and non-sensitive configuraton values that should stay within the virtual machine (i.e., they should not be included in version control, which is why sample versions of both are provided as templates in the repository). Finally, `requirements.txt` stores the current dependencies for the flask backend, and the `test` directory holds all of the API tests, which can be run as individual python programs after the developer signs into the website and pastes the required values into `.env`, as described in `.env_sample`.
+The backend is written in Python and uses the Flask framework, connected to a MariaDB (MySQL) database. Nginx, acting as a reverse proxy running on port 8443 on the virtual server, fields all requests directly and forwards them to the Gunicorn service running strictly locally on port 8000 on the virtual server. Gunicorn runs a Flask application encompassed within the files located at `/opt/ccsga_comments/backend` on the server. Most of the files at this location (or at least in the `backend` folder within the repository) are Flask files. These include `__init__.py` (the main application entry point), `route_wrappers.py` (which provides useful wrapper functions for access-restricted routes), `database_handler.py` (which provides the interface for communicating with the database), `view_handler.py` (which enumerates routes related to the Flutter navigation and build), and other files of the form `*_handler.py` (which constitute the API). Other files in `backend` include `config.py` and `.env`, which store certain sensitive and non-sensitive configuraton values that should stay within the virtual machine (i.e., they should not be included in version control, which is why sample versions of both are provided as templates in the repository instead). Finally, `requirements.txt` stores the current dependencies for the flask backend, and the `test` directory holds all of the API tests, which can be run as individual python programs after the developer signs into the website and pastes the required values into `.env`, as described in `.env_sample`.
 
 The other backend components with which the Flask application interfaces are the MariaDB database and the CAS server. The former is a service, also running on the virtual machine, to which the application connects through the python mariadb library, while the latter is a separate server with which the application communicates through the python Flask-CAS library. 
 
 #### API
 
-In the `documentation` folder of this repository, we have placed [the document](/documentation/Messaging_Service_API.pdf) we have been using an an authority for consistent API development between frontend and backend. In the interest of encouraging future development, we have provided it as is, including iceboxed routes, notes, and general tasks for future development.
+In the `documentation` folder of this repository, we have placed [the API document](/documentation/Messaging_Service_API.pdf) we have been using an an authority for consistent API development between frontend and backend. In the interest of encouraging future development, we have provided it as is, including iceboxed routes, notes, and general tasks for future development.
 
 #### Database Entity Relationships
 ![ER Diagram](documentation/CCSGA_Comments_ER_Diagram.png)
@@ -240,7 +247,7 @@ The MessageSettings table is the sole location for recording which messages whic
 
 The Labels and AppliedLabels tables are the final two tables that back the messaging service. Labels simply have a field for the text body of each label, which should be unique throughout the table. AppliedLabels embody the many-to-many relationship between Labels and Conversations. This design was chosen with the potential of supporting a small, fixed number of labels (although the system does not work this way currently) and with the potential of allowing label objects to become more complex than simple strings, if desired in the future.
 
-The database also includes two tables designed to be used if future development allows for a dynamic homepage. The Announcements table stores a string representation of an icon (the means of this representation remain to be determined), the announcement body, and the timestamp of the announcement. The Links table stores all of these attribtes as well as a URL to which a user is directed when clicking on that link.
+The database also includes two tables designed to be used if future development allows for a dynamic homepage. The Announcements table stores a string representation of an icon (the means of this representation remains to be determined), the announcement body, and the timestamp of the announcement. The Links table stores all of these attribtes as well as a URL to which a user is directed when clicking on that link.
 
 #### Component Commands and Configuration Info
 
@@ -285,6 +292,12 @@ sudo systemctl restart nginx
 
 # Check status of nginx
 sudo systemctl status nginx
+
+# View HTTP access log
+sudo less /var/log/nginx/access.log
+
+# View HTTP error log
+sudo less /var/log/nginx/error.log
 ```
 
 ```bash
@@ -299,19 +312,20 @@ sudo systemctl status ccsga-comments
 
 # Update localhost:8000 (and therefore <device.ip.or.domainname>:8443) with application changes
 sudo cp -r path/to/updated/app/root/directory/students/build/web /opt/ccsga_comments/students/build
-sudo cp -r path/to/updated/app/root/directory/backend/*.py path/to/updated/app/root/directory/backend/*.pem path/to/updated/app/root/directory/backend/.env path/to/updated/app/root/directory/backend/venv /opt/ccsga_comments/backend
+sudo cp -r path/to/updated/app/root/directory/backend/*.py path/to/updated/app/root/directory/backend/.env path/to/updated/app/root/directory/backend/venv /opt/ccsga_comments/backend
 sudo systemctl restart ccsga-comments
 
 # Edit the systemd service that runs gunicorn (not necessary during routine operation and updating of the app)
 sudo vim /etc/systemd/system/ccsga-comments.service
 sudo systemctl daemon-reload
+sudo systemctl restart ccsga-comments
 ```
 
 ```bash
 # MariaDB
 
 # Enter MariaDB console
-# When prompted, enter the password specified in your version of `backend/.env`.
+# When prompted, enter the password specified in your version of `backend/.env`
 mysql -u enter_database_username_here -p enter_database_name_here
 
 # Restart MariaDB service
@@ -353,8 +367,8 @@ CALL remove_ban('ban_username_to_remove', 'username_of_any_existing_admin');
 
 Error | Potential Fix
 ------|----
-/usr/local/opt/python@3.9/bin/python3.9: Error while finding module specification for 'virtualenvwrapper.hook_loader'... | Update zsh/bash aliases to point to whichever version of python is specified in your version of the above message. Then pip install virtualenvwrapper
-Commands out of sync; you can't run this command now | Make sure to get all of the cursor's values (and include a cur.nextset() in the code), if a SELECT command was just given, in the code. Also re-save one of the python files so the flask dev server knows to restart (if using the flask dev server), or restart the gunicorn process you're using (if using gunicorn) -- or restart the MariaDB service if that's easier.
+/usr/local/opt/python@3.9/bin/python3.9: Error while finding module specification for 'virtualenvwrapper.hook_loader'... | Update zsh/bash aliases to point to whichever version of python is specified in your version of the above message. Then `pip install virtualenvwrapper`
+Commands out of sync; you can't run this command now | Make sure to get all of the cursor's values (and include a `cur.nextset()` in the code), if a `SELECT` command was just given, in the code. Also re-save one of the python files so the flask dev server knows to restart (if using the flask dev server), or restart the gunicorn process you're using (if using gunicorn) -- or restart the MariaDB service if that's easier.
 `mariadb.OperationalError`, `mariadb.OperationalError`, or MariaDB query/command stalls | Re-save one of the python files so the flask dev server knows to restart (if using the flask dev server), or restart the gunicorn process you're using (if using gunicorn) -- or restart the MariaDB service if that's easier.
 Backend logic changes aren't updating as expected | `(mariadb) > drop procedure <name_of_recently_changed_stored_procedure>` followed by `(venv) $ python path/to/project/root/backend/database_handler.py`
 Backend response isn't updating based on a change of permissions in database | Cause flask to refresh, or restart gunicorn, whichever applies
@@ -362,9 +376,9 @@ Getting unexpected value for a boolean result from a database query | Make sure 
 flask.cli.NoAppException: Could not import "backend.backend". or flask.cli.NoAppException: Could not import "backend". | Make sure you're in the repo root directory (i.e., the one _containing_ the backend folder, not the backend folder itself) when you execute `flask run...`. If that doesn't solve it, a seemingly band-aid solution is to assign the absolute path for `backend` to `FLASK_APP` in `~/.bash_profile`, rather than assigning just `backend`.
 Runtime Error: Failed to Create Exception | Make sure the mariadb connection is still open.
 Flask isn't finding backend/key.pem or backend/cert.pem even though you're in the project root directory | Make sure the user running flask has permission to access the files (i.e., use `chown` and `chgrp` to change then owner and the group of those files so that those files look like all the others when you run `ls -l backend`, or perhaps run flask as the root user in the case of something outside the scope of our home directories)
-Cannot find the cert.pem and key.pem files | Use absolute paths to those files, as a band-aid solution
+Cannot find the `cert.pem` and `key.pem` files | Use absolute paths to those files, as a band-aid solution
 
 #### Other Maintenance Information
 As development continues, you may want to install more python packages in the backend. Before running `pip3.9 install <package>` for this purpose, make sure you are in the virtual environment (see Deployment Documentation for more information). After running `pip3.9 install <package>`, enter the `backend` directory, then run `pip freeze > requirements.txt` to make sure the list of backend dependencies is kept up to date.
 
-Running `database_handler.py` as a python program creates all the database tables and stored procedures therein __that do not already exist in the database__. Accordingly, even though all table/procedure changes should also be reflected in `database_handler.py`, if you wish to alter a table, you will have to use an `ALTER TABLE` command in the MariaDB console (unless you're willing to drop the entire table, in which case you can thereafter run `database_handler.py` if it reflects your changes). If you wish to create a stored procedure that you've added to `database_handler.py`, simply run `database_handler.py` as a python program. If you wish to make update an existing stored procedure according to how you've rewritten it in `database_handler.py`, give the command `drop procedure <procedure_name>;` in the MariaDB console before running `database_handler.py`.
+Running `database_handler.py` as a python program creates all the database tables and stored procedures therein __that do not already exist in the database__. Accordingly, even though all table/procedure changes should also be reflected in `database_handler.py`, if you wish to alter a table, you will have to use an `ALTER TABLE` command in the MariaDB console (unless you're willing to drop the entire table, in which case you can thereafter run `database_handler.py` if it reflects your changes). If you wish to create a stored procedure that you've added to `database_handler.py`, simply run `database_handler.py` as a python program. If you wish to update an existing stored procedure according to how you've rewritten it in `database_handler.py`, give the command `drop procedure procedure_name_here;` in the MariaDB console before running `database_handler.py`.

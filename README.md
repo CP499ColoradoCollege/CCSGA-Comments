@@ -3,6 +3,213 @@ A system for secure, informal, comfortable communication between students and th
 
 ## Deployment Documentation
 
+#### Development/Production Environment Setup
+
+The following are instructions from setting up a development/production environment on a CentOS 8.3.2011 machine on which the developer has super-user privileges:
+1. Install programs: `sudo dnf install git vim gcc openssl-devel bzip2-devel libffi-devel zlib-devel make screen mariadb-server mariadb_config mariadb-devel snapd mod_ssl`
+   1. For the production environment: skip `git` if you will be using another means of transferring files, and skip `snapd` if you will be producing the Flutter build elsewhere and transferring the resulting files to the production device.
+   2. Note that while these are the programs installed in this development process, they are not a definitive list. For example, developers may choose to install any text editor instead of vim specifically, and screen is a convenience if desired for assisting in development. In short, developers should feel free to use common sense when installing the above programs.
+   3. Note: the above command is a condensed version of the installation process actually experienced; since certain programs may be dependencies for others, the above command may not work as a single unit.
+2. Install python3.9; several of the programs in the previous step are there solely for this purpose.
+3. For development: in your account's home directory on the server, clone the repository from GitHub using the following command. Rename it as desired; for the purposes of these instructions, the name “ccsga_comments” will be assumed for the root directory of the repository.
+
+```bash
+git clone https://github.com/CP499ColoradoCollege/Gecko.git
+```
+
+4. Configure the server firewall to allow TCP connections for the ports on which the web server will run during development and on which Nginx will run in production (and which the CAS administrator will authorize/has authorized as CAS services)—for each port, replace 8001 with the desired number in the following command:
+
+```bash
+sudo firewall-cmd --zone=public --add-port=8001/tcp --permanent
+sudo firewall-cmd --reload
+```
+
+5. Create a self-signed certificate/key pair. For development, place them in the `backend` folder within the project. Make sure not to commit these files to version control! If cloning our project repository, they should already be git-ignored. Note that this is only relevant if this instance of the application will use SSL (e.g., integration with CAS requires SSL, but the instance on the personal computer of one of the developers uses simple http since local integration with CAS there is impossible).
+
+```bash
+openssl req -x509 -nodes -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
+```
+
+6. For development: add the following commands to `~/.bash_profile` (note that the first one will cause an error if the developer logs in again before setting up the python virtual environment as specified below):
+
+```bash
+source ~/ccsga_comments/backend/venv/bin/activate
+export FLASK_ENV=development
+export FLASK_APP=backend
+```
+
+7. Set up mariadb, including enabling it as a systemd service and running the mysql_secure_installation program. DigitalOcean provides [an excellent list of instructions](https://www.digitalocean.com/community/tutorials/how-to-install-mariadb-on-centos-8) for doing so; mariadb-server should be installed already after Step #1 above. Remember the root password for later use.
+
+#### Extra Production Setup: The Nginx/Gunicorn Stack
+
+For simplicity, the following steps assume you have a copy of the codebase called `ccsga_comments` located in your home folder on the server, including an already-produced build of the Flutter project at `ccsga_comments/students/build/web`. Feel free to adapt these instructions, for example, to use `scp` and a different copy of the codebase instead.
+
+[This DigitalOcean guide](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-centos-7) is helpful as another resource to have on hand for this process.
+
+1. Install nginx and gunicorn
+   1. `sudo dnf install nginx`
+   2. (In the virtual environment:) `pip install gunicorn`
+2. Set up subdirectories within /opt
+
+   ```bash
+   cd /opt
+   sudo mkdir ccsga_comments
+   sudo mkdir /opt/ccsga_comments/students/build
+   sudo mkdir /opt/ccsga_comments/backend
+   ```
+
+3. Move or copy `key.pem` and `cert.pem` (created in the previous section) to `/opt/ccsga_comments/backend`
+4. Run the following commands now, as well as every time you want to update the app with new changes (after producing the flutter build). If the codebase from which you'll be copying doesn't contain a `config.py` file and a `.env` file, follow the instructions below (under "Additional backend setup") to create copies for `/opt/ccsga_comments/backend`.
+
+```bash
+sudo cp -r ~/ccsga_comments/students/build/web /opt/ccsga_comments/students/build
+sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_comments/backend/venv /opt/ccsga_comments/backend
+```
+
+5. Set up Gunicorn
+   1. Create a systemd unit file for Gunicorn at /etc/systemd/system/ccsga-comments.service with these contents:
+
+   ```
+   [Unit]
+   Description = Gunicorn instance to serve CCSGA Comments App
+   After = network.target
+   
+   [Service]
+   PermissionsStartOnly = true
+   PIDFile = /run/ccsga_comments/ccsga_comments.pid
+   User = root
+   Group = nginx
+   WorkingDirectory = /opt/ccsga_comments
+   Environment = "PATH=/opt/ccsga_comments/backend/venv"
+   ExecStartPre = /bin/mkdir /run/ccsga_comments
+   ExecStartPre = /bin/chown -R root:nginx /run/ccsga_comments
+   ExecStart = /opt/ccsga_comments/backend/venv/bin/gunicorn --workers 3 --certfile backend/cert.pem --keyfile backend/key.pem -b localhost:8000 --pid /run/ccsga_comments/ccsga_comments.pid backend:app
+   ExecReload = /bin/kill -s HUP $MAINPID
+   ExecStop = /bin/kill -s TERM $MAINPID
+   ExecStopPost = /bin/rm -rf /run/ccsga_comments
+   PrivateTmp = true
+
+   [Install]
+   WantedBy = multi-user.target
+   ```
+
+   2. Create a file at /etc/systemd/system/ccsga-comments.service.d/override.conf with this single line: `After=mariadb`
+   3. Run the following commands:
+      1. `sudo systemctl start ccsga-comments` to start the ccsga-comments Gunicorn service
+      2. `sudo systemctl enable ccsga-comments` so it starts automatically upon boot
+      3. `sudo systemctl status ccsga-comments` to make sure it’s working. If not, `sudo journalctl --since “5 minutes ago”` (substitute whatever timeframe) is helpful
+6. Set up Nginx
+   1. Execute the following commands to create copies of the key and certificate:
+   
+   ```bash
+   sudo mkdir -p /etc/pki/nginx/private
+   sudo cp /opt/ccsga_comments/backend/cert.pem /etc/pki/nginx
+   sudo cp /opt/ccsga_comments/backend/key.pem /etc/pki/nginx/private
+   sudo chmod 755 /etc/pki/nginx/private
+   sudo chmod 644 /etc/pki/nginx/private/key.pem
+   sudo chmod 644 /etc/pki/nginx/cert.pem
+   ```
+
+   2. Edit the file at /etc/nginx/nginx.conf to use SSL and to proxy requests to the Gunicorn service, by following these instructions:
+      1. Comment out (using #’s) the entire server block that begins with `listen 80 default_server;`
+      2. Uncomment the server block preceded by the comment, “Settings for a TLS enabled server,” and change it to look like this (using a different port instead of 8443 if needed):
+      
+      ```
+      server {
+          listen       8443 ssl http2 default_server;
+          listen       [::]:8443 ssl http2 default_server;
+          server_name  _;
+      
+          ssl_certificate "/etc/pki/nginx/cert.pem";
+          ssl_certificate_key "/etc/pki/nginx/private/key.pem";
+          ssl_session_cache shared:SSL:1m;
+          ssl_session_timeout  10m;
+          ssl_ciphers PROFILE=SYSTEM;
+          ssl_prefer_server_ciphers on;
+
+          # Load configuration files for the default server block.
+          include /etc/nginx/default.d/*.conf;
+
+          location / {
+              # checks for static file, if not found proxy to app
+              try_files $uri @proxy_to_app;
+          }
+
+          location @proxy_to_app {
+              proxy_set_header Host $http_host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              # we don't want nginx trying to do something clever with
+              # redirects, we set the Host: header above already.
+              proxy_redirect off;
+              proxy_pass https://localhost:8000;
+          }
+      
+          error_page 404 /404.html;
+              location = /40x.html {
+          }
+      
+          error_page 500 502 503 504 /50x.html;
+              location = /50x.html {
+          }
+      }
+      ```
+
+   3. Run the following commands:
+      1. `sudo nginx -t` to check the syntax of that configuration file
+      2. `sudo systemctl start nginx`
+      3. `sudo systemctl enable nginx` so it starts automatically upon boot
+      4. `sudo systemctl status nginx` to make sure it’s working
+
+#### Product Compilation and Installation
+
+1. Frontend setup (only necessary for development, or wherever you will actually be producing the Flutter build from the Dart code):
+   1. Create a symlink from /var/lib/snapd/snap to /snap
+   2. Add /var/lib/snapd/snap/bin to the PATH environment variable (most likely by editing and then re-running `source ~/.bashrc`)
+   3. Install flutter. The flutter website has [comprehensive directions](https://flutter.dev/docs/get-started/install/linux) for doing so, although not all of the output from `flutter doctor` needs to be fixed, since development for this project does not include running an application on an iOS or Android simulator.
+   4. Switch to the flutter beta channel and enable the web feature: 
+   
+   ```bash
+   flutter channel beta
+   flutter upgrade
+   flutter config --enable-web
+   ```
+
+   5. With the ccsga_comments/students directory as the present working directory, run `flutter pub get`
+      1. Run this command every time ccsga_comments/students/pubspec.yaml changes for any reason.
+   6. In ccsga_comments/students, run `flutter build web`
+      1. Run this command every time the frontend is edited (i.e., every time files in ccsga_comments/students/lib are modified) 
+2. Set up the python virtual environment for the backend (likely only necessary for development, although we have not confirmed this):
+   1. Install virtualenv: `pip3.9 install virtualenv`
+   2. With ccsga_comments/backend as the present working directory, run `virtualenv venv` to create a subdirectory, called “venv,” to house the virtual environment.
+   3. In ccsga_comments/backend, run `source venv/bin/activate` to enter the virtual environment. 
+      1. Note that this command will need to be run every time the developer logs in, so the developer may wish to add the command (substituting the absolute path for `venv/bin/activate`) to their `~/.bash_profile` file.
+      2. The indication of having entered the virtual environment successfully is having `(venv)` on the left of the command-line prompt.
+3. Install python dependencies (only if you performed the above step): from the `backend` directory, run `pip3.9 install -r requirements.txt`
+4. Database setup (both development and production):
+   1. Connect to mariadb using `mariadb -u root -p`
+      1. When prompted, enter the root password created when setting up mariadb.
+   2. Execute the following commands (substituting in values of your own choice where specified): 
+
+   ```sql
+   CREATE DATABASE choose_a_database_name;
+   CREATE USER ‘choose_a_username’@’localhost’ IDENTIFIED BY 'choose_a_password';
+   GRANT ALL PRIVILEGES ON database_name_here.* TO ‘username_here’@’localhost’;
+   FLUSH PRIVILEGES;
+   exit
+   ```
+
+   3. Check access with `mysql -u username_here -p database_name_here`
+5. Additional backend setup (both development and production):
+   1. In the `backend` directory, create a copy of `config.py.blank` and name it `config.py`. Also create a copy of `.env_sample` and call it `.env`. Make sure not to track `config.py` or `.env` in version control (they should already be git-ignored, if you're working in a clone of the repository). In `.env`, enter the correct database credentials from the database setup step (“`localhost`” can stay), and follow the instructions therein for the testing values whenever you need to run the tests. In `config.py`, enter any random, sufficiently long (16 to 32 bytes) value for the secret key.
+   2. Run `database_handler.py` as a python program. This creates the tables and stored procedures for the database.
+   3. Log into the database using `mysql -u username_here -p database_name_here` and insert the first admin user for the website (who can later add other admins through the frontend) using a normal `INSERT` command (use the admin’s own username, or `NULL`, as the value for the `updatedBy` foreign key). Important note: this is the only time a normal `INSERT` or `UPDATE` command is the correct way to modify a user’s roles, due to the complex ways various values in different tables change when a user’s roles change. If a change to a user’s roles must be made directly in the database after the database has started accruing conversations, use the appropriate stored procedure instead (see Developer Documentation).
+ 
+   ```sql
+   INSERT INTO Users (username, displayName, isBanned, isCCSGA, isAdmin, rolesLastUpdated, updatedBy) VALUES (‘new_admin_username’, ‘New Admin Display Name’, 0, 0, 1, UTC_TIMESTAMP(), NULL);
+   ```
+6. For development: if you want to run the Flask development server and have not yet logged in again since editing `~/.bash_profile`, execute that file: `source ~/.bash_profile`
 
 ## Developer Documentation
 
@@ -105,7 +312,7 @@ sudo systemctl daemon-reload
 
 # Enter MariaDB console
 # When prompted, enter the password specified in your version of `backend/.env`.
-mysql -u ccsgacomments -p ccsgacommentsdb
+mysql -u enter_database_username_here -p enter_database_name_here
 
 # Restart MariaDB service
 sudo systemctl restart mariadb

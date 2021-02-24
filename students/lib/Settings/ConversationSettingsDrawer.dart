@@ -33,6 +33,8 @@ class _ConversationSettingsDrawerState
           builder: (BuildContext context,
               AsyncSnapshot<Tuple2<User, Conversation>> snapshot) {
             if (snapshot.hasData) {
+              print("User object: " + snapshot.data.item1.toString());
+              print("Conversation object: " + snapshot.data.item2.toString());
               anonymousIsSwitched =
                   !snapshot.data.item2.studentIdentityRevealed;
               return ListView(

@@ -70,10 +70,12 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
         ),
       ),
       floatingActionButton: fab(),
-      drawer: NavigationDrawer(true),
+      drawer: navigationDrawer(),
       endDrawer: settingsDrawer(),
     );
   }
+
+  Widget navigationDrawer() => NavigationDrawer(true);
 
   //Override to add the navigation drawer to the side, will be hidden when screen size too small
   Widget staticDrawer() => Container(

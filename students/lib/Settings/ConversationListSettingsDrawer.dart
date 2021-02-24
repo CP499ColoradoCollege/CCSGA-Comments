@@ -7,6 +7,10 @@ import 'package:tuple/tuple.dart';
 
 import '../DatabaseHandler.dart';
 
+/// This drawer is for CCSG and Admin users only
+/// Contains filters, sort and should in future contain search
+/// This page is hidden at this time (Feb 2021) as above features
+/// are not yet implemented
 class ConversationListSettingsDrawer extends StatefulWidget {
   Function(FilterByDate date, FilterByLabel label, bool isApartOfConversation)
       filterCallback;

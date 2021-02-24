@@ -7,6 +7,9 @@ import 'package:tuple/tuple.dart';
 
 import '../DatabaseHandler.dart';
 
+/// This drawer appears on the conversation page
+/// Currently functionality: anonymity slider
+/// Future functionality: mark read/unread and others
 class ConversationSettingsDrawer extends StatefulWidget {
   var isMobileLayout = false;
   Conversation conversation;
@@ -102,6 +105,9 @@ class _ConversationSettingsDrawerState
     );
   }
 
+  /// If a student wishes to deanonimize their conversation
+  /// and thereby reveal their identity, this function is called
+  /// This shows the confirmation dialogue with Confirm and Cancel
   Future<void> _showMyDialog() async {
     bool isConfirmed = false;
     await showDialog(
@@ -145,6 +151,8 @@ class _ConversationSettingsDrawerState
     }
   }
 
+  /// Gets user's data from CAS and the details of the conversation
+  /// to show the correct position on the anonymity slider
   Future<Tuple2<User, Conversation>> _getUserData() async {
     Tuple2<ChewedResponse, User> userResponse =
         await DatabaseHandler.instance.getAuthenticatedUser();

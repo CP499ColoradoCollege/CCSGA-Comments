@@ -33,7 +33,6 @@ dependencies:
   beamer: ^0.6.2
   url_strategy: ^0.1.1
   url_launcher: ^5.7.10
-  enum_to_string: ^1.0.14
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

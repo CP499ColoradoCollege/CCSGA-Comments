@@ -34,6 +34,7 @@ class _MessageThreadState extends State<MessageThread> {
         itemBuilder: (context, index) {
           bool isMyMessage =
               messages[index].sender.username == widget.currentUser.username;
+          print("Is my message: " + isMyMessage.toString());
           return MessageCard(
               message: messages[index], isMyMessage: isMyMessage);
         },

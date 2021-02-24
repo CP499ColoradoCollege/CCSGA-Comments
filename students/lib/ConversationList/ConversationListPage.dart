@@ -6,10 +6,10 @@ import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
 import 'package:ccsga_comments/Settings/ConversationListSettingsDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
-import '../DatabaseHandler.dart';
 import 'ConversationListCard.dart';
+import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:beamer/beamer.dart';
-import 'package:ccsga_comments/Models/GlobalEnums.dart';
+import 'package:ccsga_comments/Models/FilterEnums.dart';
 
 class ConversationListPage extends BasePage {
   ConversationListPage({Key key, this.title}) : super(key: key);
@@ -52,13 +52,7 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
                           padding: const EdgeInsets.all(8),
                           children: _convCards);
                     } else {
-                      return Center(
-                        child: SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
+                      return CircularProgressIndicator();
                     }
                   })),
         ],
@@ -84,7 +78,6 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
   }
 
   void buildConversationCards(convList) {
-    _convCards.clear();
     for (Conversation conv in convList) {
       String joinedLabels = '';
       for (String label in conv.labels) {
@@ -98,14 +91,8 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
         joinedLabels: joinedLabels,
         mostRecentMessageBody: mostRecentMessage.body,
         mostRecentMessageDateTime: mostRecentMessage.dateTime,
-        conversationCallback: beamToConversation,
       ));
     }
-  }
-
-  void beamToConversation(int id) {
-    context.beamTo(ConversationLocation(
-        pathParameters: {"conversationId": id.toString()}));
   }
 
   @override
@@ -120,15 +107,19 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
     );
   }
 
-  // @override
-  // Widget settingsDrawer() {
-  //   return ConversationListSettingsDrawer(
-  //     filterCallback: filterConversations,
-  //   );
-  // }
+  @override
+  Widget settingsDrawer() {
+    return ConversationListSettingsDrawer(
+      filterCallback: filterConversations,
+    );
+  }
 
-  // @override
-  // Icon get rightButtonIcon => Icon(Icons.filter_alt_outlined);
+  @override
+  Icon get rightButtonIcon => Icon(Icons.filter_alt_outlined);
+
+  void _filterDrawerButtonPressed() {
+    print("open end drawer");
+  }
 
   void _newMessage() {
     context.beamTo(NewMessageLocation());

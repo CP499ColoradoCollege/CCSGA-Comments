@@ -1,17 +1,14 @@
 import 'package:ccsga_comments/BasePage/BasePage.dart';
 import 'package:ccsga_comments/Conversation/MessageThread.dart';
+import 'package:ccsga_comments/Settings/ConversationListSettingsDrawer.dart';
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:ccsga_comments/Models/Conversation.dart';
-import 'package:ccsga_comments/Models/ConversationUpdate.dart';
-import 'package:ccsga_comments/Models/GlobalEnums.dart';
 import 'package:ccsga_comments/Models/Message.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:ccsga_comments/Settings/ConversationSettingsDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
-
-import 'ConversationStatus.dart';
 
 class ConversationPage extends BasePage {
   final int conversationId;
@@ -29,7 +26,6 @@ class _ConversationPageState extends BaseState<ConversationPage>
   Map _pathParams;
   int _conversationId;
   String _errorMessage = "";
-  User _currentUser;
 
   @override
   void initState() {
@@ -40,56 +36,50 @@ class _ConversationPageState extends BaseState<ConversationPage>
   Widget body() {
     return Container(
       padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
-      child: FutureBuilder<bool>(
-          future: _getConversationData(),
-          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-            if (snapshot.hasData) {
-              return Column(
-                children: [
-                  ConversationStatus(this.updateConversationStatus,
-                      _conversation.status, this._currentUser.isCcsga ?? false),
-                  MessageThread(
+      child: Column(
+        children: [
+          FutureBuilder<bool>(
+              future: _getConversationData(),
+              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                if (snapshot.hasData) {
+                  return MessageThread(
                     conv: this._conversation,
-                    currentUser: _currentUser,
-                  ),
-                  TextFormField(
-                    controller: _messageFieldController,
-                    minLines: 2,
-                    maxLines: 6,
-                    cursorColor: Colors.black,
-                    decoration: InputDecoration(
-                      labelText: 'Write a message',
-                      labelStyle: TextStyle(color: Colors.black),
-                      border: const OutlineInputBorder(),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.black),
-                      ),
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          _sendMessage();
-                        },
-                        icon: Icon(Icons.send_rounded),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      return null;
-                    },
-                  )
-                ],
-              );
-            } else {
-              return Center(
-                child: SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            }
-          }),
+                    currentUser: currentUser,
+                  );
+                } else {
+                  return CircularProgressIndicator();
+                }
+              }),
+          if (_errorMessage != "")
+            Text(_errorMessage, style: TextStyle(backgroundColor: Colors.red)),
+          TextFormField(
+            controller: _messageFieldController,
+            minLines: 2,
+            maxLines: 6,
+            cursorColor: Colors.black,
+            decoration: InputDecoration(
+              labelText: 'Write a message',
+              labelStyle: TextStyle(color: Colors.black),
+              border: const OutlineInputBorder(),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+              ),
+              suffixIcon: IconButton(
+                onPressed: () {
+                  _sendMessage();
+                },
+                icon: Icon(Icons.send_rounded),
+              ),
+            ),
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Please enter some text';
+              }
+              return null;
+            },
+          )
+        ],
+      ),
     );
   }
 
@@ -100,16 +90,11 @@ class _ConversationPageState extends BaseState<ConversationPage>
 
   @override
   Widget settingsDrawer() {
-    return ConversationSettingsDrawer(false, _conversation);
+    return ConversationSettingsDrawer(false);
   }
 
   @override
   Icon get rightButtonIcon => Icon(Icons.settings);
-
-  Future<void> updateConversationStatus(String status) async {
-    DatabaseHandler.instance.updateConversation(
-        _conversation.id, ConversationUpdate(setStatus: status));
-  }
 
   Future<bool> _getConversationData() async {
     _pathParams = getPathParameters();
@@ -124,10 +109,9 @@ class _ConversationPageState extends BaseState<ConversationPage>
     Tuple2<ChewedResponse, User> userResponse = await DatabaseHandler.instance
         .getAuthenticatedUser()
         .catchError(handleError);
-    // transaction successful, there was a conv obj sent in response, otherwise null
+
     if (userResponse.item2 != null) {
-      // use setState to update the data in the UI with conv
-      _currentUser = userResponse.item2;
+      currentUser = userResponse.item2;
     } else {
       setState(() {
         _errorMessage = conversationResponse.item1.message;
@@ -135,7 +119,11 @@ class _ConversationPageState extends BaseState<ConversationPage>
       return false;
     }
 
+    // transaction successful, there was a conv obj sent in response, otherwise null
     if (conversationResponse.item2 != null) {
+      print(
+          "responseTuple.item2.messages -> ${conversationResponse.item2.messages}");
+      // use setState to update the data in the UI with conv
       _conversation = conversationResponse.item2;
       // FutureBuilder requires that we return something
       return true;
@@ -145,6 +133,15 @@ class _ConversationPageState extends BaseState<ConversationPage>
       });
       return false;
     }
+    // dummy message and conversation for frontend-only testing/debugging
+    //   Message msg = Message(
+    //       body: "test body",
+    //       dateTime: "2021-02-21 13:00:00",
+    //       isRead: false,
+    //       sender: Sender(displayName: "testDispName", username: "testUserName"));
+    //   Conversation conv = Conversation(id: 99, messages: {"99": msg});
+    //   _conversation = conv;
+    //   return true;
   }
 
   void _sendMessage() async {

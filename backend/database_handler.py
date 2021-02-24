@@ -10,6 +10,7 @@ def get_new_db_connection():
     '''Connect to the database using the values specified in the environment. 
     Implemented as a function so that it can be called easily in other places when it's discovered that the connection was lost/ended.
     However, outside of this file, it is preferrable to call get_conn_and_cursor() instead.'''
+    
     try:
         return mariadb.connect(
             user=os.getenv("DB_USERNAME"),
@@ -21,11 +22,13 @@ def get_new_db_connection():
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB Platform: {e}")
 
+# Create a connection, so that the global variable exists before the following function declaration
 conn = get_new_db_connection()
 
 def get_conn_and_cursor():
-    '''Gets the current MariaDB connection and a cursor from it, automatically re-establishing the connection if needed to do so.
+    '''Get the current MariaDB connection and a cursor from it, automatically re-establishing the connection if needed to do so.
     This is the function that should generally be imported and called in other files.'''
+    
     global conn
     try:
         cur = conn.cursor()
@@ -36,7 +39,8 @@ def get_conn_and_cursor():
     return conn, cur
 
 def create_tables():
-    '''Creates all the tables for the database that don't already exist, but doesn't update their structures if the details below have changed.'''
+    '''Create all the tables for the database that don't already exist, but don't update their structures if the details below have changed.'''
+
     conn, cur = get_conn_and_cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS Users (username VARCHAR(40), displayName VARCHAR(100), isBanned BOOL, isCCSGA BOOL, isAdmin BOOL, rolesLastUpdated DATETIME, updatedBy VARCHAR(40), PRIMARY KEY (username), FOREIGN KEY (updatedBy) REFERENCES Users(username));")
     cur.execute("CREATE TABLE IF NOT EXISTS Conversations (id INT AUTO_INCREMENT, status VARCHAR(40), PRIMARY KEY (id));")
@@ -50,7 +54,9 @@ def create_tables():
     conn.close()
 
 def create_stored_procedures():
-    '''Creates all the stored procedures for the database. Doesn't modify those that currently exist.'''
+    '''Create all the stored procedures for the database, but don't modify those that currently exist.'''
+
+    # Create stored procedures concering create/read/update for the messaging service
     messages_commands = [
         '''CREATE PROCEDURE create_conversation (IN revealIdentity BOOL, IN sender VARCHAR(40), OUT conversationId INT)
             BEGIN
@@ -168,6 +174,7 @@ def create_stored_procedures():
         '''
     ]
 
+    # Create stored procedures concerning create/read/delete for administrative features
     admin_commands = [
         '''CREATE PROCEDURE add_ccsga (IN newCCSGA VARCHAR(40), IN adder VARCHAR(40))
             BEGIN
@@ -300,10 +307,11 @@ def create_stored_procedures():
         '''
     ]
 
-
-    all_commands = [messages_commands, admin_commands]
-    
+    # Get connection and cursor
     conn, cur = get_conn_and_cursor()
+
+    # Execute all of the commands in all of the lists above
+    all_commands = [messages_commands, admin_commands]
     for command_list in all_commands:
         for command in command_list:
             try:
@@ -314,6 +322,7 @@ def create_stored_procedures():
                     conn.close()
                     raise
     
+    # Close the connection
     conn.close()
 
 # Helper functions for other files to import
@@ -321,9 +330,17 @@ def create_stored_procedures():
 def confirm_user_in_db(username, display_name):
     '''Insert a record for this user (as a student) into the DB if their username is not yet in the database.
     This function also updates the user's display name if it has changed since the last time it was checked.'''
+
+    # Get connection and cursor
     conn, cur = get_conn_and_cursor()
+
+    # Make sure user is in database
     cur.execute("INSERT IGNORE INTO Users (username, isBanned, isCCSGA, isAdmin, displayName, rolesLastUpdated) VALUES (?, 0, 0, 0, ?, UTC_TIMESTAMP());", (username, display_name))
+    
+    # Update display name
     cur.execute("UPDATE Users SET displayName = ? WHERE username = ?;", (display_name, username))
+    
+    # Commit database changes
     conn.commit()
     # Don't close connection, because the calling function may have already asked for the connection and won't realize that it's since been closed here
 
@@ -331,16 +348,16 @@ def confirm_user_in_db(username, display_name):
 
 def is_student(username):
     '''Return True iff specified user is student (i.e., neither CCSGA rep nor admin).'''
-    if not username: return False
+    if not username: return False # Non-signed in user is not considered a student
     conn, cur = get_conn_and_cursor()
     cur.execute("SELECT isCCSGA, isAdmin FROM Users WHERE username = ?", (username,))
     isCCSGA, isAdmin = cur.fetchone()
     conn.close()
-    return not (isCCSGA or isAdmin)
+    return not (isCCSGA or isAdmin) # User is a student iff they are neither a CCSGA rep nor an admin
 
 def is_ccsga(username):
-    '''Return True iff specified user is a CCSGA rep.'''
-    if not username: return False
+    '''Return True iff specified user is a CCSGA representative.'''
+    if not username: return False # Non-signed in user is not considered a representative
     conn, cur = get_conn_and_cursor()
     cur.execute("SELECT isCCSGA FROM Users WHERE username = ?", (username,))
     isCCSGA = cur.fetchone()[0]
@@ -349,7 +366,7 @@ def is_ccsga(username):
 
 def is_admin(username):
     '''Return True iff specified user is an admin.'''
-    if not username: return False
+    if not username: return False # Non-signed in user is not considered an admin
     conn, cur = get_conn_and_cursor()
     cur.execute("SELECT isAdmin FROM Users WHERE username = ?", (username,))
     isAdmin = cur.fetchone()[0]
@@ -358,6 +375,8 @@ def is_admin(username):
 
 
 if __name__ == '__main__':
+    
+    # When this file is run as a python program, create tables and stored procedures that are not currently in the database
     print("Creating database tables (doesn't modify any that already exist)")
     create_tables()
     print("Creating stored procedures (doesn't modify any that already exist)")

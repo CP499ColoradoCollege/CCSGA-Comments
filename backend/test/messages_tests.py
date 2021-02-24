@@ -182,14 +182,15 @@ class TestMessagesRoutes(unittest.TestCase):
 
     def tearDown(self):
 
+        # Make sure we have a connection and cursor
         try:
             self.conn.close()
         except e:
             print("Caught in teardown: " + str(e))
             pass
-        
         self.conn, self.cur = get_conn_and_cursor()
 
+        # Delete any messages, conversations, etc. created
         for message_id in self.message_ids_for_cleanup:
             self.cur.execute("DELETE FROM MessageSettings WHERE messageId = ?;", (message_id,))
             self.cur.execute("DELETE FROM Messages WHERE id = ?;", (message_id,))
@@ -197,14 +198,19 @@ class TestMessagesRoutes(unittest.TestCase):
             self.cur.execute("DELETE FROM AppliedLabels WHERE conversationId = ?;", (conv_id,))
             self.cur.execute("DELETE FROM ConversationSettings WHERE conversationId = ?;", (conv_id,))
             self.cur.execute("DELETE FROM Conversations WHERE id = ?;", (conv_id,))
+        
+        # Reset the permissions of the signed-in user to normal student
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        
+        # Delete the fake admin who was used for role assignment
         self.cur.execute("SET foreign_key_checks = 0;")
         self.cur.execute("DELETE FROM Users WHERE username = ?;", (FAKE_ADMIN_USERNAME,))
         self.cur.execute("SET foreign_key_checks = 1;")
+        
+        # Commit, clear lists of IDs to delete, and close connections
         self.conn.commit()
         self.message_ids_for_cleanup.clear()
         self.conv_ids_for_cleanup.clear()
-
         self.conn.close()
 
 

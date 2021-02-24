@@ -25,7 +25,7 @@ class ConversationPage extends BasePage {
 class _ConversationPageState extends BaseState<ConversationPage>
     with BasicPage {
   final _messageFieldController = TextEditingController();
-  Conversation _conversation = Conversation();
+  Conversation _conversation;
   Map _pathParams;
   int _conversationId;
   String _errorMessage = "";

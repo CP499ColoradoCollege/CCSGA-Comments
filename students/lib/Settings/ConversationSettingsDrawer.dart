@@ -134,6 +134,7 @@ class _ConversationSettingsDrawerState
     );
 
     if (isConfirmed && anonymousIsSwitched) {
+      print("Conversation id:" + widget.conversation.id.toString());
       DatabaseHandler.instance.updateConversation(
           widget.conversation.id,
           ConversationUpdate(

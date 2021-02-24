@@ -155,6 +155,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
       if (chewedResponse.isSuccessful) {
         _messageFieldController.clear();
         await _getConversationData();
+        setState(() {});
       } else {
         setState(() {
           _errorMessage = chewedResponse.message;

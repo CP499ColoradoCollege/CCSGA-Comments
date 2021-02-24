@@ -51,7 +51,7 @@ class MessageCard extends StatelessWidget {
                       Text(
                         DateFormat("MMM d -")
                             .add_jm()
-                            .format(DateTime.parse(this.message.dateTime))
+                            .format(DateTime.parse(this.message.dateTime).subtract(new Duration(hours: 7)))
                             .toString(),
                         textAlign: TextAlign.right,
                       )

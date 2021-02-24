@@ -53,7 +53,7 @@ class ConversationListCard extends StatelessWidget {
                   Text(
                     DateFormat("MMM d -")
                         .add_jm()
-                        .format(DateTime.parse(mostRecentMessageDateTime))
+                        .format(DateTime.parse(mostRecentMessageDateTime).subtract(new Duration(hours: 7)))
                         .toString(),
                     textAlign: TextAlign.center,
                   )

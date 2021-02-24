@@ -28,6 +28,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
   Conversation _conversation = Conversation();
   Map _pathParams;
   int _conversationId;
+  String _errorMessage = "";
   User _currentUser;
 
   @override
@@ -112,41 +113,38 @@ class _ConversationPageState extends BaseState<ConversationPage>
 
   Future<bool> _getConversationData() async {
     _pathParams = getPathParameters();
-    //if a convId is passed in when creating the page, use that.
+    // if a convId is passed in when creating the page, use that.
     // if not, check the url for the id (pathParams)
     _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);
-    Tuple2<ChewedResponse, Conversation> responseTuple =
-        await DatabaseHandler.instance.getConversation(_conversationId);
-    Tuple2<ChewedResponse, User> userResponse =
-        await DatabaseHandler.instance.getAuthenticatedUser();
+    Tuple2<ChewedResponse, Conversation> conversationResponse =
+        await DatabaseHandler.instance
+            .getConversation(_conversationId)
+            .catchError(handleError);
 
+    Tuple2<ChewedResponse, User> userResponse = await DatabaseHandler.instance
+        .getAuthenticatedUser()
+        .catchError(handleError);
+    // transaction successful, there was a conv obj sent in response, otherwise null
     if (userResponse.item2 != null) {
+      // use setState to update the data in the UI with conv
       _currentUser = userResponse.item2;
     } else {
-      return false;
-    }
-
-    // transaction successful, there was a conv obj sent in response, otherwise null
-    if (responseTuple.item2 != null) {
-      // use setState to update the data in the UI with conv
-      _conversation = responseTuple.item2;
-      // FutureBuilder requires that we return something
-      return true;
-    } else {
       setState(() {
-        // _errorMessage = responseTuple.item1.message;
+        _errorMessage = conversationResponse.item1.message;
       });
       return false;
     }
 
-    //   Message msg = Message(
-    //       body: "test body",
-    //       dateTime: "2021-02-21 13:00:00",
-    //       isRead: false,
-    //       sender: Sender(displayName: "testDispName", username: "testUserName"));
-    //   Conversation conv = Conversation(id: 99, messages: {"99": msg});
-    //   _conversation = conv;
-    //   return true;
+    if (conversationResponse.item2 != null) {
+      _conversation = conversationResponse.item2;
+      // FutureBuilder requires that we return something
+      return true;
+    } else {
+      setState(() {
+        _errorMessage = conversationResponse.item1.message;
+      });
+      return false;
+    }
   }
 
   void _sendMessage() async {
@@ -157,15 +155,15 @@ class _ConversationPageState extends BaseState<ConversationPage>
       if (chewedResponse.isSuccessful) {
         _messageFieldController.clear();
         await _getConversationData();
-        setState(() {
-          // _successMessage = chewedResponse.message;
-        });
       } else {
         setState(() {
-          throw new Error();
-          // _errorMessage = chewedResponse.message;
+          _errorMessage = chewedResponse.message;
         });
       }
     }
+  }
+
+  handleError(e) {
+    print('Error: ${e.toString()}');
   }
 }

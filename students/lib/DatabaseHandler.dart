@@ -88,7 +88,8 @@ class DatabaseHandler {
       conv.id = conversationId;
       return Tuple2<ChewedResponse, Conversation>(chewedResponse, conv);
     } else {
-      return Tuple2<ChewedResponse, Conversation>(chewedResponse, null);
+      throw Exception(
+          "Error. Status code: ${response.statusCode}, Message: ${chewedResponse.message}");
     }
   }
 
@@ -181,7 +182,8 @@ class DatabaseHandler {
       User user = User.fromJson(jsonDecode(response.body));
       return Tuple2<ChewedResponse, User>(chewedResponse, user);
     } else {
-      return Tuple2<ChewedResponse, User>(chewedResponse, null);
+      throw Exception(
+          "Error. Status code: ${response.statusCode}, Message: ${chewedResponse.message}");
     }
   }
 

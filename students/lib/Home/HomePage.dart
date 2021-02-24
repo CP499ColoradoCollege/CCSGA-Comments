@@ -4,6 +4,10 @@ import 'package:ccsga_comments/BasePage/BasePage.dart';
 import 'package:flutter/material.dart';
 import 'HomeCard.dart';
 
+/// Page class for the hompage
+///
+/// Currently holds static HomeCards, not updatable through the UI
+/// In future, functionality should be added
 class HomePage extends BasePage {
   HomePage({Key key}) : super(key: key);
 

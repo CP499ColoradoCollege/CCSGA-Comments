@@ -44,7 +44,12 @@ class DatabaseHandler {
     }
   }
 
-  // send a new message to the db, starting a conversation
+  /// Send a new message to the db, starting a conversation
+  ///
+  /// Send new message data to the backend, where [labels]
+  /// is the list of committee labels.
+  /// ChewedResponse is used to digest the status code and
+  /// translate it into an isSuccessful bool and an error message
   Future<ChewedResponse> initiateNewConversation(
       bool isAnonymous, String messageBody, List<String> labels) async {
     final url = '/api/conversations/create';
@@ -61,7 +66,10 @@ class DatabaseHandler {
     return chewedResponse;
   }
 
-  // send a message in an existing conversation (as a reply)
+  /// Send a message in an existing conversation (as a reply)
+  ///
+  /// [conversationId] is important to know which conversation
+  /// the reply should be appended to
   Future<ChewedResponse> sendMessageInConversation(
       int conversationId, String messageBody) async {
     final url = '/api/conversations/$conversationId/messages/create';
@@ -73,7 +81,11 @@ class DatabaseHandler {
     return chewedResponse;
   }
 
-  // get messages and other details of a single conversation
+  /// Get messages and other details of a single conversation
+  ///
+  /// Conversation.fromJson turns the return JSON into a Conversation obj
+  /// Errorhandling: if response is not 200, status code and
+  /// corresponding error message are thrown as Exception
   Future<Tuple2<ChewedResponse, Conversation>> getConversation(
       int conversationId) async {
     final url = '/api/conversations/$conversationId';
@@ -93,6 +105,8 @@ class DatabaseHandler {
     }
   }
 
+  /// Updates attribute(s) of an existing conversation
+  /// (if setting status, archiving deanonymizing etc)
   Future<void> updateConversation(
       int conversationId, ConversationUpdate conversationUpdate) async {
     final url = '/api/conversations/$conversationId';
@@ -103,6 +117,10 @@ class DatabaseHandler {
     );
   }
 
+  /// Gets list of banned users
+  ///
+  /// Returns a tuple with metadata about the response and the payload
+  /// If the status code is not 200, the payload in the return tuple will be null
   Future<Tuple2<ChewedResponse, BannedUsers>> getBannedUsers() async {
     final url = '/api/banned_users';
     var response =
@@ -118,6 +136,7 @@ class DatabaseHandler {
     }
   }
 
+  /// Promote a user to CCSGA type based on [username]
   Future<void> addRepresentative(String username) async {
     final url = '/api/ccsga_reps/create';
     var response = await http.post(url,
@@ -125,6 +144,8 @@ class DatabaseHandler {
         body: jsonEncode(NewRepresentative(newCCSGA: username)));
   }
 
+  /// Add a user to the list of banned users,
+  /// stripping them of access to the site
   Future<void> banUser(String username) async {
     final url = '/api/banned_users/create';
     var response = await http.post(url,
@@ -132,6 +153,7 @@ class DatabaseHandler {
         body: jsonEncode(UserToBan(userToBan: username)));
   }
 
+  /// Promote a user to Admin type based on [username]
   Future<void> addAdmin(String username) async {
     final url = '/api/admins/create';
     var response = await http.post(url,
@@ -139,6 +161,10 @@ class DatabaseHandler {
         body: jsonEncode(NewAdmin(newAdmin: username)));
   }
 
+  /// Get current list of CCSGA type users stored in the database
+  ///
+  /// Returns a tuple with metadata about the response and the payload
+  /// If the status code is not 200, the payload in the return tuple will be null
   Future<Tuple2<ChewedResponse, Representatives>> getRepresentatives() async {
     final url = '/api/ccsga_reps';
     var response =
@@ -155,6 +181,10 @@ class DatabaseHandler {
     }
   }
 
+  /// Get current list of Admin type users stored in the database
+  ///
+  /// Returns a tuple with metadata about the response and the payload
+  /// If the status code is not 200, the payload in the return tuple will be null
   Future<Tuple2<ChewedResponse, Admins>> getAdmins() async {
     final url = '/api/admins';
     var response =
@@ -170,7 +200,10 @@ class DatabaseHandler {
     }
   }
 
-  // get messages and other details of a single conversation
+  /// Get messages and other details of a single conversation
+  ///
+  /// If stataus code is not 200, an exception is thrown with
+  /// the status code and likely corresponding error message
   Future<Tuple2<ChewedResponse, User>> getAuthenticatedUser() async {
     final url = '/api/authenticate';
     var response =
@@ -187,6 +220,7 @@ class DatabaseHandler {
     }
   }
 
+  /// Demote an Admin user and take away their Admin privileges
   Future<ChewedResponse> deleteAdmin(String username) async {
     final url = '/api/admins/' + username;
     var response =
@@ -196,6 +230,7 @@ class DatabaseHandler {
     return chewedResponse;
   }
 
+  /// Demote a CCSGA user and take away their CCSGA privileges
   Future<ChewedResponse> deleteCCSGA(String username) async {
     final url = '/api/ccsga_reps/' + username;
     var response =
@@ -205,6 +240,7 @@ class DatabaseHandler {
     return chewedResponse;
   }
 
+  /// Unban a user, removing them from the list of banned users
   Future<ChewedResponse> deleteBannedUser(String username) async {
     final url = '/api/banned_users/' + username;
     var response =
@@ -213,20 +249,4 @@ class DatabaseHandler {
     chewedResponse.chewStatusCode(response.statusCode);
     return chewedResponse;
   }
-
-// WE'LL PROB NOT HAVE THIS ON THE BACKEND
-//   // get details of a single message based on ID
-//   Future<Tuple2<ChewedResponse, Message>> getMessage(int messageId) async {
-//     final url = '/api/conversations/<conversationId>/messages/$messageId';
-//     var response =
-//         await http.get(url, headers: {"Content-Type": "application/json"});
-//     var chewedResponse = ChewedResponse();
-//     chewedResponse.chewStatusCode(response.statusCode);
-//     if (response.statusCode == 200) {
-//       Message msg = Message.fromJson(jsonDecode(response.body));
-//       return Tuple2<ChewedResponse, Message>(chewedResponse, msg);
-//     } else {
-//       return Tuple2<ChewedResponse, Message>(chewedResponse, null);
-//     }
-//   }
 }

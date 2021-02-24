@@ -21,10 +21,13 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
   ];
   List<Committee> _selectedCommittees = [];
 
+  // reveal identity to CCSGA
   bool _isChecked = false;
 
+  // used to validate and submit form
   final _formKey = GlobalKey<FormState>();
 
+  // used to validate, clear text field
   final textFieldController = TextEditingController();
 
   String _errorMessage = "";
@@ -58,6 +61,7 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
+                              // depending on the success/error, display appropriate text
                               if (_successMessage != "" && _errorMessage == "")
                                 Text(
                                   _successMessage,
@@ -106,6 +110,7 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
                                   ),
                                   suffixIcon: IconButton(
                                     onPressed: () {
+                                      // don't submit if no text
                                       if (_formKey.currentState.validate()) {
                                         _sendMessageInNewConversation();
                                       }
@@ -124,6 +129,9 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
                             ]))))));
   }
 
+  /// Once form submit is clicked, call Databasehandler,
+  /// reset the form and display the success/error message
+  /// according to the reponse
   void _sendMessageInNewConversation() async {
     List<String> selectedCommitteesStrList = [];
     _selectedCommittees.forEach((e) => selectedCommitteesStrList.add(e.name));

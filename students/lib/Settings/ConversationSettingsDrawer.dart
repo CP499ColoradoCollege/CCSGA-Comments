@@ -24,17 +24,16 @@ class ConversationSettingsDrawer extends StatefulWidget {
 class _ConversationSettingsDrawerState
     extends State<ConversationSettingsDrawer> {
   bool anonymousIsSwitched = true;
+  Future<User> currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    currentUser = _getUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
-    Future<User> currentUser;
-
-    @override
-    void initState() {
-      super.initState();
-      currentUser = _getUserData();
-    }
-
     return FutureBuilder<Conversation>(
         future: _getConversationData(),
         builder: (BuildContext context, AsyncSnapshot<Conversation> snapshot) {

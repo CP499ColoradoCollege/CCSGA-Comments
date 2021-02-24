@@ -39,8 +39,7 @@ class _ConversationSettingsDrawerState
           future: currentUser,
           builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
             if (snapshot.hasData) {
-              anonymousIsSwitched =
-                  !widget.conversation.studentIdentityRevealed;
+              anonymousIsSwitched = widget.conversation.studentIdentityRevealed;
               return ListView(
                 padding: EdgeInsets.zero,
                 children: <Widget>[

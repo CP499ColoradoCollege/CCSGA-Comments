@@ -40,6 +40,9 @@ class HomeCard extends StatelessWidget {
     ));
   }
 
+  /// Open [url] in new tab
+  ///
+  /// or throw error
   void cardTapped() async {
     if (url.isNotEmpty && await canLaunch(url)) {
       await launch(url);

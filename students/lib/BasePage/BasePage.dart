@@ -10,6 +10,15 @@ import '../DatabaseHandler.dart';
 
 //Based on this article: https://medium.com/flutter-community/mixins-and-base-classes-a-recipe-for-success-in-flutter-bc3fbb5da670
 
+//See /BasePage/README.md to learn more about how to implement this abstract class
+
+//Base page is an abstract parent to all of our pages/screens
+//In a nutshell, it passes to the build function: Widget build(BuildContext context) {
+//A scaffold object. In this scaffold object we add a body, floating action buttons,
+//And navigation drawers as overridable objects. This allows for pages that inherit
+//This class to be able to have their own custom bodys, navigation drawers, and floating
+//Action buttons. It also by default gets the currentUser's data. This is a commonly
+//Needed feature on most pages.
 abstract class BasePage extends StatefulWidget {
   BasePage({Key key}) : super(key: key);
 }
@@ -75,6 +84,7 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
     );
   }
 
+  //Navigation drawer is an overridable drawer that is for the mobile layout
   Widget navigationDrawer() => NavigationDrawer(true);
 
   //Override to add the navigation drawer to the side, will be hidden when screen size too small
@@ -91,12 +101,16 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
   // Override fab to add a floating action button to the page
   Widget fab() => Container();
 
+  //This returns the current pages path paramters. This is useful to obtain the ID of a given page from the URL
   Map<String, String> getPathParameters() {
     return Beamer.of(context).currentLocation.pathParameters;
-    // Override rightIconButton to add an icon button to the right side of the app bar
   }
 
+  // Override rightIconButton to add an icon button to the right side of the app bar
   Icon rightButtonIcon;
+
+  //This widget returns the top left icon button for navigating
+  //This will return an empty container if it is on desktop layout
   Widget drawerButton(BuildContext context) {
     if (isMobileLayout(context) == false) {
       return Container();
@@ -108,6 +122,7 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
     }
   }
 
+  //This statement checks if the current screen dimensions qualify for the mobile layout
   bool isMobileLayout(BuildContext context) {
     if (MediaQuery.of(context).size.width < 850) {
       return true;
@@ -115,6 +130,7 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
     return false;
   }
 
+  //This returns the static right side settings drawer used on the desktop layout
   Widget getSettingsDrawer() {
     var drawer = settingsDrawer();
     if (drawer is Container) {
@@ -127,10 +143,12 @@ mixin BasicPage<Page extends BasePage> on BaseState<Page> {
     }
   }
 
+  //This method opens the end drawer (right side of screen)
   void openEndDrawer() {
     Scaffold.of(scaffoldKey.currentState.context).openEndDrawer();
   }
 
+  //This function makes the get request to get user data
   Future<User> _getUserData() async {
     Tuple2<ChewedResponse, User> userResponse =
         await DatabaseHandler.instance.getAuthenticatedUser();

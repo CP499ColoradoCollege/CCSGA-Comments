@@ -10,6 +10,6 @@ enum FilterByLabel {
   DiversityAndInclusion,
 }
 
-enum ConversationStatusLabel { Unread, InProgress, Done, Denied }
+enum ConversationStatusLabel { Delivered, InProgress, Done, Denied }
 
 enum UserType { Admin, Representative, Student }

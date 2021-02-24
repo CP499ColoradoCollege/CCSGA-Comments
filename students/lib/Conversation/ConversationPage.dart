@@ -102,19 +102,23 @@ class _ConversationPageState extends BaseState<ConversationPage>
     return "Conversation Thread";
   }
 
+  //Custom conversation settings drawer
   @override
   Widget settingsDrawer() {
     return ConversationSettingsDrawer(false, _conversation);
   }
 
+  //Override right icon button for said settings drawer
   @override
   Icon get rightButtonIcon => Icon(Icons.settings);
 
+  //This method updates the conversation object
   Future<void> updateConversationStatus(String status) async {
     DatabaseHandler.instance.updateConversation(
         _conversation.id, ConversationUpdate(setStatus: status));
   }
 
+  //This gets the conversation data
   Future<bool> _getConversationData() async {
     _pathParams = getPathParameters();
     // if a convId is passed in when creating the page, use that.
@@ -151,6 +155,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
     }
   }
 
+  //This message makes an update call to send a message
   void _sendMessage() async {
     if (_messageFieldController.text != "") {
       ChewedResponse chewedResponse = await DatabaseHandler.instance

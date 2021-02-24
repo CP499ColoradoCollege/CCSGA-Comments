@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 import '../DatabaseHandler.dart';
 
+//Admin page is a base page, that displays admin controls such as banning, promoting and demoting users.
 class AdminPage extends BasePage {
   AdminPage({Key key}) : super(key: key);
 
@@ -18,10 +19,12 @@ class AdminPage extends BasePage {
 }
 
 class _AdminPageState extends BaseState<AdminPage> with BasicPage {
+  //List of each of the user types as future objects. These expect to be updated outside of state management.
   Future<List<User>> admins;
   Future<List<User>> representatives;
   Future<List<User>> bannedUsers;
 
+  //Init all of the future lists
   @override
   void initState() {
     super.initState();
@@ -36,6 +39,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
 
   @override
   Widget body() {
+    //If there are no users in a selected list, display a blank card (reused by all three lists)
     Widget noUsersEmptyCard = Center(
       child: Padding(
         child: Text("No users of this type..."),
@@ -43,6 +47,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
       ),
     );
 
+    //Future builder will update the display (conditionally) based on whether currentUser has data or not
     return FutureBuilder<User>(
         future: currentUser,
         builder: (context, snapshot) {
@@ -188,6 +193,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
         });
   }
 
+  //This function is used to get data to populate the admins list
   Future<List<User>> fetchAdmins() async {
     Tuple2<ChewedResponse, Admins> adminsResponse =
         await DatabaseHandler.instance.getAdmins();
@@ -201,6 +207,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
     }
   }
 
+  //This function is used to get data to populate the representatives list
   Future<List<User>> fetchRepresentatives() async {
     Tuple2<ChewedResponse, Representatives> repsRepsonse =
         await DatabaseHandler.instance.getRepresentatives();
@@ -214,6 +221,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
     }
   }
 
+  //This function is used to get data to populate the banned users list
   Future<List<User>> fetchBanned() async {
     Tuple2<ChewedResponse, BannedUsers> bannedUsersResponse =
         await DatabaseHandler.instance.getBannedUsers();
@@ -227,11 +235,14 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
     }
   }
 
+  //This is the display name in the app bar
   @override
   String screenName() {
     return "Admin Controls";
   }
 
+  //This is the floating action button in the bottom right side of the screen
+  //In this case, it contains both a button to ban a user as well as a button to promote a user
   @override
   Widget fab() {
     return Row(
@@ -246,6 +257,9 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
     );
   }
 
+  //This widget is in charge of displaying the floating action button in the bottom right,
+  //As well as shows the dialogue box when promote new user is selected, allowing the admin
+  //To select who to promote (and promote to either admin or representative)
   Widget promoteNewUserButton() {
     return FloatingActionButton.extended(
       heroTag: "promoteNewUserButton",
@@ -343,6 +357,9 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
     );
   }
 
+  //This widget is in charge of displaying the floating action button in the bottom right,
+  //As well as shows the dialogue box when ban a user is selected, allowing the admin
+  //To select who to ban
   Widget banUserButton() {
     return FloatingActionButton.extended(
       heroTag: "banUserButton",

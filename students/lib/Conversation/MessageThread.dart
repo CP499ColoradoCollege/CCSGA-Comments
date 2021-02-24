@@ -47,6 +47,7 @@ class _MessageThreadState extends State<MessageThread> {
     WidgetsBinding.instance.addPostFrameCallback((_) => scrollToBottom());
   }
 
+  //This causes a scroll to bottom animation
   void scrollToBottom() {
     _scrollController.animateTo(
       _scrollController.position.maxScrollExtent,

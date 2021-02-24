@@ -90,7 +90,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           FutureBuilder<User>(
               future: currentUser,
               builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-                if (snapshot.hasData) {
+                if (snapshot.hasData && snapshot.data.isAdmin) {
                   return ListTile(
                     title: Center(
                       child: Text(

@@ -38,7 +38,8 @@ class _ConversationSettingsDrawerState
         future: _getConversationData(),
         builder: (BuildContext context, AsyncSnapshot<Conversation> snapshot) {
           if (snapshot.hasData) {
-            anonymousIsSwitched = !snapshot.data.studentIdentityRevealed;
+            anonymousIsSwitched =
+                !snapshot.data.studentIdentityRevealed ?? true;
             return Drawer(
               child: ListView(
                 padding: EdgeInsets.zero,
@@ -98,6 +99,7 @@ class _ConversationSettingsDrawerState
               ),
             );
           } else {
+            print("No data in conversation settings drawer");
             return Drawer(
               child: Flexible(
                 child: Center(

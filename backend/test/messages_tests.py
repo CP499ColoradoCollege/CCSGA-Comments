@@ -39,7 +39,6 @@ class TestMessagesRoutes(unittest.TestCase):
         
         # Make signed-in user nominally banned, to check the unauthorized check
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.callproc("add_ban", (SIGNED_IN_USERNAME, FAKE_ADMIN_USERNAME))
         self.cur.nextset()
         self.conn.commit()
@@ -68,7 +67,6 @@ class TestMessagesRoutes(unittest.TestCase):
         labels = ["Outreach", "Internal Affairs"]
         req = requests.post(f"{BASE_API_URL}/conversations/create", verify=False, json={"revealIdentity": False, "messageBody": "Unauthenticated message", "labels": labels})
         self.assertEqual(401, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT COUNT(*) FROM Conversations;")
         num_convs = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -77,7 +75,6 @@ class TestMessagesRoutes(unittest.TestCase):
         # Make unauthorized request to create conversation (i.e., signed in but as a banned user)
         req = requests.post(f"{BASE_API_URL}/conversations/create", verify=False, headers=POST_HEADERS, json={"revealIdentity": False, "messageBody": "Unauthorized message", "labels": labels})
         self.assertEqual(403, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT COUNT(*) FROM Conversations;")
         num_convs = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -101,7 +98,6 @@ class TestMessagesRoutes(unittest.TestCase):
         self.assertEqual(201, req.status_code)
         
         # Check that conversation was added
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT COUNT(*) FROM Conversations;")
         num_convs = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -171,7 +167,7 @@ class TestMessagesRoutes(unittest.TestCase):
         
         self.assertEqual(201, non_anon_req.status_code)
         # Check that non-anonymous initiator conversation setting was added correctly
-        self.conn.close() # for some reason the test fails without this line
+        self.conn.close() # For some reason the test fails if the cursor isn't closed here
         self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isArchived, identityRevealed, isInitiator, isAccessible FROM ConversationSettings WHERE username = ? AND conversationId = ?;", (SIGNED_IN_USERNAME, second_new_conv_id))
         non_anon_query_result = self.cur.fetchall()
@@ -181,14 +177,6 @@ class TestMessagesRoutes(unittest.TestCase):
 
 
     def tearDown(self):
-
-        # Make sure we have a connection and cursor
-        try:
-            self.conn.close()
-        except e:
-            print("Caught in teardown: " + str(e))
-            pass
-        self.conn, self.cur = get_conn_and_cursor()
 
         # Delete any messages, conversations, etc. created
         for message_id in self.message_ids_for_cleanup:
@@ -207,7 +195,7 @@ class TestMessagesRoutes(unittest.TestCase):
         self.cur.execute("DELETE FROM Users WHERE username = ?;", (FAKE_ADMIN_USERNAME,))
         self.cur.execute("SET foreign_key_checks = 1;")
         
-        # Commit, clear lists of IDs to delete, and close connections
+        # Commit, clear lists of IDs to delete, and close connection
         self.conn.commit()
         self.message_ids_for_cleanup.clear()
         self.conv_ids_for_cleanup.clear()

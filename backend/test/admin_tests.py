@@ -32,7 +32,6 @@ class TestAdminRoutes(unittest.TestCase):
     def test_override_anonymity(self):
         
         # Create new conversation
-        self.conn, self.cur = get_conn_and_cursor()
         data={"revealIdentity":False,"messageBody":"Initial message in test conversation","labels":[]}
         new_conv_req = requests.post(f"{BASE_API_URL}/conversations/create", verify=False, json=data, headers=POST_HEADERS)
         self.assertEqual(201, new_conv_req.status_code)
@@ -82,7 +81,6 @@ class TestAdminRoutes(unittest.TestCase):
         
         # Ensure signed-in user is not currently an admin, to check the unauthorized check
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -95,7 +93,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make request to add admin but with NO authentication
         req = requests.post(f"{BASE_API_URL}/admins/create", verify=False, json={"newAdmin": test_username})
         self.assertEqual(401, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
         is_admin = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -104,7 +101,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make unauthorized request to add admin (i.e., signed in but not as an admin)
         req = requests.post(f"{BASE_API_URL}/admins/create", verify=False, json={"newAdmin": test_username}, headers=POST_HEADERS)
         self.assertEqual(403, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
         is_admin = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -117,7 +113,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make authorized request to add admin
         req = requests.post(f"{BASE_API_URL}/admins/create", verify=False, json={"newAdmin": test_username}, headers=POST_HEADERS)
         self.assertEqual(201, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
         is_admin = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -126,7 +121,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make request to add admin again; make sure their already-admin status is indicated in the response status code
         req = requests.post(f"{BASE_API_URL}/admins/create", verify=False, json={"newAdmin": test_username}, headers=POST_HEADERS)
         self.assertEqual(200, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
         is_admin = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -136,7 +130,6 @@ class TestAdminRoutes(unittest.TestCase):
         
         # Ensure signed-in user is not currently an admin, to check the unauthorized check
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -149,7 +142,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make request to remove admin but with NO authentication
         req = requests.delete(f"{BASE_API_URL}/admins/{test_username}", verify=False)
         self.assertEqual(401, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
         is_admin = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -158,7 +150,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make unauthorized request to remove admin (i.e., signed in but not as an admin)
         req = requests.delete(f"{BASE_API_URL}/admins/{test_username}", verify=False, headers=DELETE_HEADERS)
         self.assertEqual(403, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
         is_admin = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -171,7 +162,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make authorized request to remove admin
         req = requests.delete(f"{BASE_API_URL}/admins/{test_username}", verify=False, headers=DELETE_HEADERS)
         self.assertEqual(200, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
         is_admin = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -180,7 +170,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make request to remove admin again; make sure their already-non-admin status is indicated in the response status code
         req = requests.delete(f"{BASE_API_URL}/admins/{test_username}", verify=False, headers=DELETE_HEADERS)
         self.assertEqual(404, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isAdmin FROM Users WHERE username = ?;", (test_username,))
         is_admin = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -190,7 +179,6 @@ class TestAdminRoutes(unittest.TestCase):
         
         # Ensure signed-in user is not currently an admin, to check the unauthorized check
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -203,7 +191,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make request to add CCSGA but with NO authentication
         req = requests.post(f"{BASE_API_URL}/ccsga_reps/create", verify=False, json={"newCCSGA": test_username})
         self.assertEqual(401, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
         is_ccsga = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -212,7 +199,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make unauthorized request to add CCSGA (i.e., signed in but not as an admin)
         req = requests.post(f"{BASE_API_URL}/ccsga_reps/create", verify=False, json={"newCCSGA": test_username}, headers=POST_HEADERS)
         self.assertEqual(403, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
         is_ccsga = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -225,7 +211,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make authorized request to add CCSGA
         req = requests.post(f"{BASE_API_URL}/ccsga_reps/create", verify=False, json={"newCCSGA": test_username}, headers=POST_HEADERS)
         self.assertEqual(201, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
         is_ccsga = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -234,7 +219,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make request to add CCSGA again; make sure their already-CCSGA status is indicated in the response status code
         req = requests.post(f"{BASE_API_URL}/ccsga_reps/create", verify=False, json={"newCCSGA": test_username}, headers=POST_HEADERS)
         self.assertEqual(200, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
         is_ccsga = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -244,7 +228,6 @@ class TestAdminRoutes(unittest.TestCase):
         
         # Ensure signed-in user is not currently an admin, to check the unauthorized check
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -257,7 +240,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make request to remove CCSGA but with NO authentication
         req = requests.delete(f"{BASE_API_URL}/ccsga_reps/{test_username}", verify=False)
         self.assertEqual(401, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
         is_ccsga = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -266,7 +248,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make unauthorized request to remove CCSGA (i.e., signed in but not as an admin)
         req = requests.delete(f"{BASE_API_URL}/ccsga_reps/{test_username}", verify=False, headers=DELETE_HEADERS)
         self.assertEqual(403, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
         is_ccsga = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -279,7 +260,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make authorized request to remove CCSGA
         req = requests.delete(f"{BASE_API_URL}/ccsga_reps/{test_username}", verify=False, headers=DELETE_HEADERS)
         self.assertEqual(200, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
         is_ccsga = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -288,7 +268,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make request to remove CCSGA again; make sure their already-non-CCSGA status is indicated in the response status code
         req = requests.delete(f"{BASE_API_URL}/ccsga_reps/{test_username}", verify=False, headers=DELETE_HEADERS)
         self.assertEqual(404, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isCCSGA FROM Users WHERE username = ?;", (test_username,))
         is_ccsga = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -298,7 +277,6 @@ class TestAdminRoutes(unittest.TestCase):
         
         # Ensure signed-in user is not currently an admin, to check the unauthorized check
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -311,7 +289,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make request to add ban but with NO authentication
         req = requests.post(f"{BASE_API_URL}/banned_users/create", verify=False, json={"userToBan": test_username})
         self.assertEqual(401, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
         is_banned = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -320,7 +297,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make unauthorized request to add ban (i.e., signed in but not as an admin)
         req = requests.post(f"{BASE_API_URL}/banned_users/create", verify=False, json={"userToBan": test_username}, headers=POST_HEADERS)
         self.assertEqual(403, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
         is_banned = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -333,7 +309,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make authorized request to add ban
         req = requests.post(f"{BASE_API_URL}/banned_users/create", verify=False, json={"userToBan": test_username}, headers=POST_HEADERS)
         self.assertEqual(201, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
         is_banned = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -342,7 +317,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make request to add ban again; make sure their already-banned status is indicated in the response status code
         req = requests.post(f"{BASE_API_URL}/banned_users/create", verify=False, json={"userToBan": test_username}, headers=POST_HEADERS)
         self.assertEqual(200, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
         is_banned = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -352,7 +326,6 @@ class TestAdminRoutes(unittest.TestCase):
         
         # Ensure signed-in user is not currently an admin, to check the unauthorized check
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -365,7 +338,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make request to remove ban but with NO authentication
         req = requests.delete(f"{BASE_API_URL}/banned_users/{test_username}", verify=False)
         self.assertEqual(401, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
         is_banned = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -374,7 +346,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make unauthorized request to remove ban (i.e., signed in but not as an admin)
         req = requests.delete(f"{BASE_API_URL}/banned_users/{test_username}", verify=False, headers=DELETE_HEADERS)
         self.assertEqual(403, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
         is_banned = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -387,7 +358,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make authorized request to remove ban
         req = requests.delete(f"{BASE_API_URL}/banned_users/{test_username}", verify=False, headers=DELETE_HEADERS)
         self.assertEqual(200, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
         is_banned = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -396,7 +366,6 @@ class TestAdminRoutes(unittest.TestCase):
         # Make request to remove ban again; make sure their already-unbanned status is indicated in the response status code
         req = requests.delete(f"{BASE_API_URL}/banned_users/{test_username}", verify=False, headers=DELETE_HEADERS)
         self.assertEqual(404, req.status_code)
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("SELECT isBanned FROM Users WHERE username = ?;", (test_username,))
         is_banned = self.cur.fetchone()[0]
         self.cur.nextset()
@@ -406,7 +375,6 @@ class TestAdminRoutes(unittest.TestCase):
 
         # Ensure signed-in user is not currently an admin, to check unauthorized requests
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -423,7 +391,6 @@ class TestAdminRoutes(unittest.TestCase):
         self.assertNotIn("admins", req.json().keys())
 
         # Give superficial admin privilege (although not actual conversation access) to signed in user
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
         
@@ -451,7 +418,6 @@ class TestAdminRoutes(unittest.TestCase):
 
         # Ensure signed-in user is not currently an admin, to check unauthorized requests
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -468,7 +434,6 @@ class TestAdminRoutes(unittest.TestCase):
         self.assertNotIn("ccsgaReps", req.json().keys())
 
         # Give superficial admin privilege (although not actual conversation access) to signed in user
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
         
@@ -496,7 +461,6 @@ class TestAdminRoutes(unittest.TestCase):
 
         # Ensure signed-in user is not currently an admin, to check unauthorized requests
         confirm_user_in_db(SIGNED_IN_USERNAME, "User Who Signed In For Testing")
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
 
@@ -513,7 +477,6 @@ class TestAdminRoutes(unittest.TestCase):
         self.assertNotIn("bannedUsers", req.json().keys())
 
         # Give superficial admin privilege (although not actual conversation access) to signed in user
-        self.conn, self.cur = get_conn_and_cursor()
         self.cur.execute("UPDATE Users SET isAdmin = 1 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         self.conn.commit()
         
@@ -537,14 +500,6 @@ class TestAdminRoutes(unittest.TestCase):
 
     def tearDown(self):
 
-        # Make sure we have a connection and cursor
-        try:
-            self.conn.close()
-        except e:
-            print("Caught in teardown: " + str(e))
-            pass
-        self.conn, self.cur = get_conn_and_cursor()
-
         # Delete any messages, conversations, etc. created
         for message_id in self.message_ids_for_cleanup:
             self.cur.execute("DELETE FROM MessageSettings WHERE messageId = ?;", (message_id,))
@@ -557,7 +512,7 @@ class TestAdminRoutes(unittest.TestCase):
         # Reset the permissions of the signed-in user to normal student
         self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
         
-        # Commit, clear lists of IDs to delete, and close connections
+        # Commit, clear lists of IDs to delete, and close connection
         self.conn.commit()
         self.message_ids_for_cleanup.clear()
         self.conv_ids_for_cleanup.clear()

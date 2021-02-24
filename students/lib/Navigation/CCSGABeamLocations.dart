@@ -14,13 +14,22 @@ const List<String> _newMessagePath = ['new_message'];
 const List<String> _adminPath = ['admin_controls'];
 const List<String> _logoutPath = ['logout'];
 
+//To better understand how beamer works, I recommend checking out the basic example on the
+//Frameworks repository: https://github.com/slovnicki/beamer
+
+//The basic breakdown of a location:
+
+//Must extend beam location
 class HomeLocation extends BeamLocation {
   HomeLocation() {
+    //We want to assign to the path segments the path to display in URL
     pathSegments = _homePath;
   }
+  //These path blueprints are also required to update the URL
   @override
   List<String> get pathBlueprints => _homePath;
 
+  //Pages contains the pages that are at a specific location
   @override
   List<BeamPage> get pages => [
         BeamPage(

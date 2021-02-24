@@ -10,11 +10,14 @@ import '../DatabaseHandler.dart';
 class ConversationSettingsDrawer extends StatefulWidget {
   var isMobileLayout = false;
   Conversation conversation;
+  User currentUser;
 
   @required
-  ConversationSettingsDrawer(bool isMobileLayout, Conversation conversation) {
+  ConversationSettingsDrawer(
+      bool isMobileLayout, Conversation conversation, User currentUser) {
     this.isMobileLayout = isMobileLayout;
     this.conversation = conversation;
+    this.currentUser = currentUser;
   }
 
   _ConversationSettingsDrawerState createState() =>
@@ -24,101 +27,84 @@ class ConversationSettingsDrawer extends StatefulWidget {
 class _ConversationSettingsDrawerState
     extends State<ConversationSettingsDrawer> {
   bool anonymousIsSwitched = true;
-  Future<User> currentUser;
-
-  @override
-  void initState() {
-    currentUser = _getUserData();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        child: CircularProgressIndicator(),
-        height: 50,
-        width: 50,
-      ),
-    );
-    // return FutureBuilder<Conversation>(
-    //     future: _getConversationData(),
-    //     builder: (BuildContext context, AsyncSnapshot<Conversation> snapshot) {
-    //       if (snapshot.hasData) {
-    //         anonymousIsSwitched =
-    //             !snapshot.data.studentIdentityRevealed ?? true;
-    //         return Drawer(
-    //           child: Column(
-    //             children: [
-    //               Center(
-    //                 child: Padding(
-    //                   padding: EdgeInsets.all(10),
-    //                   child: Text(
-    //                     "Conversation Settings",
-    //                     style: TextStyle(
-    //                         fontSize: 16, fontWeight: FontWeight.bold),
-    //                   ),
-    //                 ),
-    //               ),
-    //               SwitchListTile(
-    //                 title: Text(
-    //                   'Anonymous',
-    //                 ),
-    //                 value: anonymousIsSwitched,
-    //                 inactiveThumbColor: anonymousIsSwitched
-    //                     ? Colors.white
-    //                     : Colors.grey.shade400,
-    //                 inactiveTrackColor: anonymousIsSwitched
-    //                     ? Colors.grey.withAlpha(0x80)
-    //                     : Colors.grey[300],
-    //                 onChanged: (bool value) {
-    //                   currentUser.then((value) {
-    //                     if (value.isCcsga != null) {
-    //                       if (value.isCcsga == false) {
-    //                         if (anonymousIsSwitched) {
-    //                           _showMyDialog();
-    //                         } else {
-    //                           ScaffoldMessenger.of(context).showSnackBar(
-    //                             SnackBar(
-    //                               content: Text(
-    //                                   "You cannot anonymize yourself after revealing your identity..."),
-    //                               duration: Duration(seconds: 3),
-    //                             ),
-    //                           );
-    //                         }
-    //                       }
-    //                     }
-    //                   });
-    //                 },
-    //                 // secondary: const Icon(Icons.account_circle_outlined),
-    //               ),
-    //               // Padding(
-    //               //   child: ElevatedButton(
-    //               //     onPressed: () {
-    //               //       // Respond to button press
-    //               //     },
-    //               //     child: Text('Mark conversation as unread'),
-    //               //   ),
-    //               //   padding: EdgeInsets.all(10),
-    //               // ),
-    //             ],
-    //           ),
-    //         );
-    //       } else {
-    //         print("No data in conversation settings drawer");
-    //         return Drawer(
-    //           child: Flexible(
-    //             child: Center(
-    //               child: SizedBox(
-    //                 width: 50,
-    //                 height: 50,
-    //                 child: CircularProgressIndicator(),
-    //               ),
-    //             ),
-    //           ),
-    //         );
-    //       }
-    //     });
+    return FutureBuilder<bool>(
+        future: _getConversationData(),
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          if (snapshot.hasData) {
+            anonymousIsSwitched = !widget.conversation.studentIdentityRevealed;
+            return Drawer(
+              child: Column(
+                children: [
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        "Conversation Settings",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  SwitchListTile(
+                    title: Text(
+                      'Anonymous',
+                    ),
+                    value: anonymousIsSwitched,
+                    inactiveThumbColor: anonymousIsSwitched
+                        ? Colors.white
+                        : Colors.grey.shade400,
+                    inactiveTrackColor: anonymousIsSwitched
+                        ? Colors.grey.withAlpha(0x80)
+                        : Colors.grey[300],
+                    onChanged: (bool value) {
+                      if (widget.currentUser.isCcsga != null) {
+                        if (widget.currentUser.isCcsga == false) {
+                          if (anonymousIsSwitched) {
+                            _showMyDialog();
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    "You cannot anonymize yourself after revealing your identity..."),
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          }
+                        }
+                      }
+                    },
+                    // secondary: const Icon(Icons.account_circle_outlined),
+                  ),
+                  // Padding(
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       // Respond to button press
+                  //     },
+                  //     child: Text('Mark conversation as unread'),
+                  //   ),
+                  //   padding: EdgeInsets.all(10),
+                  // ),
+                ],
+              ),
+            );
+          } else {
+            print("No data in conversation settings drawer");
+            return Drawer(
+              child: Flexible(
+                child: Center(
+                  child: SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ),
+            );
+          }
+        });
   }
 
   Future<void> _showMyDialog() async {
@@ -174,14 +160,15 @@ class _ConversationSettingsDrawerState
     }
   }
 
-  Future<Conversation> _getConversationData() async {
+  Future<bool> _getConversationData() async {
     Tuple2<ChewedResponse, Conversation> conversationResponse =
         await DatabaseHandler.instance.getConversation(widget.conversation.id);
 
     if (conversationResponse.item2 != null) {
-      return conversationResponse.item2;
+      widget.conversation = conversationResponse.item2;
+      return true;
     } else {
-      return null;
+      return false;
     }
   }
 }

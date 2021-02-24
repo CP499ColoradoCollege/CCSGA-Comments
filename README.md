@@ -22,7 +22,7 @@ The other backend components with which the Flask application interfaces are the
 
 #### API
 
-In the `documentation` folder of this repository, we have placed the document we have been using an an authority for consistent API development between frontend and backend. In the interest of encouraging future development, we have provided it as is, including iceboxed routes, notes, and general tasks for future development.
+In the `documentation` folder of this repository, we have placed [the document](/documentation/Messaging_Service_API.pdf) we have been using an an authority for consistent API development between frontend and backend. In the interest of encouraging future development, we have provided it as is, including iceboxed routes, notes, and general tasks for future development.
 
 #### Database Entity Relationships
 ![ER Diagram](documentation/CCSGA_Comments_ER_Diagram.png)

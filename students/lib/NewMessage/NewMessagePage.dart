@@ -71,7 +71,7 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
                                 ),
                               SizedBox(height: 24),
                               CheckboxListTile(
-                                title: Text("Send my message anonymously"),
+                                title: Text("Share my identity with CCSGA"),
                                 contentPadding:
                                     EdgeInsets.symmetric(horizontal: 6),
                                 value: _isChecked,

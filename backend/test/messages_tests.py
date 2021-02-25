@@ -31,8 +31,8 @@ class TestMessagesRoutes(unittest.TestCase):
         self.conv_ids_for_cleanup = []
         self.message_ids_for_cleanup = []
         
-        # Create fake admin for changing roles
-        self.cur.execute("INSERT INTO Users (username, displayName, isBanned, isCCSGA, isAdmin) VALUES (?, ?, 0, 0, 1);", (FAKE_ADMIN_USERNAME, FAKE_ADMIN_DISPLAY_NAME))
+        # Create fake admin for changing roles (for safety because of the way it's removed at the end, don't let the fake admin send any messages)
+        self.cur.execute("INSERT IGNORE INTO Users (username, displayName, isBanned, isCCSGA, isAdmin) VALUES (?, ?, 0, 0, 1);", (FAKE_ADMIN_USERNAME, FAKE_ADMIN_DISPLAY_NAME))
         self.conn.commit()
     
     def test_create_conversation(self):
@@ -187,13 +187,13 @@ class TestMessagesRoutes(unittest.TestCase):
             self.cur.execute("DELETE FROM ConversationSettings WHERE conversationId = ?;", (conv_id,))
             self.cur.execute("DELETE FROM Conversations WHERE id = ?;", (conv_id,))
         
-        # Reset the permissions of the signed-in user to normal student
-        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0 WHERE username = ?;", (SIGNED_IN_USERNAME,))
+        # Reset the permissions and updated metadata (for the sake of fake admin removal) of the signed-in user to normal student
+        self.cur.execute("UPDATE Users SET isBanned = 0, isCCSGA = 0, isAdmin = 0, rolesLastUpdated = UTC_TIMESTAMP(), updatedBy = NULL WHERE username = ?;", (SIGNED_IN_USERNAME,))
         
-        # Delete the fake admin who was used for role assignment
-        self.cur.execute("SET foreign_key_checks = 0;")
+        # Delete the fake admin who was used for role assignment (these commands are only safe under the assumption that THE fake admin didn't send any messages)
+        self.cur.execute("DELETE FROM ConversationSettings WHERE username = ?;", (FAKE_ADMIN_USERNAME,))
+        self.cur.execute("DELETE FROM MessageSettings WHERE username = ?;", (FAKE_ADMIN_USERNAME,))
         self.cur.execute("DELETE FROM Users WHERE username = ?;", (FAKE_ADMIN_USERNAME,))
-        self.cur.execute("SET foreign_key_checks = 1;")
         
         # Commit, clear lists of IDs to delete, and close connection
         self.conn.commit()

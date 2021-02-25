@@ -47,7 +47,6 @@ def create_conversation():
 
         # Respond appropriately if the stored procedure determined that the requester was not authorized
         if conversation_id == -403:
-            conn.close()
             return make_response(jsonify({"message": "User is banned and therefore is not authorized to initiate new conversations."}), 403)
 
         # Call the stored procedure for creating a new Messages entry and corresponding MessageSettings entries
@@ -103,12 +102,10 @@ def create_message(conversation_id):
         
         # Respond appropriately if the stored procedure determined that the requester was not authorized
         if message_id == -403:
-            conn.close()
             return make_response(jsonify({"message": "User is either banned or not authorized to post to this conversation"}), 403)
         
         # Respond appropriately if the stored procedure determined that the specified conversation does not exist
         if message_id == -404:
-            conn.close()
             return make_response(jsonify({"message": "Conversation not found"}), 404)
 
         # Commit database changes and close connection
@@ -153,7 +150,6 @@ def get_conversations(conversation_id = None):
 
             # Respond appropriately if the stored procedure determined that the requester was not authorized
             if conv_ids_to_get == [-403]:
-                conn.close()
                 return make_response(jsonify({"message": "User is banned"}), 403)
         else:
             
@@ -176,12 +172,10 @@ def get_conversations(conversation_id = None):
 
             # Respond appropriately if the stored procedure determined that the requester was not authorized
             if messages_query_result == [(-403,)]:
-                conn.close()
                 return make_response(jsonify({"message": f"User is either banned or not authorized to view conversation #{curr_conv_id}"}), 403)
 
             # Respond appropriately if the stored procedure determined that a requested conversation does not exist
             if messages_query_result == [(-404,)]:
-                conn.close()
                 return make_response(jsonify({"message": f"Conversation #{curr_conv_id} not found"}), 404)
 
             # Handle the messages query; create a dictionary comprising the messages data
@@ -265,12 +259,10 @@ def update_conversation(conversation_id):
 
             # Respond appropriately if the stored procedure determined that the requester was not authorized
             if status_query_result == -403:
-                conn.close()
                 return make_response(jsonify({"message": "User is either banned or not authorized to set conversation status"}), 403)
 
             # Respond appropriately if the stored procedure determined that the specified conversation does not exist
             if status_query_result == -404:
-                conn.close()
                 return make_response(jsonify({"message": f"Conversation #{conversation_id} not found"}), 404)
 
             # Successful! Add the appropriate success message to the list of success messages
@@ -286,12 +278,10 @@ def update_conversation(conversation_id):
 
             # Respond appropriately if the stored procedure determined that the requester was not authorized
             if archived_query_result == -403:
-                conn.close()
                 return make_response(jsonify({"message": f"User is either banned or not involved in conversation #{conversation_id}"}), 403)
 
             # Respond appropriately if the stored procedure determined that the specified conversation does not exist
             if archived_query_result == -404:
-                conn.close()
                 return make_response(jsonify({"message": f"Conversation #{conversation_id} not found"}), 404)
             
             # Successful! Add the appropriate success message to the list of success messages
@@ -307,12 +297,10 @@ def update_conversation(conversation_id):
 
             # Respond appropriately if the stored procedure determined that the requester was not authorized
             if reveal_identity_query_result == -403:
-                conn.close()
                 return make_response(jsonify({"message": f"User is either banned or not involved in conversation #{conversation_id}"}), 403)
 
             # Respond appropriately if the stored procedure determined that the specified conversation does not exist
             if reveal_identity_query_result == -404:
-                conn.close()
                 return make_response(jsonify({"message": f"Conversation #{conversation_id} not found"}), 404)
             
             # Successful! Add the appropriate success message to the list of success messages

@@ -40,7 +40,6 @@ def add_admin():
 
         # Respond appropriately if the stored procedure determined that the requester was not authorized
         if proc_result == -403:
-            conn.close()
             return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
         
         # Commit database changes
@@ -94,7 +93,6 @@ def add_ccsga_rep():
 
         # Respond appropriately if the stored procedure determined that the requester was not authorized
         if proc_result == -403:
-            conn.close()
             return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
         
         # Commit database changes
@@ -148,7 +146,6 @@ def create_banned_user():
 
         # Respond appropriately if the stored procedure determined that the requester was not authorized
         if proc_result == -403:
-            conn.close()
             return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
         
         # Commit database changes
@@ -187,7 +184,6 @@ def get_admins():
 
         # Respond appropriately if the stored procedure determined that the requester was not authorized
         if proc_result == [(-403,)]:
-            conn.close()
             return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     except mariadb.Error as e:
         print(f"Error when getting admins: {e}")
@@ -225,7 +221,6 @@ def get_ccsga_reps():
 
         # Respond appropriately if the stored procedure determined that the requester was not authorized
         if proc_result == [(-403,)]:
-            conn.close()
             return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     except mariadb.Error as e:
         print(f"Error when getting reps: {e}")
@@ -263,7 +258,6 @@ def get_banned_users():
 
         # Respond appropriately if the stored procedure determined that the requester was not authorized
         if proc_result == [(-403,)]:
-            conn.close()
             return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
     except mariadb.Error as e:
         print(f"Error when getting banned users: {e}")
@@ -302,17 +296,14 @@ def remove_admin(admin_to_remove):
 
         # Respond appropriately if the stored procedure determined that the requester was not authorized
         if proc_result == -403:
-            conn.close()
             return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
         
         # Respond appropriately if the stored procedure determined that the specified user was the site's only admin (don't want to allow the site to be without admins)
         if proc_result == -400:
-            conn.close()
             return make_response(jsonify({"message": f"{admin_to_remove} is currently the only admin. Please add another before removing this one."}), 400)
         
         # Respond appropriately if the stored procedure determined that the specified user was already not an admin
         if proc_result == -404:
-            conn.close()
             return make_response(jsonify({"message": f"'{admin_to_remove}' is already not an admin."}), 404)
         
         # Commit database changes
@@ -348,12 +339,10 @@ def remove_ccsga_rep(rep_to_remove):
 
         # Respond appropriately if the stored procedure determined that the requester was not authorized
         if proc_result == -403:
-            conn.close()
             return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
         
         # Respond appropriately if the stored procedure determined that the specified user was already not a rep
         if proc_result == -404:
-            conn.close()
             return make_response(jsonify({"message": f"'{rep_to_remove}' is already not a CCSGA rep."}), 404)
         
         # Commit database changes
@@ -390,12 +379,10 @@ def unban_user(user_to_unban):
 
         # Respond appropriately if the stored procedure determined that the requester was not authorized
         if proc_result == -403:
-            conn.close()
             return make_response(jsonify({"message": "User is not an admin, so this request is not allowed."}), 403)
         
         # Respond appropriately if the stored procedure determined that the specified user was already unbanned
         if proc_result == -404:
-            conn.close()
             return make_response(jsonify({"message": f"'{user_to_unban}' is already not banned."}), 404)
 
         # Commit database changes

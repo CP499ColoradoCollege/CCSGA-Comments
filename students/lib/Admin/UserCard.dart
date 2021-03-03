@@ -74,10 +74,12 @@ class _UserCardState extends State<UserCard> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Remove User"),
-          content: Text("Are you sure you would you like to remove the" +
-              (user.isAdmin ? " admin: " : " representative: ") +
-              user.username +
-              "?"),
+          content: Text("Are you sure you would you like to " + 
+            (widget.userType == UserType.Student ? "unban the user: " : (
+              "remove the" + (widget.userType == UserType.Admin ? " admin: " : " representative: ")
+            )) +
+            user.username +
+            "?"),
           actions: [
             TextButton(
               child: Text("Cancel"),

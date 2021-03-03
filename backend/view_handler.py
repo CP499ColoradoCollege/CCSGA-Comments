@@ -7,7 +7,7 @@ from backend.route_wrappers import login_required_with_db_confirm, student_or_ad
 def static_proxy(path):
     '''This function/route is required to load all the static files (besides index.html) from the frontend build. Found on an online help forum.'''
 
-    resp = make_response(send_from_directory('../students/build/web', path))
+    resp = make_response(send_from_directory('../frontend/build/web', path))
     if ('assets' not in path and 'favicon' not in path): # Don't prevent our images or favicon from caching, but prevent other files (namely JS files) from caching
         resp.headers.set('Cache-Control', 'no-store')
     return resp

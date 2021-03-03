@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cas import CAS
 
 # Instantiate the Flask app
-app = Flask(__name__, template_folder="../students/build/web")
+app = Flask(__name__, template_folder="../frontend/build/web")
 
 # Configure the app to use specified values for CAS, a secret key, database credentials, etc.
 app.config.from_pyfile('config.py')

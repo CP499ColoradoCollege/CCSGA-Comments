@@ -13,8 +13,7 @@ mysqldump -u insert_backup_user_username -pinsert_password -x --databases insert
 # Delete backups that are at least a week old
 for filename in backups/*.sql; do
     filedate=${filename:8:-4}
-    minkeepdate=$(date -v -6d +'%Y%m%d') # works on Mac, not that Linux machine
-    # minkeepdate=$(date -d "-6 day" +'%Y%m%d') # Linux version
+    minkeepdate=$(date -d "-6 day" +'%Y%m%d')
     if [[ $filedate < $minkeepdate ]]; then 
         rm $filename
     fi

@@ -7,8 +7,11 @@
 cd $HOME
 mkdir -p backups
 
-# Create backup
-mysqldump -u insert_backup_user_username -pinsert_password -x --databases insert_database_name > backups/`date +'%Y%m%d'`.sql || return 1
+# Generate backup; exit with error if mysqldump exited with error
+mysqldump -u insert_backup_user_username -pinsert_password -x --databases insert_database_name > /dev/null || return 1
+
+# Now that we know mysqldump works and we won't overwrite a good backup with a blank file, save the backup to a file
+mysqldump -u insert_backup_user_username -pinsert_password -x --databases insert_database_name > backups/`date +'%Y%m%d'`.sql
 
 # Delete backups that are at least a week old
 for filename in backups/*.sql; do

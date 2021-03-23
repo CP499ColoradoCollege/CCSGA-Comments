@@ -44,7 +44,7 @@ export FLASK_APP=backend
 
 For simplicity, the following steps assume: 
 1. You have a copy of the codebase, named `ccsga_comments`, located in your home folder on the server.
-2. It includes an already-produced build of the Flutter project at `ccsga_comments/frontend/build/web`.
+2. It includes an already-produced build of the Flutter project at `ccsga_comments/frontend/build/web` as specified in "Product Compilation and Installation."
 3. It also includes a `venv` folder containing a virtual environment in which you have already installed the backend dependencies as specified in "Product Compilation and Installation." 
 
 Feel free to adapt these instructions, for example, to use `scp` and a different copy of the codebase (that still fulfills assumptions 2 and 3) instead.
@@ -103,7 +103,7 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
       1. `sudo systemctl daemon-reload` since you just modified the ccsga-comments unit file
       2. `sudo systemctl start ccsga-comments` to start the ccsga-comments Gunicorn service
       3. `sudo systemctl enable ccsga-comments` so it starts automatically upon boot
-      4. `sudo systemctl status ccsga-comments` to make sure it’s working. If not, `sudo journalctl --since “5 minutes ago”` (substitute whatever timeframe) is helpful
+      4. `sudo systemctl status ccsga-comments` to make sure it's working. If not, `sudo journalctl --since “5 minutes ago”` (substitute whatever timeframe) is helpful
 6. Set up Nginx
    1. Execute the following commands to create copies of the key and certificate:
    
@@ -117,7 +117,7 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
    ```
 
    2. Edit the file at `/etc/nginx/nginx.conf` to use SSL and to proxy requests to the Gunicorn service, by following these instructions:
-      1. Comment out (using #’s) the entire server block that begins with `listen 80 default_server;`
+      1. Comment out (using #'s) the entire server block that begins with `listen 80 default_server;`
       2. Uncomment the server block preceded by the comment, “Settings for a TLS enabled server,” and change it to look like this (using a different port instead of 8443 if needed):
       
       ```
@@ -166,7 +166,7 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
       1. `sudo nginx -t` to check the syntax of that configuration file
       2. `sudo systemctl start nginx`
       3. `sudo systemctl enable nginx` so it starts automatically upon boot
-      4. `sudo systemctl status nginx` to make sure it’s working
+      4. `sudo systemctl status nginx` to make sure it's working
 7. Once you've completed the setup steps under "Product Compilation and Installation," the website should be accessible at the server's IP address/domain name on whatever port you specified on the `listen` lines of the Nginx configuration file (albeit with a self-signed certificate, so you'll have to click through an SSL warning in your browser)!
 
 #### Product Compilation and Installation
@@ -187,36 +187,80 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
       1. Run this command every time `ccsga_comments/frontend/pubspec.yaml` changes for any reason.
    6. In ccsga_comments/frontend, run `flutter build web`
       1. Run this command every time the frontend is edited (i.e., every time files in `ccsga_comments/frontend/lib` are modified) 
-2. Set up the python virtual environment for the backend (likely only necessary for development, although we have not confirmed this):
+2. Set up the python virtual environment for the backend:
    1. Install virtualenv: `pip3.9 install virtualenv`
    2. With ccsga_comments/backend as the present working directory, run `virtualenv venv` to create a subdirectory, called “venv,” to house the virtual environment.
    3. In ccsga_comments/backend, run `source venv/bin/activate` to enter the virtual environment. 
       1. Note that this command will need to be run every time the developer logs in, so the developer may wish to add the command (substituting the absolute path for `venv/bin/activate`) to their `~/.bash_profile` file.
       2. The indication of having entered the virtual environment successfully is having `(venv)` on the left of the command-line prompt.
-3. Install python dependencies (only if you performed the above step): from the `backend` directory, run `pip3.9 install -r requirements.txt`
-4. Database setup (both development and production):
+3. Install python dependencies: from the `backend` directory, run `pip3.9 install -r requirements.txt`
+4. Database setup:
    1. Connect to mariadb using `mariadb -u root -p`
       1. When prompted, enter the root password created when setting up mariadb.
    2. Execute the following commands (substituting in values of your own choice where specified): 
 
    ```sql
    CREATE DATABASE choose_a_database_name;
-   CREATE USER ‘choose_a_username’@’localhost’ IDENTIFIED BY 'choose_a_password';
-   GRANT ALL PRIVILEGES ON database_name_here.* TO ‘username_here’@’localhost’;
+   CREATE USER 'choose_a_username'@'localhost' IDENTIFIED BY 'choose_a_password';
+   GRANT ALL PRIVILEGES ON database_name_here.* TO 'username_here'@'localhost';
    FLUSH PRIVILEGES;
    exit
    ```
 
    3. Check access with `mysql -u username_here -p database_name_here`
-5. Additional backend setup (both development and production):
+5. Additional backend setup:
    1. In the `backend` directory, create a copy of `config.py.blank` and name it `config.py`. Also create a copy of `.env_sample` and call it `.env`. Make sure not to track `config.py` or `.env` in version control (they should already be git-ignored, if you're working in a clone of the repository). In `.env`, enter the correct database credentials from the database setup step (“`localhost`” can stay), and follow the instructions therein for the testing values whenever you need to run the tests. In `config.py`, enter any random, sufficiently long (16 to 32 bytes) value for the secret key.
    2. Run `database_handler.py` as a python program. This creates the tables and stored procedures for the database.
-   3. Log into the database using `mysql -u username_here -p database_name_here` and insert the first admin user for the website (who can later add other admins through the frontend) using a normal `INSERT` command (use the admin’s own username, or `NULL`, as the value for the `updatedBy` foreign key). Important note: this is the only time a normal `INSERT` or `UPDATE` command is the correct way to modify a user’s roles, due to the complex ways various values in different tables change when a user’s roles change. If a change to a user’s roles must be made directly in the database after the database has started accruing conversations, use the appropriate stored procedure instead (see Developer Documentation).
+   3. Log into the database using `mysql -u username_here -p database_name_here` and insert the first admin user for the website (who can later add other admins through the frontend) using a normal `INSERT` command (use the admin's own username, or `NULL`, as the value for the `updatedBy` foreign key). Important note: this is the only time a normal `INSERT` or `UPDATE` command is the correct way to modify a user's roles, due to the complex ways various values in different tables change when a user's roles change. If a change to a user's roles must be made directly in the database after the database has started accruing conversations, use the appropriate stored procedure instead (see Developer Documentation).
  
    ```sql
-   INSERT INTO Users (username, displayName, isBanned, isCCSGA, isAdmin, rolesLastUpdated, updatedBy) VALUES (‘new_admin_username’, ‘New Admin Display Name’, 0, 0, 1, UTC_TIMESTAMP(), NULL);
+   INSERT INTO Users (username, displayName, isBanned, isCCSGA, isAdmin, rolesLastUpdated, updatedBy) VALUES ('new_admin_username', 'New Admin Display Name', 0, 0, 1, UTC_TIMESTAMP(), NULL);
    ```
 6. For development: if you want to run the Flask development server (according to the commands under "Component Commands and Configuration Info") and have not yet logged in again since editing `~/.bash_profile`, execute that file: `source ~/.bash_profile`
+
+#### Automatic Database Backup Setup
+
+1. Create a new user who will automatically run the recurring backup command. The steps in this section assume use of the username `cronuser` in this step. 
+   
+   ```bash
+   sudo useradd cronuser
+   sudo passwd cronuser # optional. If creating a password, store it somewhere secure.
+   ```
+
+2. Create a new database user with the specific permissions for creating backups (run `mysql -u root -p` to enter to MariaDB prompt):
+
+   ```sql
+   GRANT LOCK TABLES, SELECT, RELOAD on *.* to 'choose_a_username'@'localhost' identified by 'choose_a_password';
+   FLUSH PRIVILEGES;
+   ```
+
+3. Copy the `backup_database` file from the `backend` directory of this repo to `cronuser`'s home folder:
+   1. `sudo cp ~/ccsga_comments/backend/backup_database /home/cronuser`
+   2. Edit the file (the version in `/home/cronuser`) to contain the MariaDB username and password from the previous step and the database name of the database for the project.
+   3. Change the owner and group of that file so that `cronuser` can run it:
+
+      ```bash
+      sudo chown cronuser /home/cronuser/backup_database
+      sudo chgrp cronuser /home/cronuser/backup_database
+      ```
+
+4. Create a new crontab for `cronuser`, by running `sudo crontab -u cronuser -e` and pasting the following code (updating the value for maintainer_email):
+
+   ```bash
+   #!/bin/bash
+
+   SHELL=/bin/bash
+   maintainer_email=insert_maintainer_address_here@emaildomain.com
+
+   # The following code (0 * * * *) indicates that cron should run the command at the top of every hour
+   0 * * * * backup_output=$(source ./backup_database 2>&1) || echo -e "To: $maintainer_email\nSubject: CCSGA Comments Error: backup_database\n\n$backup_output" | /sbin/sendmail -t ; echo "$backup_output"
+   ```
+   
+5. Once the cron job should have run at least once, check if `cronuser` is unauthorized to use `cron` (by checking `/var/log/cron` for `PAM ERROR (Permission denied)` or `FAILED to authorize user with PAM (Permission denied)`). If it is not authorized, add `+:cronuser:cron crond :0 tty1 tty2 tty3 tty4 tty5 tty6` before the first rule of `/etc/security/access.conf` and then check again once the cron job should have run again.
+6. Other aspects that are good to test/check:
+   1. Database backup is complete and correct (on the development system, use the instructions in the Developer Documentation section to restore the database from a backup)
+   2. Emails are delivered successfully when errors occur (`mailq` is helpful for understanding why emails might not be delivered if the cron job is running)
+   3. See the Developer Documentation section for more information about how to determine the status of the cron job
 
 ## Developer Documentation
 
@@ -228,7 +272,7 @@ Once the system is set up and running successfully, use the following informatio
 
 The frontend and the middleware of the system use the Flutter framework and are written in Dart. The Dart files stored within the repository at `frontend/lib/` are transpiled into a JavaScript web build placed at `frontend/build/web`, which a Flask backend serves to the browser whenever the browser requests any routes not beginning with `/api`. Within the `lib` directory, each page in the user interface has its own sub-directory. `lib` also contains a `BasePage`, the parent of all other page classes, as well as `Models`, which holds blueprints for frequently used objects such as Conversations and Messages. There is also a `Navigation` directory within `lib`, which holds the logic for the side navigation and URL routing. Lastly, the `lib` directory also holds `main.dart`, which is the main class, and `DatabaseHandler.dart`, which constitutes our middleware. `DatabaseHandler` holds functions responsible for sending requests to the Database and digesting the response before sending it back to the caller in a suitable format. `ChewedResponse` is a class that `DatabaseHandler` uses to determine success and potential error description based on the status code that the API returns. When the frontend needs to make an API request, it formats any required data as JSON, sends a request through the Dart http library, and awaits a JSON response from the server. 
 
-The backend is written in Python and uses the Flask framework, connected to a MariaDB (MySQL) database. Nginx, acting as a reverse proxy running on port 8443 on the virtual server, fields all requests directly and forwards them to the Gunicorn service running strictly locally on port 8000 on the virtual server. Gunicorn runs a Flask application encompassed within the files located at `/opt/ccsga_comments/backend` on the server. Most of the files at this location (or at least in the `backend` folder within the repository) are Flask files. These include `__init__.py` (the main application entry point), `route_wrappers.py` (which provides useful wrapper functions for access-restricted routes), `database_handler.py` (which provides the interface for communicating with the database), `view_handler.py` (which enumerates routes related to the Flutter navigation and build), and other files of the form `*_handler.py` (which constitute the API). Other files in `backend` include `config.py` and `.env`, which store certain sensitive and non-sensitive configuraton values that should stay within the virtual machine (i.e., they should not be included in version control, which is why sample versions of both are provided as templates in the repository instead). Finally, `requirements.txt` stores the current dependencies for the flask backend, and the `test` directory holds all of the API tests, which can be run as individual python programs after the developer signs into the website and pastes the required values into `.env`, as described in `.env_sample`.
+The backend is written in Python and uses the Flask framework, connected to a MariaDB (MySQL) database. Nginx, acting as a reverse proxy running on port 8443 on the virtual server, fields all requests directly and forwards them to the Gunicorn service running strictly locally on port 8000 on the virtual server. Gunicorn runs a Flask application encompassed within the files located at `/opt/ccsga_comments/backend` on the server. Many of the files at this location (or at least in the `backend` folder within the repository) are Flask files. These include `__init__.py` (the main application entry point), `route_wrappers.py` (which provides useful wrapper functions for access-restricted routes), `database_handler.py` (which provides the interface for communicating with the database), `view_handler.py` (which enumerates routes related to the Flutter navigation and build), and other files of the form `*_handler.py` (which constitute the API). Other files in `backend` include `config.py` and `.env`, which store certain sensitive and non-sensitive configuraton values that should stay within the virtual machine (i.e., they should not be included in version control, which is why sample versions of both are provided as templates in the repository instead). Additionally, `requirements.txt` stores the current dependencies for the flask backend, and the `test` directory holds all of the API tests, which can be run as individual python programs after the developer signs into the website and pastes the required values into `.env`, as described in `.env_sample`. Finally, `backup_database` is a bash script that can be set to run automatically (e.g., using cron) to generate a week's worth of complete backups of the database structure and data.
 
 The other backend components with which the Flask application interfaces are the MariaDB database and the CAS server. The former is a service, also running on the virtual machine, to which the application connects through the python mariadb library, while the latter is a separate server with which the application communicates through the python Flask-CAS library. 
 
@@ -241,7 +285,7 @@ In the `documentation` folder of this repository, we have placed [the API docume
 
 The core objects within the messaging system are Users, Conversations, and Messages. The Users table stores information from CAS (username and display name), information about special roles (i.e., if a user is banned, CCSGA, or an admin), and metadata regarding the updating of the user's roles. The Conversations table itself stores only the CCSGA-set status of each conversation, and the Messages table itself stores the sender, body, and timestamp of each message. 
 
-The ConversationSettings and MessageSettings tables embody the many-to-many relationships between Users and Conversations and between Users and Messages, respectively. The ConversationSettings table contains some fields that represent actual settings of a specific User within the context of a specific conversation (i.e., whether or not the user has archived or revealed their identity within that conversation). In addition, the table also stores indicators of whether or not the user initated the conversation (used for determining access when a user is demoted from an admin or CCSGA role) and whether or not the user currently has access to the conversation. The latter is redundant currently, as a user's conversation access could be determined solely by their isInitiator flag or their isCCSGA/isAdmin status under the current setup. However, this method would become problematic if future functionality allowed students to copy other students when initiating conversations, since such other students are indifferentiable from ex-reps in terms of isInitiator and isCCSGA/isAdmin, but such other students should still have access to the conversation whereas ex-reps shouldn’t. Having an isAccessible field in ConversationSettings resolves this easily, so it is included in the table proactively. If future development moves in this direction, further thought should be given to this strategy; either isInitiator or isAccessible might need to change to something similar to becameInvolvedAsStudent to cover students who were copied on a conversation, were later promoted, and were even later demoted. 
+The ConversationSettings and MessageSettings tables embody the many-to-many relationships between Users and Conversations and between Users and Messages, respectively. The ConversationSettings table contains some fields that represent actual settings of a specific User within the context of a specific conversation (i.e., whether or not the user has archived or revealed their identity within that conversation). In addition, the table also stores indicators of whether or not the user initated the conversation (used for determining access when a user is demoted from an admin or CCSGA role) and whether or not the user currently has access to the conversation. The latter is redundant currently, as a user's conversation access could be determined solely by their isInitiator flag or their isCCSGA/isAdmin status under the current setup. However, this method would become problematic if future functionality allowed students to copy other students when initiating conversations, since such other students are indifferentiable from ex-reps in terms of isInitiator and isCCSGA/isAdmin, but such other students should still have access to the conversation whereas ex-reps shouldn't. Having an isAccessible field in ConversationSettings resolves this easily, so it is included in the table proactively. If future development moves in this direction, further thought should be given to this strategy; either isInitiator or isAccessible might need to change to something similar to becameInvolvedAsStudent to cover students who were copied on a conversation, were later promoted, and were even later demoted. 
 
 The MessageSettings table is the sole location for recording which messages which users have read. When communicating the read or unread state of an entire conversation, the program should indicate that an entire conversation is read, for a given user, if and only if all messages in that conversation are marked as read for that user.
 
@@ -361,6 +405,37 @@ CALL add_ban('new_ban_username', 'username_of_any_existing_admin');
 
 -- Remove a user's ban
 CALL remove_ban('ban_username_to_remove', 'username_of_any_existing_admin');
+```
+
+```bash
+# cron, which automatically runs a script to generate database backups
+
+# Update the automatically-run copy of backup_database after making changes to it in the repo
+sudo cp path/to/updated/app/root/directory/backend/backup_database /home/cronuser/
+
+# Edit the crontab that specifies how to automatically run backup_database and whom to notify about errors
+# Make sure to update the email address in this location whenever the software maintainer changes!
+sudo crontab -u cronuser -e
+
+# View a log of executed cron jobs
+sudo less /var/spool/mail/cronuser # press Shift+G to jump to the bottom of file (to see the most recent jobs)
+```
+
+```bash
+# Restoring the database from a backup
+# IMPORTANT: Do not run this command lightly on the production server! 
+# It will completely overwrite all of the data and structures in the database to resemble the backup exactly.
+
+# 1. Either switch to cronuser...
+sudo su cronuser
+cd ~/backups
+
+# ...or copy the backup file to a location where you have read access
+sudo cp /home/cronuser/backups/insert_backup_filename.sql ~
+
+# 2. Restore from the backup
+# When prompted, enter the password specified in your version of `backend/.env`
+mysql -u enter_database_username_here -p enter_database_name_here < path/to/backup/file.sql
 ```
 
 #### Common Errors and Fixes

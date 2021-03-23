@@ -220,7 +220,7 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
 
 #### Automatic Database Backup Setup
 
-1. Create a new user who will automatically run the recurring backup command. The steps in this section assume use of the username `cronuser` in this step. 
+1. Create a new user who will automatically run the recurring backup command. The steps in this section and below assume use of the username `cronuser` in this step. 
    
    ```bash
    sudo useradd cronuser
@@ -235,7 +235,7 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
    ```
 
 3. Copy the `backup_database` file from the `backend` directory of this repo to `cronuser`'s home folder:
-   1. `sudo cp ~/ccsga_comments/backend/backup_database /home/cronuser`
+   1. `sudo cp ~/ccsga_comments/backend/backup_database /home/cronuser/`
    2. Edit the file (the version in `/home/cronuser`) to contain the MariaDB username and password from the previous step and the database name of the database for the project.
    3. Change the owner and group of that file so that `cronuser` can run it:
 
@@ -244,7 +244,7 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
       sudo chgrp cronuser /home/cronuser/backup_database
       ```
 
-4. Create a new crontab for `cronuser`, by running `sudo crontab -u cronuser -e` and pasting the following code (updating the value for maintainer_email):
+4. Create a new crontab for `cronuser`, by running `sudo crontab -u cronuser -e` and pasting the following code (updating the value for maintainer_email). This code runs backup_database, notifies the maintainer if something goes wrong, and logs any output.
 
    ```bash
    #!/bin/bash
@@ -411,7 +411,7 @@ CALL remove_ban('ban_username_to_remove', 'username_of_any_existing_admin');
 # cron, which automatically runs a script to generate database backups
 
 # Update the automatically-run copy of backup_database after making changes to it in the repo
-sudo cp path/to/updated/app/root/directory/backend/backup_database /home/cronuser/
+sudo cp ~/ccsga_comments/backend/backup_database /home/cronuserf
 
 # Edit the crontab that specifies how to automatically run backup_database and whom to notify about errors
 # Make sure to update the email address in this location whenever the software maintainer changes!

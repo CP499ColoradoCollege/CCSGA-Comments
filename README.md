@@ -411,7 +411,7 @@ CALL remove_ban('ban_username_to_remove', 'username_of_any_existing_admin');
 # cron, which automatically runs a script to generate database backups
 
 # Update the automatically-run copy of backup_database after making changes to it in the repo
-sudo cp ~/ccsga_comments/backend/backup_database /home/cronuserf
+sudo cp ~/ccsga_comments/backend/backup_database /home/cronuser
 
 # Edit the crontab that specifies how to automatically run backup_database and whom to notify about errors
 # Make sure to update the email address in this location whenever the software maintainer changes!
@@ -434,7 +434,7 @@ cd ~/backups
 sudo cp /home/cronuser/backups/insert_backup_filename.sql ~
 
 # 2. Restore from the backup
-# When prompted, enter the password specified in your version of `backend/.env`
+# Use the credentials (including password, when prompted) from your version of `backend/.env`
 mysql -u enter_database_username_here -p enter_database_name_here < path/to/backup/file.sql
 ```
 

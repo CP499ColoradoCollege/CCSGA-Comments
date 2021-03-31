@@ -152,7 +152,7 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
       1. `sudo systemctl daemon-reload` since you just modified the ccsga-comments unit file
       2. `sudo systemctl start ccsga-comments` to start the ccsga-comments Gunicorn service
       3. `sudo systemctl enable ccsga-comments` so it starts automatically upon boot
-      4. `sudo systemctl status ccsga-comments` to make sure it's working. If not, `sudo journalctl --since “5 minutes ago”` (substitute whatever timeframe) is helpful
+      4. `sudo systemctl status ccsga-comments` to make sure it's working. If not, `sudo journalctl --since "5 minutes ago"` (substitute whatever timeframe) is helpful
 6. Set up Nginx
    1. Execute the following commands to create copies of the key and certificate:
    

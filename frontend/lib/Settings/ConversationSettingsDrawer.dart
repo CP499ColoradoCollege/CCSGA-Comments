@@ -91,6 +91,7 @@ class _ConversationSettingsDrawerState
                 ],
               );
             } else {
+              print("Object has no data");
               return Flexible(
                 child: Center(
                   child: SizedBox(

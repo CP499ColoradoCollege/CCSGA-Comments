@@ -40,6 +40,55 @@ export FLASK_APP=backend
 
 7. Set up mariadb, including enabling it as a systemd service and running the mysql_secure_installation program. DigitalOcean provides [an excellent list of instructions](https://www.digitalocean.com/community/tutorials/how-to-install-mariadb-on-centos-8) for doing so; mariadb-server should be installed already after Step #1 above. Remember the root password for later use.
 
+#### Product Compilation and Installation
+
+1. Frontend setup (only necessary for development, or wherever you will actually be producing the Flutter build from the Dart code):
+   1. Create a symlink from `/var/lib/snapd/snap` to `/snap`
+   2. Add `/var/lib/snapd/snap/bin` to the PATH environment variable (most likely by editing and then re-running `source ~/.bashrc`)
+   3. Install flutter. The flutter website has [comprehensive directions](https://flutter.dev/docs/get-started/install/linux) for doing so, although not all of the output from `flutter doctor` needs to be fixed, since development for this project does not include running an application on an iOS or Android simulator.
+   4. Switch to the flutter beta channel and enable the web feature: 
+   
+   ```bash
+   flutter channel beta
+   flutter upgrade
+   flutter config --enable-web
+   ```
+
+   5. With the ccsga_comments/frontend directory as the present working directory, run `flutter pub get`
+      1. Run this command every time `ccsga_comments/frontend/pubspec.yaml` changes for any reason.
+   6. In ccsga_comments/frontend, run `flutter build web`
+      1. Run this command every time the frontend is edited (i.e., every time files in `ccsga_comments/frontend/lib` are modified) 
+2. Set up the python virtual environment for the backend:
+   1. Install virtualenv: `pip3.9 install virtualenv`
+   2. With ccsga_comments/backend as the present working directory, run `virtualenv venv` to create a subdirectory, called “venv,” to house the virtual environment.
+   3. In ccsga_comments/backend, run `source venv/bin/activate` to enter the virtual environment. 
+      1. Note that this command will need to be run every time the developer logs in, so the developer may wish to add the command (substituting the absolute path for `venv/bin/activate`) to their `~/.bash_profile` file if they have not done so already.
+      2. The indication of having entered the virtual environment successfully is having `(venv)` on the left of the command-line prompt.
+3. Install python dependencies: from the `backend` directory, run `pip3.9 install -r requirements.txt`
+4. Database setup:
+   1. Connect to mariadb using `mariadb -u root -p`
+      1. When prompted, enter the root password created when setting up mariadb.
+   2. Execute the following commands (substituting in values of your own choice where specified): 
+
+   ```sql
+   CREATE DATABASE choose_a_database_name;
+   CREATE USER 'choose_a_username'@'localhost' IDENTIFIED BY 'choose_a_password';
+   GRANT ALL PRIVILEGES ON database_name_here.* TO 'username_here'@'localhost';
+   FLUSH PRIVILEGES;
+   exit
+   ```
+
+   3. Check access with `mysql -u username_here -p database_name_here`
+5. Additional backend setup:
+   1. In the `backend` directory, create a copy of `config.py.blank` and name it `config.py`. Also create a copy of `.env_sample` and call it `.env`. Make sure not to track `config.py` or `.env` in version control (they should already be git-ignored, if you're working in a clone of the repository). In `.env`, enter the correct database credentials from the database setup step (“`localhost`” can stay), and follow the instructions therein for the testing values whenever you need to run the tests. In `config.py`, enter any random, sufficiently long (16 to 32 bytes) value for the secret key.
+   2. Run `database_handler.py` as a python program. This creates the tables and stored procedures for the database.
+   3. Log into the database using `mysql -u username_here -p database_name_here` and insert the first admin user for the website (who can later add other admins through the frontend) using a normal `INSERT` command (use the admin's own username, or `NULL`, as the value for the `updatedBy` foreign key). Important note: this is the only time a normal `INSERT` or `UPDATE` command is the correct way to modify a user's roles, due to the complex ways various values in different tables change when a user's roles change. If a change to a user's roles must be made directly in the database after the database has started accruing conversations, use the appropriate stored procedure instead (see Developer Documentation).
+ 
+   ```sql
+   INSERT INTO Users (username, displayName, isBanned, isCCSGA, isAdmin, rolesLastUpdated, updatedBy) VALUES ('new_admin_username', 'New Admin Display Name', 0, 0, 1, UTC_TIMESTAMP(), NULL);
+   ```
+6. For development: if you want to run the Flask development server (according to the commands under "Component Commands and Configuration Info") and have not yet logged in again since editing `~/.bash_profile`, execute that file: `source ~/.bash_profile`
+
 #### Extra Production Setup: The Nginx/Gunicorn Stack
 
 For simplicity, the following steps assume: 
@@ -63,8 +112,8 @@ Feel free to adapt these instructions, for example, to use `scp` and a different
    sudo mkdir /opt/ccsga_comments/backend
    ```
 
-3. Move or copy `key.pem` and `cert.pem` (created in the previous section) to `/opt/ccsga_comments/backend`
-4. Run the following commands now, as well as every time you want to update the app with new changes (after producing the flutter build). If the codebase from which you'll be copying doesn't contain a `config.py` file and a `.env` file, follow the instructions below (under "Additional backend setup") to create copies for `/opt/ccsga_comments/backend`.
+3. Move or copy `key.pem` and `cert.pem` (created in the Development/Production Environment Setup section) to `/opt/ccsga_comments/backend`
+4. Run the following commands now, as well as every time you want to update the app with new changes (after producing the flutter build). If the codebase from which you'll be copying doesn't contain a `config.py` file and a `.env` file, follow the relevant instructions in the "Additional backend setup" step of the Product Compilation and Installation section to create copies for `/opt/ccsga_comments/backend`.
 
 ```bash
 sudo cp -r ~/ccsga_comments/frontend/build/web /opt/ccsga_comments/frontend/build
@@ -167,56 +216,7 @@ sudo cp -r ~/ccsga_comments/backend/*.py ~/ccsga_comments/backend/.env ~/ccsga_c
       2. `sudo systemctl start nginx`
       3. `sudo systemctl enable nginx` so it starts automatically upon boot
       4. `sudo systemctl status nginx` to make sure it's working
-7. Once you've completed the setup steps under "Product Compilation and Installation," the website should be accessible at the server's IP address/domain name on whatever port you specified on the `listen` lines of the Nginx configuration file (albeit with a self-signed certificate, so you'll have to click through an SSL warning in your browser)!
-
-#### Product Compilation and Installation
-
-1. Frontend setup (only necessary for development, or wherever you will actually be producing the Flutter build from the Dart code):
-   1. Create a symlink from `/var/lib/snapd/snap` to `/snap`
-   2. Add `/var/lib/snapd/snap/bin` to the PATH environment variable (most likely by editing and then re-running `source ~/.bashrc`)
-   3. Install flutter. The flutter website has [comprehensive directions](https://flutter.dev/docs/get-started/install/linux) for doing so, although not all of the output from `flutter doctor` needs to be fixed, since development for this project does not include running an application on an iOS or Android simulator.
-   4. Switch to the flutter beta channel and enable the web feature: 
-   
-   ```bash
-   flutter channel beta
-   flutter upgrade
-   flutter config --enable-web
-   ```
-
-   5. With the ccsga_comments/frontend directory as the present working directory, run `flutter pub get`
-      1. Run this command every time `ccsga_comments/frontend/pubspec.yaml` changes for any reason.
-   6. In ccsga_comments/frontend, run `flutter build web`
-      1. Run this command every time the frontend is edited (i.e., every time files in `ccsga_comments/frontend/lib` are modified) 
-2. Set up the python virtual environment for the backend:
-   1. Install virtualenv: `pip3.9 install virtualenv`
-   2. With ccsga_comments/backend as the present working directory, run `virtualenv venv` to create a subdirectory, called “venv,” to house the virtual environment.
-   3. In ccsga_comments/backend, run `source venv/bin/activate` to enter the virtual environment. 
-      1. Note that this command will need to be run every time the developer logs in, so the developer may wish to add the command (substituting the absolute path for `venv/bin/activate`) to their `~/.bash_profile` file.
-      2. The indication of having entered the virtual environment successfully is having `(venv)` on the left of the command-line prompt.
-3. Install python dependencies: from the `backend` directory, run `pip3.9 install -r requirements.txt`
-4. Database setup:
-   1. Connect to mariadb using `mariadb -u root -p`
-      1. When prompted, enter the root password created when setting up mariadb.
-   2. Execute the following commands (substituting in values of your own choice where specified): 
-
-   ```sql
-   CREATE DATABASE choose_a_database_name;
-   CREATE USER 'choose_a_username'@'localhost' IDENTIFIED BY 'choose_a_password';
-   GRANT ALL PRIVILEGES ON database_name_here.* TO 'username_here'@'localhost';
-   FLUSH PRIVILEGES;
-   exit
-   ```
-
-   3. Check access with `mysql -u username_here -p database_name_here`
-5. Additional backend setup:
-   1. In the `backend` directory, create a copy of `config.py.blank` and name it `config.py`. Also create a copy of `.env_sample` and call it `.env`. Make sure not to track `config.py` or `.env` in version control (they should already be git-ignored, if you're working in a clone of the repository). In `.env`, enter the correct database credentials from the database setup step (“`localhost`” can stay), and follow the instructions therein for the testing values whenever you need to run the tests. In `config.py`, enter any random, sufficiently long (16 to 32 bytes) value for the secret key.
-   2. Run `database_handler.py` as a python program. This creates the tables and stored procedures for the database.
-   3. Log into the database using `mysql -u username_here -p database_name_here` and insert the first admin user for the website (who can later add other admins through the frontend) using a normal `INSERT` command (use the admin's own username, or `NULL`, as the value for the `updatedBy` foreign key). Important note: this is the only time a normal `INSERT` or `UPDATE` command is the correct way to modify a user's roles, due to the complex ways various values in different tables change when a user's roles change. If a change to a user's roles must be made directly in the database after the database has started accruing conversations, use the appropriate stored procedure instead (see Developer Documentation).
- 
-   ```sql
-   INSERT INTO Users (username, displayName, isBanned, isCCSGA, isAdmin, rolesLastUpdated, updatedBy) VALUES ('new_admin_username', 'New Admin Display Name', 0, 0, 1, UTC_TIMESTAMP(), NULL);
-   ```
-6. For development: if you want to run the Flask development server (according to the commands under "Component Commands and Configuration Info") and have not yet logged in again since editing `~/.bash_profile`, execute that file: `source ~/.bash_profile`
+7. If you've completed the database-related steps under "Product Compilation and Installation," the website should be accessible at the server's IP address/domain name on whatever port you specified on the `listen` lines of the Nginx configuration file (albeit with a self-signed certificate, so you'll have to click through an SSL warning in your browser)!
 
 #### Automatic Database Backup Setup
 

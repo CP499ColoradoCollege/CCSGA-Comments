@@ -30,15 +30,14 @@ sudo firewall-cmd --reload
 openssl req -x509 -nodes -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
 ```
 
-6. For development: add the following commands to `~/.bash_profile` (note that the first one will cause a complaint if the developer logs in again before setting up the python virtual environment as specified below):
+6. For development: add the following commands to `~/.bash_profile`:
 
 ```bash
-source ~/ccsga_comments/backend/venv/bin/activate
 export FLASK_ENV=development
 export FLASK_APP=backend
 ```
 
-7. Set up mariadb, including enabling it as a systemd service and running the mysql_secure_installation program. DigitalOcean provides [an excellent list of instructions](https://www.digitalocean.com/community/tutorials/how-to-install-mariadb-on-centos-8) for doing so; mariadb-server should be installed already after Step #1 above. Remember the root password for later use.
+7. Set up mariadb, including enabling it as a systemd service and running the mysql_secure_installation program. DigitalOcean provides [an excellent list of instructions](https://www.digitalocean.com/community/tutorials/how-to-install-mariadb-on-centos-8) for doing so; mariadb-server should be installed already after Step 1 above. Remember the root password for later use.
 
 #### Product Compilation and Installation
 
@@ -62,7 +61,7 @@ export FLASK_APP=backend
    1. Install virtualenv: `pip3.9 install virtualenv`
    2. With ccsga_comments/backend as the present working directory, run `virtualenv venv` to create a subdirectory, called “venv,” to house the virtual environment.
    3. In ccsga_comments/backend, run `source venv/bin/activate` to enter the virtual environment. 
-      1. Note that this command will need to be run every time the developer logs in, so the developer may wish to add the command (substituting the absolute path for `venv/bin/activate`) to their `~/.bash_profile` file if they have not done so already.
+      1. Note that this command will need to be run every time the developer logs in, so the developer may wish to add the command (substituting the absolute path for `venv/bin/activate`) to their `~/.bash_profile` file.
       2. The indication of having entered the virtual environment successfully is having `(venv)` on the left of the command-line prompt.
 3. Install python dependencies: from the `backend` directory, run `pip3.9 install -r requirements.txt`
 4. Database setup:
@@ -106,14 +105,12 @@ Feel free to adapt these instructions, for example, to use `scp` and a different
 2. Set up subdirectories within /opt
 
    ```bash
-   cd /opt
-   sudo mkdir ccsga_comments
-   sudo mkdir /opt/ccsga_comments/frontend/build
+   sudo mkdir -p /opt/ccsga_comments/frontend/build
    sudo mkdir /opt/ccsga_comments/backend
    ```
 
 3. Move or copy `key.pem` and `cert.pem` (created in the Development/Production Environment Setup section) to `/opt/ccsga_comments/backend`
-4. Run the following commands now, as well as every time you want to update the app with new changes (after producing the flutter build). If the codebase from which you'll be copying doesn't contain a `config.py` file and a `.env` file, follow the relevant instructions in the "Additional backend setup" step of the Product Compilation and Installation section to create copies for `/opt/ccsga_comments/backend`.
+4. Run the following commands. If the codebase from which you'll be copying doesn't contain a `config.py` file and a `.env` file, follow the relevant instructions in the "Additional backend setup" step of the Product Compilation and Installation section to create copies for `/opt/ccsga_comments/backend`.
 
 ```bash
 sudo cp -r ~/ccsga_comments/frontend/build/web /opt/ccsga_comments/frontend/build
@@ -298,10 +295,10 @@ The database also includes two tables designed to be used if future development 
 ```bash
 # Flutter -- run these commands from the `frontend` directory
 
-# Run this every time `pubspec.yaml` changes, to install Flutter libraries
+# Run this (from within the frontend directory) every time `pubspec.yaml` changes, to install Flutter libraries
 flutter pub get
 
-# Run this every time `lib` changes, to rebuild the distribution that's located at frontend/build/web
+# Run this (from within the frontend directory) every time `lib` changes, to rebuild the distribution that's located at frontend/build/web
 flutter build web
 ```
 
@@ -355,6 +352,7 @@ sudo systemctl restart ccsga-comments
 sudo systemctl status ccsga-comments
 
 # Update localhost:8000 (and therefore <device.ip.or.domainname>:8443) with application changes
+sudo rm -r /opt/ccsga_comments/frontend/build/*
 sudo cp -r path/to/updated/app/root/directory/frontend/build/web /opt/ccsga_comments/frontend/build
 sudo cp -r path/to/updated/app/root/directory/backend/*.py path/to/updated/app/root/directory/backend/.env path/to/updated/app/root/directory/backend/venv /opt/ccsga_comments/backend
 sudo systemctl restart ccsga-comments

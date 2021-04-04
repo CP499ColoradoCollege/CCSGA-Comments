@@ -13,11 +13,13 @@ import '../DatabaseHandler.dart';
 class ConversationSettingsDrawer extends StatefulWidget {
   var isMobileLayout = false;
   Conversation conversation;
+  int conversationId;
 
   @required
-  ConversationSettingsDrawer(bool isMobileLayout, Conversation conversation) {
+  ConversationSettingsDrawer(bool isMobileLayout, Conversation conversation, int conversationId) {
     this.isMobileLayout = isMobileLayout;
     this.conversation = conversation;
+    this.conversationId = conversationId;
   }
 
   _ConversationSettingsDrawerState createState() =>
@@ -136,9 +138,9 @@ class _ConversationSettingsDrawerState
     );
 
     if (isConfirmed && anonymousIsSwitched) {
-      print("Conversation id:" + widget.conversation.id.toString());
+      print("Conversation id:" + widget.conversationId.toString());
       DatabaseHandler.instance.updateConversation(
-          widget.conversation.id,
+          widget.conversationId,
           ConversationUpdate(
               revealIdentity: true,
               setArchived: null,
@@ -158,7 +160,7 @@ class _ConversationSettingsDrawerState
         await DatabaseHandler.instance.getAuthenticatedUser();
 
     Tuple2<ChewedResponse, Conversation> conversationResponse =
-        await DatabaseHandler.instance.getConversation(widget.conversation.id);
+        await DatabaseHandler.instance.getConversation(widget.conversationId);
 
     if (userResponse.item2 != null && conversationResponse.item2 != null) {
       return Tuple2(userResponse.item2, conversationResponse.item2);

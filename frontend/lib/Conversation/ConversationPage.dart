@@ -38,6 +38,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
   @override
   void initState() {
     super.initState();
+    _pathParams = getPathParameters();
   }
 
   @override
@@ -109,7 +110,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
   /// Custom conversation settings drawer
   @override
   Widget settingsDrawer() {
-    return ConversationSettingsDrawer(false, _conversation);
+    return ConversationSettingsDrawer(false, _conversation, _conversationId ?? int.parse(_pathParams['id']));
   }
 
   /// Override right icon button for said settings drawer
@@ -133,7 +134,6 @@ class _ConversationPageState extends BaseState<ConversationPage>
   /// will cause an infinite loop
   /// A better implementation is possible
   Future<bool> _getConversationData() async {
-    _pathParams = getPathParameters();
     // if a convId is passed in when creating the page, use that.
     // if not, check the url for the id (pathParams)
     _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);

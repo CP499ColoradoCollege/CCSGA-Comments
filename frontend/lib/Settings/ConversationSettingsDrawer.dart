@@ -12,14 +12,12 @@ import '../DatabaseHandler.dart';
 /// Future functionality: mark read/unread and others
 class ConversationSettingsDrawer extends StatefulWidget {
   var isMobileLayout = false;
-  Conversation conversation;
-  int conversationId;
+  Future<Conversation> conversationFuture;
 
   @required
-  ConversationSettingsDrawer(bool isMobileLayout, Conversation conversation, int conversationId) {
+  ConversationSettingsDrawer(bool isMobileLayout, Future<Conversation> conversationFuture) {
     this.isMobileLayout = isMobileLayout;
-    this.conversation = conversation;
-    this.conversationId = conversationId;
+    this.conversationFuture = conversationFuture;
   }
 
   _ConversationSettingsDrawerState createState() =>
@@ -138,9 +136,9 @@ class _ConversationSettingsDrawerState
     );
 
     if (isConfirmed && anonymousIsSwitched) {
-      print("Conversation id:" + widget.conversationId.toString());
+      Conversation conv = await widget.conversationFuture;
       DatabaseHandler.instance.updateConversation(
-          widget.conversationId,
+          conv.id,
           ConversationUpdate(
               revealIdentity: true,
               setArchived: null,
@@ -159,11 +157,10 @@ class _ConversationSettingsDrawerState
     Tuple2<ChewedResponse, User> userResponse =
         await DatabaseHandler.instance.getAuthenticatedUser();
 
-    Tuple2<ChewedResponse, Conversation> conversationResponse =
-        await DatabaseHandler.instance.getConversation(widget.conversationId);
+    Conversation conv = await widget.conversationFuture;
 
-    if (userResponse.item2 != null && conversationResponse.item2 != null) {
-      return Tuple2(userResponse.item2, conversationResponse.item2);
+    if (userResponse.item2 != null && conv != null) {
+      return Tuple2(userResponse.item2, conv);
     } else {
       return null;
     }

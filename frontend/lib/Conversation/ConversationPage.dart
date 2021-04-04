@@ -29,15 +29,15 @@ class ConversationPage extends BasePage {
 class _ConversationPageState extends BaseState<ConversationPage>
     with BasicPage {
   final _messageFieldController = TextEditingController();
-  Conversation _conversation;
+  Future<Conversation> _conversationFuture;
   Map _pathParams;
-  int _conversationId;
   String _errorMessage = "";
   User _currentUser;
 
   @override
   void initState() {
     super.initState();
+    _conversationFuture = _getConversationData();
     _pathParams = getPathParameters();
   }
 
@@ -45,20 +45,20 @@ class _ConversationPageState extends BaseState<ConversationPage>
   Widget body() {
     return Container(
       padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
-      child: FutureBuilder<bool>(
-          future: _getConversationData(),
-          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+      child: FutureBuilder<Conversation>(
+          future: _conversationFuture,
+          builder: (BuildContext context, AsyncSnapshot<Conversation> snapshot) {
             if (snapshot.hasData) {
               return Column(
                 children: [
                   ConversationStatus(
                       this.updateConversationStatus,
-                      _conversation.status,
+                      snapshot.data.status,
                       (this._currentUser.isCcsga ||
                               this._currentUser.isAdmin) ??
                           false),
                   MessageThread(
-                    conv: this._conversation,
+                    conv: snapshot.data,
                     currentUser: _currentUser,
                   ),
                   TextFormField(
@@ -110,7 +110,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
   /// Custom conversation settings drawer
   @override
   Widget settingsDrawer() {
-    return ConversationSettingsDrawer(false, _conversation, _conversationId ?? int.parse(_pathParams['id']));
+    return ConversationSettingsDrawer(false, _conversationFuture);
   }
 
   /// Override right icon button for said settings drawer
@@ -119,24 +119,24 @@ class _ConversationPageState extends BaseState<ConversationPage>
 
   /// This method updates the conversation object
   Future<void> updateConversationStatus(String status) async {
+    Conversation conv = await _conversationFuture;
     DatabaseHandler.instance.updateConversation(
-        _conversation.id, ConversationUpdate(setStatus: status));
+        conv.id, ConversationUpdate(setStatus: status));
   }
 
   /// This gets the conversation data and the user data
   ///
   /// 2 separate DatabaseHandler methods are called, responses
-  /// handled separately
-  /// The return bool is out of necessity, the FutureBuilder widget
-  /// requires a return value. This function sets attributes so it needs not
-  /// return anything
+  /// handled separately:
+  /// This function sets the _currentUser attribute to convey user info,
+  /// but returns a future representing the conversation to convey conversation info
   /// Because the function is called within the tree, setState() in this function
   /// will cause an infinite loop
   /// A better implementation is possible
-  Future<bool> _getConversationData() async {
+  Future<Conversation> _getConversationData() async {
     // if a convId is passed in when creating the page, use that.
     // if not, check the url for the id (pathParams)
-    _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);
+    int _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);
     Tuple2<ChewedResponse, Conversation> conversationResponse =
         await DatabaseHandler.instance
             .getConversation(_conversationId)
@@ -153,18 +153,16 @@ class _ConversationPageState extends BaseState<ConversationPage>
       setState(() {
         _errorMessage = conversationResponse.item1.message;
       });
-      return false;
+      return null;
     }
 
     if (conversationResponse.item2 != null) {
-      _conversation = conversationResponse.item2;
-      // FutureBuilder requires that we return something
-      return true;
+      return conversationResponse.item2;
     } else {
       setState(() {
         _errorMessage = conversationResponse.item1.message;
       });
-      return false;
+      return null;
     }
   }
 
@@ -176,12 +174,13 @@ class _ConversationPageState extends BaseState<ConversationPage>
   /// for the new message to appear without reload
   void _sendMessage() async {
     if (_messageFieldController.text != "") {
+      Conversation conv = await _conversationFuture;
       ChewedResponse chewedResponse = await DatabaseHandler.instance
           .sendMessageInConversation(
-              _conversationId, _messageFieldController.text);
+              conv.id, _messageFieldController.text);
       if (chewedResponse.isSuccessful) {
         _messageFieldController.clear();
-        await _getConversationData();
+        this._conversationFuture = _getConversationData();
         setState(() {});
       } else {
         setState(() {

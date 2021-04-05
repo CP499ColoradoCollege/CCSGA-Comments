@@ -18,7 +18,8 @@ class Conversation {
     this.status,
     this.labels,
     this.isArchived,
-    this.studentIdentityRevealed,
+    this.allIdentitiesRevealed,
+    this.ownIdentityRevealed,
     this.isRead,
   });
 
@@ -27,7 +28,8 @@ class Conversation {
   String status;
   List<String> labels;
   bool isArchived;
-  bool studentIdentityRevealed;
+  bool allIdentitiesRevealed;
+  bool ownIdentityRevealed;
   bool isRead;
 
   factory Conversation.fromJson(Map<String, dynamic> json) => Conversation(
@@ -40,9 +42,12 @@ class Conversation {
             ? null
             : List<String>.from(json["labels"].map((x) => x)),
         isArchived: json["isArchived"] == null ? null : json["isArchived"],
-        studentIdentityRevealed: json["studentIdentityRevealed"] == null
+        allIdentitiesRevealed: json["allIdentitiesRevealed"] == null
             ? null
-            : json["studentIdentityRevealed"],
+            : json["allIdentitiesRevealed"],
+        ownIdentityRevealed: json["ownIdentityRevealed"] == null
+            ? null
+            : json["ownIdentityRevealed"],
         isRead: json["isRead"] == null ? null : json["isRead"],
       );
 
@@ -55,8 +60,10 @@ class Conversation {
         "labels":
             labels == null ? null : List<dynamic>.from(labels.map((x) => x)),
         "isArchived": isArchived == null ? null : isArchived,
-        "studentIdentityRevealed":
-            studentIdentityRevealed == null ? null : studentIdentityRevealed,
+        "allIdentitiesRevealed":
+            allIdentitiesRevealed == null ? null : allIdentitiesRevealed,
+        "ownIdentityRevealed":
+            ownIdentityRevealed == null ? null : ownIdentityRevealed,
         "isRead": isRead == null ? null : isRead,
       };
 }

@@ -125,6 +125,7 @@ def create_stored_procedures():
                     SELECT body FROM Labels JOIN AppliedLabels ON Labels.id = AppliedLabels.labelId WHERE AppliedLabels.conversationId = requestedConversationId;
                     SELECT isArchived FROM ConversationSettings WHERE ConversationSettings.conversationId = requestedConversationId AND ConversationSettings.username = requester;
                     SELECT NOT EXISTS (SELECT ConversationSettings.id from ConversationSettings WHERE ConversationSettings.conversationId = requestedConversationId AND NOT identityRevealed);
+                    SELECT identityRevealed FROM ConversationSettings WHERE username = requester AND conversationId = requestedConversationId;
                     SELECT NOT EXISTS (SELECT Messages.id FROM Messages JOIN MessageSettings ON requester = MessageSettings.username AND Messages.id = MessageSettings.messageId WHERE Messages.conversationId = requestedConversationId AND NOT isRead);
                 ELSE
                     SELECT -403;

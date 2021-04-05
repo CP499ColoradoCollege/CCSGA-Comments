@@ -200,6 +200,10 @@ def get_conversations(conversation_id = None):
             cur.nextset()
             allIdentitiesRevealed = bool(cur.fetchone()[0])
             
+            # Handle the own identity revealed query; store result in a boolean
+            cur.nextset()
+            ownIdentityRevealed = bool(cur.fetchone()[0])
+
             # Handle the all messages read query; store result in a boolean
             cur.nextset()
             allMessagesRead = bool(cur.fetchone()[0])
@@ -208,7 +212,7 @@ def get_conversations(conversation_id = None):
             cur.nextset()
 
             # Add this key/value (conversation id/conversation data) pair to the conversations dict
-            conversations[curr_conv_id] = {"messages": messages, "status": status, "labels": labels, "isArchived": isArchived, "studentIdentityRevealed": allIdentitiesRevealed, "isRead": allMessagesRead}
+            conversations[curr_conv_id] = {"messages": messages, "status": status, "labels": labels, "isArchived": isArchived, "allIdentitiesRevealed": allIdentitiesRevealed, "ownIdentityRevealed": ownIdentityRevealed, "isRead": allMessagesRead}
     except mariadb.Error as e:
         print(f"Error when getting conversation data: {e}")
     finally:

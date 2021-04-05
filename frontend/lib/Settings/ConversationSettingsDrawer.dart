@@ -26,7 +26,7 @@ class ConversationSettingsDrawer extends StatefulWidget {
 
 class _ConversationSettingsDrawerState
     extends State<ConversationSettingsDrawer> {
-  bool anonymousIsSwitched = true;
+  bool anonymousIsSwitched;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class _ConversationSettingsDrawerState
               print("User object: " + snapshot.data.item1.toString());
               print("Conversation object: " + snapshot.data.item2.toString());
               anonymousIsSwitched =
-                  !snapshot.data.item2.studentIdentityRevealed;
+                  !snapshot.data.item2.ownIdentityRevealed;
               return ListView(
                 padding: EdgeInsets.zero,
                 children: <Widget>[
@@ -55,7 +55,7 @@ class _ConversationSettingsDrawerState
                   ),
                   SwitchListTile(
                     title: Text(
-                      'Anonymous',
+                      'Sending anonymously',
                     ),
                     value: anonymousIsSwitched,
                     inactiveThumbColor: anonymousIsSwitched
@@ -157,10 +157,13 @@ class _ConversationSettingsDrawerState
     Tuple2<ChewedResponse, User> userResponse =
         await DatabaseHandler.instance.getAuthenticatedUser();
 
-    Conversation conv = await widget.conversationFuture;
+    Conversation conv = await widget.conversationFuture; // get currently stored conversation, so we have its id
+    Tuple2<ChewedResponse, Conversation> convResponse =
+        await DatabaseHandler.instance.getConversation(conv.id); // send request to backend to check for changes
+    widget.conversationFuture = Future(() => convResponse.item2); // update the widget's attribute with the new conversation
 
-    if (userResponse.item2 != null && conv != null) {
-      return Tuple2(userResponse.item2, conv);
+    if (userResponse.item2 != null && convResponse.item2 != null) {
+      return Tuple2(userResponse.item2, convResponse.item2);
     } else {
       return null;
     }

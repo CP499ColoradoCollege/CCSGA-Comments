@@ -104,6 +104,30 @@ class DatabaseHandler {
     }
   }
 
+  /// Get messages and other details of a single conversation, deanonymized
+  ///
+  /// Conversation.fromJson turns the return JSON into a Conversation obj
+  /// Errorhandling: if response is not 200, status code and
+  /// corresponding error message are thrown as Exception
+  Future<Tuple2<ChewedResponse, Conversation>> getConversationDeanonymized(
+      int conversationId) async {
+    final url = '/api/conversations/$conversationId?overrideAnonymity=true';
+    var response =
+        await http.get(url, headers: {"Content-Type": "application/json"});
+    var chewedResponse = ChewedResponse();
+    chewedResponse.chewStatusCode(response.statusCode);
+    // only if the transaction is successful, will there will be a conversation obj in the response
+    if (response.statusCode == 200) {
+      Conversation conv = Conversation.fromJson(jsonDecode(response.body));
+      // the conv id comes from the request, not from the response
+      conv.id = conversationId;
+      return Tuple2<ChewedResponse, Conversation>(chewedResponse, conv);
+    } else {
+      throw Exception(
+          "Error. Status code: ${response.statusCode}, Message: ${chewedResponse.message}");
+    }
+  }
+
   /// Updates attribute(s) of an existing conversation
   /// (if setting status, archiving deanonymizing etc)
   Future<void> updateConversation(

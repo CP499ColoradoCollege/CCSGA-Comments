@@ -3,10 +3,12 @@ import 'package:ccsga_comments/BasePage/BasePage.dart';
 import 'package:ccsga_comments/Models/Admins.dart';
 import 'package:ccsga_comments/Models/BannedUsers.dart';
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
+import 'package:ccsga_comments/Models/Conversation.dart';
 import 'package:ccsga_comments/Models/GlobalEnums.dart';
 import 'package:ccsga_comments/Models/Representatives.dart';
 import 'package:ccsga_comments/Models/User.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tuple/tuple.dart';
 import '../DatabaseHandler.dart';
 
@@ -36,6 +38,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
   TextEditingController _textEditingController = TextEditingController();
   bool _isAdminChecked = true;
   bool _isRepresentativeChecked = false;
+  String _revealedUser = "";
 
   @override
   Widget body() {
@@ -247,6 +250,10 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
   Widget fab() {
     return Row(
       children: [
+        revealUserIdentityButton(),
+        SizedBox(
+          width: 10,
+        ),
         banUserButton(),
         SizedBox(
           width: 10,
@@ -421,6 +428,99 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
       label: Text('Ban User'),
       icon: Icon(Icons.not_interested),
       backgroundColor: Theme.of(context).accentColor,
+    );
+  }
+
+  //This widget is in charge of displaying the floating action button in the bottom right,
+  //As well as shows the dialogue box to reveal a user's identity
+  Widget revealUserIdentityButton() {
+    return FloatingActionButton.extended(
+      heroTag: "revealUserIdentityButton",
+      onPressed: () {
+        return showDialog<void>(
+          context: context,
+          barrierDismissible: true,
+          builder: (context) {
+            return StatefulBuilder(builder: (context, setState) {
+              return AlertDialog(
+                title: Text("Reveal User Identity"),
+                content: SizedBox(
+                  height: 250,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                            "Please enter the conversation ID to reveal the user's anonymous identity:"),
+                        TextField(
+                          controller: _textEditingController,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'^[0-9]+$')),
+                          ],
+                          decoration: InputDecoration(
+                            labelText: 'Conversation ID:',
+                            labelStyle: TextStyle(color: Colors.black),
+                            border: const OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Confirm"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _showAnonymousUserIdentityDialog(
+                          int.parse(_textEditingController.text));
+                    },
+                  ),
+                ],
+              );
+            });
+          },
+        );
+      },
+      label: Text('Reveal User Identity'),
+      icon: Icon(Icons.people_alt_outlined),
+      backgroundColor: Theme.of(context).accentColor,
+    );
+  }
+
+  Future<void> _showAnonymousUserIdentityDialog(int conversationID) async {
+    Tuple2<ChewedResponse, Conversation> conversationResponse =
+        await DatabaseHandler.instance
+            .getConversationDeanonymized(conversationID);
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Revealed Identity'),
+          content: Text("Username: " +
+              conversationResponse.item2.messages.values.first.sender.username),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

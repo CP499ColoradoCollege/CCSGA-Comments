@@ -434,6 +434,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
   //This widget is in charge of displaying the floating action button in the bottom right,
   //As well as shows the dialogue box to reveal a user's identity
   Widget revealUserIdentityButton() {
+    var userIdentity = "";
     return FloatingActionButton.extended(
       heroTag: "revealUserIdentityButton",
       onPressed: () {
@@ -442,52 +443,71 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
           barrierDismissible: true,
           builder: (context) {
             return StatefulBuilder(builder: (context, setState) {
-              return AlertDialog(
-                title: Text("Reveal User Identity"),
-                content: SizedBox(
-                  height: 250,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                            "Please enter the conversation ID to reveal the user's anonymous identity:"),
-                        TextField(
-                          controller: _textEditingController,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'^[0-9]+$')),
-                          ],
-                          decoration: InputDecoration(
-                            labelText: 'Conversation ID:',
-                            labelStyle: TextStyle(color: Colors.black),
-                            border: const OutlineInputBorder(),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.black),
-                            ),
-                          ),
+              return userIdentity == ""
+                  ? AlertDialog(
+                      title: Text("User Identity:" + userIdentity),
+                      actions: [
+                        TextButton(
+                          child: Text("Close"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
                         ),
                       ],
-                    ),
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    child: Text("Cancel"),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  TextButton(
-                    child: Text("Confirm"),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      _showAnonymousUserIdentityDialog(
-                          int.parse(_textEditingController.text));
-                    },
-                  ),
-                ],
-              );
+                    )
+                  : AlertDialog(
+                      title: Text("Reveal User Identity"),
+                      content: SizedBox(
+                        height: 250,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                  "Please enter the conversation ID to reveal the user's anonymous identity:"),
+                              TextField(
+                                controller: _textEditingController,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'^[0-9]+$')),
+                                ],
+                                decoration: InputDecoration(
+                                  labelText: 'Conversation ID:',
+                                  labelStyle: TextStyle(color: Colors.black),
+                                  border: const OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.black),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          child: Text("Cancel"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: Text("Confirm"),
+                          onPressed: () async {
+                            Tuple2<ChewedResponse, Conversation>
+                                conversationResponse = await DatabaseHandler
+                                    .instance
+                                    .getConversationDeanonymized(
+                                        int.parse(_textEditingController.text));
+                            setState(() {
+                              userIdentity = conversationResponse
+                                  .item2.messages[0].sender.username;
+                            });
+                          },
+                        ),
+                      ],
+                    );
             });
           },
         );
@@ -503,7 +523,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
         await DatabaseHandler.instance
             .getConversationDeanonymized(conversationID);
 
-    return showDialog<void>(
+    showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {

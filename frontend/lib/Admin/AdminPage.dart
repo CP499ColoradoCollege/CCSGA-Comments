@@ -458,13 +458,16 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                   : AlertDialog(
                       title: Text("Reveal User Identity"),
                       content: SizedBox(
-                        height: 250,
+                        height: 150,
                         child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                   "Please enter the conversation ID to reveal the user's anonymous identity:"),
+                              SizedBox(
+                                height: 20,
+                              ),
                               TextField(
                                 controller: _textEditingController,
                                 inputFormatters: [
@@ -494,14 +497,14 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                         ),
                         TextButton(
                           child: Text("Confirm"),
-                          onPressed: () {
-                            setState(() async {
-                              Tuple2<ChewedResponse, Conversation>
-                                  conversationResponse = await DatabaseHandler
-                                      .instance
-                                      .getConversationDeanonymized(int.parse(
-                                          _textEditingController.text));
+                          onPressed: () async {
+                            Tuple2<ChewedResponse, Conversation>
+                                conversationResponse = await DatabaseHandler
+                                    .instance
+                                    .getConversationDeanonymized(
+                                        int.parse(_textEditingController.text));
 
+                            setState(() async {
                               userIdentity = conversationResponse
                                   .item2.messages[0].sender.username;
                             });

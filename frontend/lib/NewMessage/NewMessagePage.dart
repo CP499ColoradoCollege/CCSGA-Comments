@@ -145,9 +145,11 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
       setState(() {
         _isChecked = false;
         _successMessage = chewedResponse.message;
+        _errorMessage = "";
       });
     } else {
       setState(() {
+        _successMessage = "";
         _errorMessage = chewedResponse.message;
       });
     }

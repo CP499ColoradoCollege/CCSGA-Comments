@@ -250,6 +250,10 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
   Widget fab() {
     return Row(
       children: [
+        revealUserIdentityButton(),
+        SizedBox(
+          width: 10,
+        ),
         banUserButton(),
         SizedBox(
           width: 10,
@@ -506,7 +510,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
         return AlertDialog(
           title: Text('Revealed Identity'),
           content: Text("Username: " +
-              conversationResponse.item2.messages[0].sender.username),
+              conversationResponse.item2.messages.values.first.sender.username),
           actions: <Widget>[
             TextButton(
               child: Text('Close'),

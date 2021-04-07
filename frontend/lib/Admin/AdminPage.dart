@@ -255,6 +255,10 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
           width: 10,
         ),
         promoteNewUserButton(),
+        SizedBox(
+          width: 10,
+        ),
+        revealUserIdentityButton(),
       ],
       mainAxisAlignment: MainAxisAlignment.end,
     );

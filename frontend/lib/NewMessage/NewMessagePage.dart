@@ -3,6 +3,10 @@ import 'package:ccsga_comments/DatabaseHandler.dart';
 import 'package:ccsga_comments/Models/ChewedResponseModel.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:beamer/beamer.dart';
+import 'package:ccsga_comments/Navigation/CCSGABeamLocations.dart';
+import 'dart:convert';
+import 'package:tuple/tuple.dart';
 
 class NewMessagePage extends BasePage {
   NewMessagePage({Key key, this.title}) : super(key: key);
@@ -135,18 +139,17 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
   void _sendMessageInNewConversation() async {
     List<String> selectedCommitteesStrList = [];
     _selectedCommittees.forEach((e) => selectedCommitteesStrList.add(e.name));
-    ChewedResponse chewedResponse = await DatabaseHandler.instance
+    Tuple2<ChewedResponse, String> chewedResponseAndBody = await DatabaseHandler.instance
         .initiateNewConversation(
             _isChecked, textFieldController.text, selectedCommitteesStrList);
+    ChewedResponse chewedResponse = chewedResponseAndBody.item1;
+    String responseBody = chewedResponseAndBody.item2;
     if (chewedResponse.isSuccessful) {
       _formKey.currentState.reset();
       _selectedCommittees.clear();
       textFieldController.clear();
-      setState(() {
-        _isChecked = false;
-        _successMessage = chewedResponse.message;
-        _errorMessage = "";
-      });
+      context.beamTo(ConversationLocation(
+        pathParameters: {"conversationId": jsonDecode(responseBody)["conversationId"].toString()}));
     } else {
       setState(() {
         _successMessage = "";

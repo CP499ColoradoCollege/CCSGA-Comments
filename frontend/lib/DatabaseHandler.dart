@@ -50,7 +50,7 @@ class DatabaseHandler {
   /// is the list of committee labels.
   /// ChewedResponse is used to digest the status code and
   /// translate it into an isSuccessful bool and an error message
-  Future<ChewedResponse> initiateNewConversation(
+  Future<Tuple2<ChewedResponse, String>> initiateNewConversation(
       bool isAnonymous, String messageBody, List<String> labels) async {
     final url = '/api/conversations/create';
     var newMessageAttributes = {
@@ -63,7 +63,7 @@ class DatabaseHandler {
         body: jsonEncode(newMessageAttributes));
     var chewedResponse = ChewedResponse(
         message: "Message Sent Successfully!", statusCode: response.statusCode);
-    return chewedResponse;
+    return Tuple2(chewedResponse, response.body);
   }
 
   /// Send a message in an existing conversation (as a reply)

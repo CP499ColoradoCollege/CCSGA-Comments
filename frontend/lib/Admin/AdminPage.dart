@@ -494,13 +494,14 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
                         ),
                         TextButton(
                           child: Text("Confirm"),
-                          onPressed: () async {
-                            Tuple2<ChewedResponse, Conversation>
-                                conversationResponse = await DatabaseHandler
-                                    .instance
-                                    .getConversationDeanonymized(
-                                        int.parse(_textEditingController.text));
-                            setState(() {
+                          onPressed: () {
+                            setState(() async {
+                              Tuple2<ChewedResponse, Conversation>
+                                  conversationResponse = await DatabaseHandler
+                                      .instance
+                                      .getConversationDeanonymized(int.parse(
+                                          _textEditingController.text));
+
                               userIdentity = conversationResponse
                                   .item2.messages[0].sender.username;
                             });

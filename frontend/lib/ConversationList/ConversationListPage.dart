@@ -51,7 +51,27 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
                   future: _getConversationList(),
                   builder:
                       (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                    if (snapshot.hasData) {
+                    if (snapshot.hasError){
+                      String exceptionString = snapshot.error.toString();
+                      String errorMessage;
+                      switch(exceptionString.substring(exceptionString.length - 3)){
+                        case "401":
+                          errorMessage = "You are not signed in. Please refresh the page.";
+                          break;
+                        case "403":
+                          errorMessage = "You are currently banned from this site. Please email CCSGA if you believe this is a mistake.";
+                          break;
+                        default:
+                          errorMessage = "Something went wrong. Refreshing the page may help.";
+                      }
+                      return Center(
+                        child: SizedBox(
+                          width: 200,
+                          height: 200,
+                          child: Text(errorMessage),
+                        ),
+                      );
+                    }else if (snapshot.hasData) {
                       return ListView(
                           padding: const EdgeInsets.all(8),
                           children: _convCards);
@@ -87,7 +107,7 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
       return true;
     } else {
       setState(() {
-        throw new Error();
+        throw new Exception(responseTuple.item1.statusCode);
       });
       return false;
     }
@@ -130,14 +150,22 @@ class _ConversationListPageState extends BaseState<ConversationListPage>
   /// Takes user to the new_message page
   @override
   Widget fab() {
-    return FloatingActionButton.extended(
-      onPressed: () {
-        _newMessage();
-      },
-      label: Text('New Message'),
-      icon: Icon(Icons.add),
-      backgroundColor: Theme.of(context).accentColor,
-    );
+    return FutureBuilder<bool>(
+      future: _getConversationList(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if(snapshot.hasData){
+          return FloatingActionButton.extended(
+            onPressed: () {
+              _newMessage();
+            },
+            label: Text('New Message'),
+            icon: Icon(Icons.add),
+            backgroundColor: Theme.of(context).accentColor,
+          );
+        }else{ // error (such as banned user), or hasn't loaded yet
+          return null;
+        }
+    });
   }
 
   // Future functionality, for filter, sort, search

@@ -12,12 +12,12 @@ import '../DatabaseHandler.dart';
 /// Future functionality: mark read/unread and others
 class ConversationSettingsDrawer extends StatefulWidget {
   var isMobileLayout = false;
-  Future<Conversation> conversationFuture;
+  Future<Tuple2<User, Conversation>> userAndConversationFuture;
 
   @required
-  ConversationSettingsDrawer(bool isMobileLayout, Future<Conversation> conversationFuture) {
+  ConversationSettingsDrawer(bool isMobileLayout, Future<Tuple2<User, Conversation>> userAndConversationFuture) {
     this.isMobileLayout = isMobileLayout;
-    this.conversationFuture = conversationFuture;
+    this.userAndConversationFuture = userAndConversationFuture;
   }
 
   _ConversationSettingsDrawerState createState() =>
@@ -35,6 +35,9 @@ class _ConversationSettingsDrawerState
           future: _getUserData(),
           builder: (BuildContext context,
               AsyncSnapshot<Tuple2<User, Conversation>> snapshot) {
+            if(snapshot.hasError){
+              return null;
+            }
             if (snapshot.hasData) {
               print("User object: " + snapshot.data.item1.toString());
               print("Conversation object: " + snapshot.data.item2.toString());
@@ -136,7 +139,7 @@ class _ConversationSettingsDrawerState
     );
 
     if (isConfirmed && anonymousIsSwitched) {
-      Conversation conv = await widget.conversationFuture;
+      Conversation conv = (await widget.userAndConversationFuture).item2;
       DatabaseHandler.instance.updateConversation(
           conv.id,
           ConversationUpdate(
@@ -157,14 +160,17 @@ class _ConversationSettingsDrawerState
     Tuple2<ChewedResponse, User> userResponse =
         await DatabaseHandler.instance.getAuthenticatedUser();
 
-    Conversation conv = await widget.conversationFuture; // get currently stored conversation, so we have its id
+    Conversation conv = (await widget.userAndConversationFuture).item2; // get currently stored conversation, so we have its id
     Tuple2<ChewedResponse, Conversation> convResponse =
         await DatabaseHandler.instance.getConversation(conv.id); // send request to backend to check for changes
-    widget.conversationFuture = Future(() => convResponse.item2); // update the widget's attribute with the new conversation
+    widget.userAndConversationFuture = Future(() => Tuple2(userResponse.item2, convResponse.item2)); // update the widget's attribute with the new user and conversation
 
     if (userResponse.item2 != null && convResponse.item2 != null) {
       return Tuple2(userResponse.item2, convResponse.item2);
     } else {
+      setState(() {
+        throw Exception();
+      });
       return null;
     }
   }

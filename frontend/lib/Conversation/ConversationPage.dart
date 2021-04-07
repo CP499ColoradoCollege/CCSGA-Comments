@@ -29,15 +29,11 @@ class ConversationPage extends BasePage {
 class _ConversationPageState extends BaseState<ConversationPage>
     with BasicPage {
   final _messageFieldController = TextEditingController();
-  Future<Conversation> _conversationFuture;
   Map _pathParams;
-  String _errorMessage = "";
-  User _currentUser;
 
   @override
   void initState() {
     super.initState();
-    _conversationFuture = _getConversationData();
     _pathParams = getPathParameters();
   }
 
@@ -45,21 +41,44 @@ class _ConversationPageState extends BaseState<ConversationPage>
   Widget body() {
     return Container(
       padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
-      child: FutureBuilder<Conversation>(
-          future: _conversationFuture,
-          builder: (BuildContext context, AsyncSnapshot<Conversation> snapshot) {
-            if (snapshot.hasData) {
+      child: FutureBuilder<Tuple2<User, Conversation>>(
+          future: _getConversationData(),
+          builder: (BuildContext context, AsyncSnapshot<Tuple2<User, Conversation>> snapshot) {
+            if(snapshot.hasError){
+              String exceptionString = snapshot.error.toString();
+              String errorMessage;
+              switch(exceptionString.substring(exceptionString.length - 3)){
+                case "401":
+                  errorMessage = "You are not signed in. Please refresh the page.";
+                  break;
+                case "403":
+                  errorMessage = "You do not have access to this conversation, or you are currently banned from this site. Please email CCSGA if you believe this is a mistake.";
+                  break;
+                case "404":
+                  errorMessage = "Conversation not found.";
+                  break;
+                default:
+                  errorMessage = "Something went wrong. Refreshing the page may help.";
+              }
+              return Center(
+                child: SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: Text(errorMessage),
+                ),
+              );
+            }else if (snapshot.hasData){
               return Column(
                 children: [
                   ConversationStatus(
                       this.updateConversationStatus,
-                      snapshot.data.status,
-                      (this._currentUser.isCcsga ||
-                              this._currentUser.isAdmin) ??
+                      snapshot.data.item2.status,
+                      (snapshot.data.item1.isCcsga ||
+                              snapshot.data.item1.isAdmin) ??
                           false),
                   MessageThread(
-                    conv: snapshot.data,
-                    currentUser: _currentUser,
+                    conv: snapshot.data.item2,
+                    currentUser: snapshot.data.item1,
                   ),
                   TextFormField(
                     controller: _messageFieldController,
@@ -89,7 +108,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
                   )
                 ],
               );
-            } else {
+            }else{ // still loading
               return Center(
                 child: SizedBox(
                   height: 50,
@@ -110,7 +129,7 @@ class _ConversationPageState extends BaseState<ConversationPage>
   /// Custom conversation settings drawer
   @override
   Widget settingsDrawer() {
-    return ConversationSettingsDrawer(false, _conversationFuture);
+    return ConversationSettingsDrawer(false, _getConversationData());
   }
 
   /// Override right icon button for said settings drawer
@@ -119,54 +138,31 @@ class _ConversationPageState extends BaseState<ConversationPage>
 
   /// This method updates the conversation object
   Future<void> updateConversationStatus(String status) async {
-    Conversation conv = await _conversationFuture;
+    int _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);
     DatabaseHandler.instance.updateConversation(
-        conv.id, ConversationUpdate(setStatus: status));
+        _conversationId, ConversationUpdate(setStatus: status));
   }
 
   /// This gets the conversation data and the user data
   ///
-  /// 2 separate DatabaseHandler methods are called, responses
-  /// handled separately:
-  /// This function sets the _currentUser attribute to convey user info,
-  /// but returns a future representing the conversation to convey conversation info
-  /// Because the function is called within the tree, setState() in this function
-  /// will cause an infinite loop
-  /// A better implementation is possible
-  Future<Conversation> _getConversationData() async {
+  /// 2 separate DatabaseHandler methods are called. 
+  /// If both succeed, this function returns a future representing the user and the conversation.
+  /// If either DatabaseHandler method raises an exception, that exception is passed up to this function's caller.
+  Future<Tuple2<User, Conversation>> _getConversationData() async {
     // if a convId is passed in when creating the page, use that.
     // if not, check the url for the id (pathParams)
     int _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);
     Tuple2<ChewedResponse, Conversation> conversationResponse =
         await DatabaseHandler.instance
-            .getConversation(_conversationId)
-            .catchError(handleError);
+            .getConversation(_conversationId);
 
     Tuple2<ChewedResponse, User> userResponse = await DatabaseHandler.instance
-        .getAuthenticatedUser()
-        .catchError(handleError);
-    // transaction successful, there was a conv obj sent in response, otherwise null
-    if (userResponse.item2 != null) {
-      // use setState to update the data in the UI with conv
-      _currentUser = userResponse.item2;
-    } else {
-      setState(() {
-        _errorMessage = conversationResponse.item1.message;
-      });
-      return null;
-    }
-
-    if (conversationResponse.item2 != null) {
-      return conversationResponse.item2;
-    } else {
-      setState(() {
-        _errorMessage = conversationResponse.item1.message;
-      });
-      return null;
-    }
+        .getAuthenticatedUser();
+    // transaction successful, there were a conv obj and a user obj sent in responses, without exceptions thrown
+    return Tuple2(userResponse.item2, conversationResponse.item2);
   }
 
-  /// This message makes a call to append a new message
+  /// This function makes a call to append a new message
   /// to this existing conversation
   ///
   /// Error is printed to the console if any
@@ -174,19 +170,12 @@ class _ConversationPageState extends BaseState<ConversationPage>
   /// for the new message to appear without reload
   void _sendMessage() async {
     if (_messageFieldController.text != "") {
-      Conversation conv = await _conversationFuture;
-      ChewedResponse chewedResponse = await DatabaseHandler.instance
+      int _conversationId = widget.conversationId ?? int.parse(_pathParams['id']);
+      await DatabaseHandler.instance
           .sendMessageInConversation(
-              conv.id, _messageFieldController.text);
-      if (chewedResponse.isSuccessful) {
-        _messageFieldController.clear();
-        this._conversationFuture = _getConversationData();
-        setState(() {});
-      } else {
-        setState(() {
-          _errorMessage = chewedResponse.message;
-        });
-      }
+              _conversationId, _messageFieldController.text);
+      _messageFieldController.clear();
+      setState(() {}); // reload, letting _getConversationData take care of error handling
     }
   }
 

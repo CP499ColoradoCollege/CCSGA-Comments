@@ -443,7 +443,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
           barrierDismissible: true,
           builder: (context) {
             return StatefulBuilder(builder: (context, setState) {
-              return userIdentity == ""
+              return userIdentity != ""
                   ? AlertDialog(
                       title: Text("User Identity:" + userIdentity),
                       actions: [

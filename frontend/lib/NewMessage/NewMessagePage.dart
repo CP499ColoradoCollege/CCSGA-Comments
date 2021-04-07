@@ -21,7 +21,9 @@ class _NewMessagePageState extends BaseState<NewMessagePage> with BasicPage {
   static List<Committee> _committees = [
     new Committee(id: 0, name: 'Internal Affairs'),
     new Committee(id: 1, name: 'Outreach'),
-    new Committee(id: 2, name: 'Diversity and Inclusion')
+    new Committee(id: 2, name: 'Inclusion'),
+    new Committee(id: 3, name: 'Student Life'),
+    new Committee(id: 4, name: 'Finance')
   ];
   List<Committee> _selectedCommittees = [];
 

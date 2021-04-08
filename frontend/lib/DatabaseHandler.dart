@@ -37,8 +37,10 @@ class DatabaseHandler {
         conversation.id = int.parse(id);
         conversationList.add(conversation);
       });
+      List<Conversation> reversedConvList =
+          new List.from(conversationList.reversed);
       return Tuple2<ChewedResponse, List<Conversation>>(
-          chewedResponse, conversationList);
+          chewedResponse, reversedConvList);
     } else {
       return Tuple2<ChewedResponse, List<Conversation>>(chewedResponse, null);
     }

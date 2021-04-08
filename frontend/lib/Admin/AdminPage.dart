@@ -271,6 +271,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
     return FloatingActionButton.extended(
       heroTag: "promoteNewUserButton",
       onPressed: () {
+        _textEditingController.clear(); // in case user has already opened one of the popups and entered text
         return showDialog<void>(
           context: context,
           barrierDismissible: true,
@@ -371,6 +372,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
     return FloatingActionButton.extended(
       heroTag: "banUserButton",
       onPressed: () {
+        _textEditingController.clear(); // in case user has already opened one of the popups and entered text
         return showDialog<void>(
           context: context,
           barrierDismissible: true,
@@ -437,6 +439,7 @@ class _AdminPageState extends BaseState<AdminPage> with BasicPage {
     return FloatingActionButton.extended(
       heroTag: "revealUserIdentityButton",
       onPressed: () {
+        _textEditingController.clear(); // in case user has already opened one of the popups and entered text
         return showDialog<void>(
           context: context,
           barrierDismissible: true,

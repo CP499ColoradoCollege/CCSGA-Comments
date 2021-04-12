@@ -130,6 +130,24 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
               }
             },
           ),
+          FutureBuilder<User>(
+            future: currentUser,
+            builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+              if (snapshot.hasData) {
+                return ListTile(
+                  title: Center(
+                    child: Text(
+                      'Signed in as ${snapshot.data.username}',
+                      style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                  contentPadding: EdgeInsets.all(10),
+                );
+              } else {
+                return Container();
+              }
+            }
+          ),
         ],
       ),
     );
